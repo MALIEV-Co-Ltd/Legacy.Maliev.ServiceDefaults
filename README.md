@@ -4,6 +4,10 @@ Compatibility-preserving .NET 10 hosting defaults for MALIEV's extracted legacy 
 
 The repository is public and independently versioned so legacy workloads do not depend on the new-platform `Maliev.Aspire` repository. The first compatibility release intentionally retains the existing `Maliev.Aspire.ServiceDefaults.*` C# namespaces while changing the repository, assembly, and package identity to `Legacy.Maliev.ServiceDefaults`. This avoids a single cross-organization breaking change across every legacy service.
 
+The initial source snapshot was extracted from `MALIEV-Co-Ltd/Maliev.Aspire` commit
+`01d506203763b914e237268a8746f1406423df86`. Subsequent changes belong in this
+repository and must not be copied back implicitly.
+
 ## Included defaults
 
 - health, readiness, liveness, Prometheus, OpenTelemetry, and URL-query redaction
