@@ -16,11 +16,7 @@
   </PropertyGroup>
 
   <ItemGroup Condition="'$(GITHUB_ACTIONS)' != 'true'">
-    <ProjectReference Include="$(MalievWorkspaceRoot)\Maliev.MessagingContracts\generated\csharp\Maliev.MessagingContracts.csproj" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
-    <PackageReference Include="Maliev.MessagingContracts" Version="$(SharedLibraryVersion)" />
+    <ProjectReference Include="$(MalievWorkspaceRoot)\Legacy.Maliev.CompatibilityContracts\src\Legacy.Maliev.CompatibilityContracts\Legacy.Maliev.CompatibilityContracts.csproj" />
   </ItemGroup>
 
   <ItemGroup>
