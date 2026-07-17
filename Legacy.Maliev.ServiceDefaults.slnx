@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="src/Legacy.Maliev.ServiceDefaults/Legacy.Maliev.ServiceDefaults.csproj" />
+  <Project Path="tests/Legacy.Maliev.ServiceDefaults.Tests/Legacy.Maliev.ServiceDefaults.Tests.csproj" />
+</Solution>
