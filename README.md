@@ -25,7 +25,10 @@ dotnet test Legacy.Maliev.ServiceDefaults.slnx -c Release --no-build --no-restor
 dotnet pack src/Legacy.Maliev.ServiceDefaults/Legacy.Maliev.ServiceDefaults.csproj -c Release --no-build
 ```
 
-Local builds resolve `Maliev.MessagingContracts` from the sibling MALIEV workspace. CI resolves the same versioned contract from the organization package registry.
+Local builds resolve `Legacy.Maliev.CompatibilityContracts` from the sibling
+MALIEV workspace. CI checks out the exact validated public commit. Packing this
+project records `Legacy.Maliev.CompatibilityContracts` as a package dependency;
+publishing remains a separate gated action.
 
 ## Operational boundary
 
