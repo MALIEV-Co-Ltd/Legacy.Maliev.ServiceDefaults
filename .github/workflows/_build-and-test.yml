@@ -1,0 +1,37 @@
+name: Build and test
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: validate
+    runs-on: ubuntu-latest
+    env:
+      MalievWorkspaceRoot: ${{ github.workspace }}/.dependencies
+    steps:
+      - name: Check out ServiceDefaults
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        with:
+          persist-credentials: false
+      - name: Check out MessagingContracts
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        with:
+          repository: MALIEV-Co-Ltd/Maliev.MessagingContracts
+          ref: 1d58583676bc1c6e5cad74f30e1e96ff0a761464
+          path: .dependencies/Maliev.MessagingContracts
+          persist-credentials: false
+      - name: Validate .NET solution
+        uses: MALIEV-Co-Ltd/Legacy.Maliev.Workflows/actions/dotnet-validate@f7bafd4ba7e8e6e92a0b7d853150f3ca60e1eae6
+        with:
+          solution: Legacy.Maliev.ServiceDefaults.slnx
+          use-local-maliev-dependencies: 'true'
+      - name: Verify package can be produced
+        shell: bash
+        run: |
+          export GITHUB_ACTIONS=false
+          dotnet pack src/Legacy.Maliev.ServiceDefaults/Legacy.Maliev.ServiceDefaults.csproj \
+            --configuration Release --no-build --no-restore --output artifacts
