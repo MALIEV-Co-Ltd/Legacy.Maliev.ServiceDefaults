@@ -1,0 +1,51 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Legacy.Maliev.ServiceDefaults</AssemblyName>
+    <RootNamespace>Maliev.Aspire.ServiceDefaults</RootNamespace>
+    <IsAspireSharedProject>true</IsAspireSharedProject>
+    <IsPackable>true</IsPackable>
+    <PackageId>Legacy.Maliev.ServiceDefaults</PackageId>
+    <VersionPrefix>1.0.0</VersionPrefix>
+    <Authors>MALIEV</Authors>
+    <Company>MALIEV Co., Ltd.</Company>
+    <Description>Compatibility-preserving .NET 10 service defaults for the independently deployed legacy MALIEV services.</Description>
+    <PackageTags>legacy;aspire;servicedefaults;opentelemetry;healthchecks</PackageTags>
+    <RepositoryUrl>https://github.com/MALIEV-Co-Ltd/Legacy.Maliev.ServiceDefaults</RepositoryUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <NoWarn>$(NoWarn);NU5104</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(GITHUB_ACTIONS)' != 'true'">
+    <ProjectReference Include="$(MalievWorkspaceRoot)\Maliev.MessagingContracts\generated\csharp\Maliev.MessagingContracts.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+    <PackageReference Include="Maliev.MessagingContracts" Version="$(SharedLibraryVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="../../README.md" Pack="true" PackagePath="\" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="AspNetCore.HealthChecks.Rabbitmq" Version="9.0.0" />
+    <PackageReference Include="AspNetCore.HealthChecks.Redis" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="10.4.0" />
+    <PackageReference Include="Microsoft.Extensions.ServiceDiscovery" Version="10.4.0" />
+    <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.15.3" />
+    <PackageReference Include="OpenTelemetry.Exporter.Prometheus.AspNetCore" Version="1.14.0-beta.1" />
+    <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.15.3" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.15.1" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.15.1" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.Runtime" Version="1.15.1" />
+    <PackageReference Include="MassTransit.RabbitMQ" Version="[8.5.8, 9.0.0)" />
+    <PackageReference Include="MassTransit.Abstractions" Version="[8.5.8, 9.0.0)" />
+    <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="10.0.5" />
+    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="10.0.5" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.5" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.16.0" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.5" />
+    <PackageReference Include="Microsoft.OpenApi" Version="2.7.5" />
+    <PackageReference Include="Scalar.AspNetCore" Version="2.13.10" />
+    <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.1.1" />
+  </ItemGroup>
+</Project>
