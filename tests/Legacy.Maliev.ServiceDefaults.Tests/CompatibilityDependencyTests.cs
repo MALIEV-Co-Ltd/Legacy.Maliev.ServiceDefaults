@@ -44,6 +44,16 @@ public sealed class CompatibilityDependencyTests
         Assert.DoesNotContain("repository: MALIEV-Co-Ltd/Maliev.MessagingContracts", workflow, StringComparison.Ordinal);
     }
 
+    [Fact]
+    public void DependabotDefersMicrosoftOpenApiMajorUpdatesUntilAspNetCoreIsCompatible()
+    {
+        var root = FindRepositoryRoot();
+        var dependabot = File.ReadAllText(Path.Combine(root, ".github", "dependabot.yml"));
+
+        Assert.Contains("dependency-name: Microsoft.OpenApi", dependabot, StringComparison.Ordinal);
+        Assert.Contains("version-update:semver-major", dependabot, StringComparison.Ordinal);
+    }
+
     private static string FindRepositoryRoot()
     {
         var directory = new DirectoryInfo(AppContext.BaseDirectory);
