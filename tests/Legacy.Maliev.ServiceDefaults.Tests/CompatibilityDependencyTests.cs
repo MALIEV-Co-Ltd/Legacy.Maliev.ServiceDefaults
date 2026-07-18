@@ -3,6 +3,26 @@ namespace Legacy.Maliev.ServiceDefaults.Tests;
 public sealed class CompatibilityDependencyTests
 {
     [Fact]
+    public void JwtBearerAndTokenHandlerUseCompatiblePackageVersions()
+    {
+        var root = FindRepositoryRoot();
+        var project = File.ReadAllText(Path.Combine(
+            root,
+            "src",
+            "Legacy.Maliev.ServiceDefaults",
+            "Legacy.Maliev.ServiceDefaults.csproj"));
+
+        Assert.Contains(
+            "PackageReference Include=\"Microsoft.AspNetCore.Authentication.JwtBearer\" Version=\"10.0.10\"",
+            project,
+            StringComparison.Ordinal);
+        Assert.Contains(
+            "PackageReference Include=\"System.IdentityModel.Tokens.Jwt\" Version=\"8.19.2\"",
+            project,
+            StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void ProjectAndCiUseOnlyLegacyCompatibilityContracts()
     {
         var root = FindRepositoryRoot();
