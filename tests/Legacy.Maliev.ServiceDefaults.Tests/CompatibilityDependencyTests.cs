@@ -54,6 +54,48 @@ public sealed class CompatibilityDependencyTests
         Assert.Contains("version-update:semver-major", dependabot, StringComparison.Ordinal);
     }
 
+    [Fact]
+    public void DependabotGroupsOnlyCompatibleGitHubActionsVersionUpdates()
+    {
+        var block = ReadDependabotUpdateBlock("github-actions");
+
+        Assert.Contains("    open-pull-requests-limit: 5", block);
+        Assert.Contains("    groups:", block);
+        Assert.Contains("      minor-and-patch:", block);
+        Assert.Contains("        applies-to: version-updates", block);
+        Assert.Contains("        patterns:", block);
+        Assert.Contains("          - \"*\"", block);
+        Assert.Contains("        update-types:", block);
+        Assert.Contains("          - minor", block);
+        Assert.Contains("          - patch", block);
+        Assert.DoesNotContain(block, line => line.Contains("major", StringComparison.Ordinal));
+    }
+
+    private static string[] ReadDependabotUpdateBlock(string packageEcosystem)
+    {
+        var root = FindRepositoryRoot();
+        var lines = File.ReadAllLines(Path.Combine(root, ".github", "dependabot.yml"));
+        var blockStart = Array.FindIndex(
+            lines,
+            line => line.Trim() == $"- package-ecosystem: {packageEcosystem}");
+
+        Assert.True(blockStart >= 0, $"Dependabot update block '{packageEcosystem}' was not found.");
+
+        var blockEnd = Array.FindIndex(
+            lines,
+            blockStart + 1,
+            line => line.StartsWith("  - package-ecosystem:", StringComparison.Ordinal));
+        if (blockEnd < 0)
+        {
+            blockEnd = lines.Length;
+        }
+
+        return lines[blockStart..blockEnd]
+            .Select(line => line.TrimEnd())
+            .Where(line => line.Length > 0)
+            .ToArray();
+    }
+
     private static string FindRepositoryRoot()
     {
         var directory = new DirectoryInfo(AppContext.BaseDirectory);
