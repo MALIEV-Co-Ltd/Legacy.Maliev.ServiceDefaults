@@ -244,7 +244,11 @@ public static class Extensions
                 await context.Response.WriteAsync(result);
             }
         })
-        .WithTags("kubernetes");
+        .WithTags("kubernetes")
+        // Infrastructure probes must remain reachable when an application uses
+        // an authenticated fallback policy. Business endpoints stay protected by
+        // that policy; health probes do not carry employee credentials.
+        .AllowAnonymous();
 
         // OpenTelemetry Prometheus metrics endpoint at /{servicePrefix}/metrics
         app.MapPrometheusScrapingEndpoint($"/{servicePrefix}/metrics");
