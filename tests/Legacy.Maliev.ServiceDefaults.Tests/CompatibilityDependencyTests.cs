@@ -71,6 +71,29 @@ public sealed class CompatibilityDependencyTests
         Assert.DoesNotContain(block, line => line.Contains("major", StringComparison.Ordinal));
     }
 
+    [Fact]
+    public void ReadinessProbeIsAnonymousForAuthenticatedFallbackPolicies()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root,
+            "src",
+            "Legacy.Maliev.ServiceDefaults",
+            "Extensions.cs"));
+
+        var readiness = source.IndexOf(
+            "app.MapHealthChecks($\"/{servicePrefix}/readiness\"",
+            StringComparison.Ordinal);
+
+        Assert.True(readiness >= 0, "The standard readiness endpoint was not found.");
+        var readinessBlock = source[readiness..source.IndexOf(
+            "// OpenTelemetry Prometheus metrics endpoint",
+            readiness,
+            StringComparison.Ordinal)];
+
+        Assert.Contains(".AllowAnonymous();", readinessBlock, StringComparison.Ordinal);
+    }
+
     private static string[] ReadDependabotUpdateBlock(string packageEcosystem)
     {
         var root = FindRepositoryRoot();
