@@ -49,7 +49,7 @@ public static class ServiceRegistrationExtensions
         });
 
         httpClientBuilder.AddServiceDiscovery();
-        httpClientBuilder.AddStandardResilienceHandler();
+        httpClientBuilder.AddLegacyStandardResilienceHandler();
 
         return httpClientBuilder;
     }
