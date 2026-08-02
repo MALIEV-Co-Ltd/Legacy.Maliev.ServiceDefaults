@@ -147,14 +147,10 @@ public static class Extensions
         builder.Services.AddServiceDiscovery();
         builder.Services.ConfigureHttpClientDefaults(http =>
         {
-            // Turn on resilience by default with optimized timeouts
-            http.AddStandardResilienceHandler(options =>
-            {
-                // Tuned timeouts: IAM registration can be slow but 100s is excessive
-                options.AttemptTimeout.Timeout = TimeSpan.FromSeconds(30);
-                options.TotalRequestTimeout.Timeout = TimeSpan.FromSeconds(60);
-                options.CircuitBreaker.SamplingDuration = TimeSpan.FromSeconds(65); // Must be >= 2 * AttemptTimeout
-            });
+            // Turn on resilience by default with optimized timeouts. The shared
+            // policy retries safe reads only; unsafe writes must be idempotent at
+            // the API boundary before a caller adds any write retry semantics.
+            http.AddLegacyStandardResilienceHandler();
 
             // Turn on service discovery by default
             http.AddServiceDiscovery();
