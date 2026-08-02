@@ -16,6 +16,15 @@ repository and must not be copied back implicitly.
 - PostgreSQL, Redis caching, RabbitMQ/MassTransit, rate limits, CORS, and middleware
 - ASP.NET Core OpenAPI with Scalar
 
+### Outbound write safety
+
+The shared HTTP resilience policy retries transient failures for safe read
+methods only. Automatic retries are disabled for `POST`, `PUT`, `PATCH`,
+`DELETE`, and `CONNECT` so a lost response cannot repeat a legacy write. A
+service that needs retryable writes must expose an idempotency contract and
+own that retry at its application boundary; changing the shared policy is not
+an acceptable substitute.
+
 ## Local validation
 
 ```powershell
