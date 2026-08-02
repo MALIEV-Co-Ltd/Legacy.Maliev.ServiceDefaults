@@ -21,7 +21,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           repository: MALIEV-Co-Ltd/Legacy.Maliev.CompatibilityContracts
-          ref: c96b6bf76e0f42696de2f4728a788568cdf41d47
+          ref: 78e48ffc4ee000df0510cba5e7c7a3c4c4d539d7
           path: .dependencies/Legacy.Maliev.CompatibilityContracts
           persist-credentials: false
       - name: Validate .NET solution
