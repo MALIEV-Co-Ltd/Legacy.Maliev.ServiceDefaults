@@ -17,7 +17,7 @@ public sealed class CompatibilityDependencyTests
             project,
             StringComparison.Ordinal);
         Assert.Contains(
-            "PackageReference Include=\"System.IdentityModel.Tokens.Jwt\" Version=\"8.19.2\"",
+            "PackageReference Include=\"System.IdentityModel.Tokens.Jwt\" Version=\"8.22.0\"",
             project,
             StringComparison.Ordinal);
     }
@@ -40,7 +40,7 @@ public sealed class CompatibilityDependencyTests
             project,
             StringComparison.Ordinal);
         Assert.Contains("repository: MALIEV-Co-Ltd/Legacy.Maliev.CompatibilityContracts", workflow, StringComparison.Ordinal);
-        Assert.Contains("ref: c96b6bf76e0f42696de2f4728a788568cdf41d47", workflow, StringComparison.Ordinal);
+        Assert.Contains("ref: 78e48ffc4ee000df0510cba5e7c7a3c4c4d539d7", workflow, StringComparison.Ordinal);
         Assert.DoesNotContain("repository: MALIEV-Co-Ltd/Maliev.MessagingContracts", workflow, StringComparison.Ordinal);
     }
 
