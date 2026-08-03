@@ -501,6 +501,67 @@ public sealed class PermissionAuthorizationPolicyTests
         Assert.False(context.HasSucceeded);
     }
 
+    [Theory]
+    [InlineData("service:legacy-intranet", "project.projects.read", true)]
+    [InlineData("service:legacy-intranet", "*", false)]
+    [InlineData("service:legacy-intranet", "project.projects.write", false)]
+    [InlineData("user-123", "project.projects.read", false)]
+    public async Task HandleAsync_ForcedLiveRequirement_LocalSnapshotAcceptsOnlyExactServiceGrant(
+        string subject,
+        string claim,
+        bool expected)
+    {
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["Features:AllowExactServiceClaimsForLiveCheck"] = "true"
+            })
+            .Build();
+        await using var services = new ServiceCollection()
+            .AddSingleton<IConfiguration>(configuration)
+            .BuildServiceProvider();
+        var httpContext = new DefaultHttpContext();
+        var handler = new PermissionAuthorizationHandler(
+            services,
+            new HttpContextAccessor { HttpContext = httpContext },
+            NullLogger<PermissionAuthorizationHandler>.Instance,
+            new LegacyIamClient());
+        var principal = new ClaimsPrincipal(new ClaimsIdentity(
+        [
+            new Claim("sub", subject),
+            new Claim("permissions", claim),
+        ], "test"));
+        var requirement = new PermissionRequirement("project.projects.read", requireLiveCheck: true);
+        var context = new AuthorizationHandlerContext([requirement], principal, httpContext);
+
+        await handler.HandleAsync(context);
+
+        Assert.Equal(expected, context.HasSucceeded);
+    }
+
+    [Fact]
+    public async Task HandleAsync_ForcedLiveRequirement_ExactServiceGrantRemainsDisabledByDefault()
+    {
+        await using var services = new ServiceCollection().BuildServiceProvider();
+        var httpContext = new DefaultHttpContext();
+        var handler = new PermissionAuthorizationHandler(
+            services,
+            new HttpContextAccessor { HttpContext = httpContext },
+            NullLogger<PermissionAuthorizationHandler>.Instance,
+            new LegacyIamClient());
+        var principal = new ClaimsPrincipal(new ClaimsIdentity(
+        [
+            new Claim("sub", "service:legacy-intranet"),
+            new Claim("permissions", "project.projects.read"),
+        ], "test"));
+        var requirement = new PermissionRequirement("project.projects.read", requireLiveCheck: true);
+        var context = new AuthorizationHandlerContext([requirement], principal, httpContext);
+
+        await handler.HandleAsync(context);
+
+        Assert.False(context.HasSucceeded);
+    }
+
     /// <summary>
     /// Missing route values must deny access without sending a malformed resource path to IAM.
     /// </summary>

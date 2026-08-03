@@ -213,6 +213,19 @@ public class PermissionAuthorizationHandler : AuthorizationHandler<PermissionReq
 
         requestCancellation.ThrowIfCancellationRequested();
 
+        // Exact-snapshot Aspire has no IAM runtime by design. It may opt in to
+        // proving server-to-server workflows with the exact scoped permissions
+        // already signed into a service JWT. This remains disabled by default,
+        // never accepts wildcard claims, and never applies to end-user subjects.
+        if (!hasPermission && requireLiveCheck && IsExactLocalServiceGrant(user, principalId, permission))
+        {
+            hasPermission = true;
+            _logger.LogInformation(
+                "Local snapshot accepted exact service-token permission {Permission} for Principal {PrincipalId}",
+                permission,
+                principalId);
+        }
+
         // Standard checks may fall back to token claims. Forced-live checks fail closed
         // when IAM is unavailable or denies the permission.
         if (!hasPermission && !requireLiveCheck)
@@ -279,6 +292,20 @@ public class PermissionAuthorizationHandler : AuthorizationHandler<PermissionReq
 
         _authMetrics?.RecordFailure(permission, "Permission denied");
         return false;
+    }
+
+    private bool IsExactLocalServiceGrant(ClaimsPrincipal user, string principalId, string permission)
+    {
+        var configuration = _serviceProvider.GetService<IConfiguration>();
+        if (!(configuration?.GetValue<bool>("Features:AllowExactServiceClaimsForLiveCheck", false) ?? false) ||
+            !principalId.StartsWith("service:", StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        return user.Claims.Any(claim =>
+            (claim.Type == "permissions" || claim.Type == "permission") &&
+            string.Equals(claim.Value, permission, StringComparison.Ordinal));
     }
 
     private string ResolveResourcePath(string template, RouteValueDictionary routeValues)
