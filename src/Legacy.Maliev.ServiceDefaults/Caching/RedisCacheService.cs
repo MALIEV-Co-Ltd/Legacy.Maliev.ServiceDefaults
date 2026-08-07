@@ -74,7 +74,7 @@ public class RedisCacheService : ICacheService
         }
         catch (Exception ex)
         {
-            _logger.LogWarning(ex, "Failed to retrieve from cache for key: {Key}", key);
+            _logger.LogWarning(ex, "Failed to retrieve from cache for key hash: {KeyHash}", CacheLogValue.Hash(key));
             return null;
         }
     }
@@ -114,7 +114,7 @@ public class RedisCacheService : ICacheService
         }
         catch (Exception ex)
         {
-            _logger.LogWarning(ex, "Failed to set cache for key: {Key}", key);
+            _logger.LogWarning(ex, "Failed to set cache for key hash: {KeyHash}", CacheLogValue.Hash(key));
         }
     }
 
@@ -139,7 +139,7 @@ public class RedisCacheService : ICacheService
         }
         catch (Exception ex)
         {
-            _logger.LogWarning(ex, "Failed to remove cache key: {Key}", key);
+            _logger.LogWarning(ex, "Failed to remove cache key hash: {KeyHash}", CacheLogValue.Hash(key));
         }
     }
 
@@ -155,7 +155,7 @@ public class RedisCacheService : ICacheService
 
         if (!_redis.IsConnected)
         {
-            _logger.LogWarning("Redis is not connected. Cannot remove by pattern: {Pattern}", pattern);
+            _logger.LogWarning("Redis is not connected. Cannot remove by pattern hash: {PatternHash}", CacheLogValue.Hash(pattern));
             return;
         }
 
@@ -175,7 +175,7 @@ public class RedisCacheService : ICacheService
                     await database.KeyDeleteAsync(key).WaitAsync(cancellationToken);
                 }
 
-                _logger.LogInformation("Finished removing keys matching pattern {Pattern} from Redis endpoint {Endpoint}", prefixedPattern, endpoint);
+                _logger.LogInformation("Finished removing keys matching pattern hash {PatternHash} from Redis endpoint {Endpoint}", CacheLogValue.Hash(prefixedPattern), endpoint);
             }
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
@@ -184,7 +184,7 @@ public class RedisCacheService : ICacheService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to remove keys by pattern {Pattern} from Redis", pattern);
+            _logger.LogError(ex, "Failed to remove keys by pattern hash {PatternHash} from Redis", CacheLogValue.Hash(pattern));
         }
     }
 
@@ -210,7 +210,7 @@ public class RedisCacheService : ICacheService
         }
         catch (Exception ex)
         {
-            _logger.LogWarning(ex, "Failed to check key existence in Redis: {Key}", key);
+            _logger.LogWarning(ex, "Failed to check Redis key existence for hash: {KeyHash}", CacheLogValue.Hash(key));
             return false;
         }
     }
@@ -254,7 +254,7 @@ public class RedisCacheService : ICacheService
         }
         catch (Exception ex)
         {
-            _logger.LogWarning(ex, "Failed to increment cache key: {Key}", key);
+            _logger.LogWarning(ex, "Failed to increment cache key hash: {KeyHash}", CacheLogValue.Hash(key));
             return 0;
         }
     }

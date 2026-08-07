@@ -46,7 +46,7 @@ public class InMemoryCacheService : ICacheService
         }
         catch (Exception ex)
         {
-            _logger.LogWarning(ex, "Failed to retrieve from in-memory cache for key: {Key}", key);
+            _logger.LogWarning(ex, "Failed to retrieve from in-memory cache for key hash: {KeyHash}", CacheLogValue.Hash(key));
             return Task.FromResult<T?>(null);
         }
     }
@@ -91,7 +91,7 @@ public class InMemoryCacheService : ICacheService
                 RemoveRegistration(registration);
             }
 
-            _logger.LogWarning(ex, "Failed to set in-memory cache for key: {Key}", key);
+            _logger.LogWarning(ex, "Failed to set in-memory cache for key hash: {KeyHash}", CacheLogValue.Hash(key));
             return Task.CompletedTask;
         }
     }
@@ -117,7 +117,7 @@ public class InMemoryCacheService : ICacheService
         }
         catch (Exception ex)
         {
-            _logger.LogWarning(ex, "Failed to remove in-memory cache key: {Key}", key);
+            _logger.LogWarning(ex, "Failed to remove in-memory cache key hash: {KeyHash}", CacheLogValue.Hash(key));
             return Task.CompletedTask;
         }
     }
@@ -149,12 +149,12 @@ public class InMemoryCacheService : ICacheService
                 RemoveRegistration(registration);
             }
 
-            _logger.LogInformation("Removed {Count} keys matching pattern {Pattern} from in-memory cache", matchingKeys.Count, pattern);
+            _logger.LogInformation("Removed {Count} keys matching pattern hash {PatternHash} from in-memory cache", matchingKeys.Count, CacheLogValue.Hash(pattern));
             return Task.CompletedTask;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to remove keys by pattern {Pattern} from in-memory cache", pattern);
+            _logger.LogError(ex, "Failed to remove keys by pattern hash {PatternHash} from in-memory cache", CacheLogValue.Hash(pattern));
             return Task.CompletedTask;
         }
     }
@@ -173,7 +173,7 @@ public class InMemoryCacheService : ICacheService
         }
         catch (Exception ex)
         {
-            _logger.LogWarning(ex, "Failed to check key existence in in-memory cache: {Key}", key);
+            _logger.LogWarning(ex, "Failed to check in-memory cache key hash: {KeyHash}", CacheLogValue.Hash(key));
             return Task.FromResult(false);
         }
     }
@@ -230,7 +230,7 @@ public class InMemoryCacheService : ICacheService
                 RemoveRegistration(registration);
             }
 
-            _logger.LogWarning(ex, "Failed to increment in-memory cache key: {Key}", key);
+            _logger.LogWarning(ex, "Failed to increment in-memory cache key hash: {KeyHash}", CacheLogValue.Hash(key));
             return Task.FromResult(0L);
         }
     }
