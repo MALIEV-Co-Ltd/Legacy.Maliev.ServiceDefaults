@@ -57,6 +57,10 @@ public static class DatabaseExtensions
             var dataSourceBuilder = new Npgsql.NpgsqlDataSourceBuilder(connectionString);
             dataSourceBuilder.EnableDynamicJson();
             dataSource = dataSourceBuilder.Build();
+            // Register the data source with the container so its sockets and
+            // background resources are disposed when the host shuts down.  A
+            // locally captured data source would otherwise outlive the DI scope.
+            builder.Services.AddSingleton(dataSource);
         }
 
         builder.Services.AddDbContext<TContext>((sp, options) =>

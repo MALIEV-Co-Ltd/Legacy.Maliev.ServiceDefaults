@@ -21,6 +21,7 @@ public sealed class DatabaseMigrationBoundaryTests
         Assert.Contains("Legacy.Maliev.AppHost MigrationRunner", method, StringComparison.Ordinal);
         Assert.DoesNotContain("Database.MigrateAsync", method, StringComparison.Ordinal);
         Assert.Contains("LEGACY001", source, StringComparison.Ordinal);
+        Assert.Contains("builder.Services.AddSingleton(dataSource)", source, StringComparison.Ordinal);
     }
 
     private static string FindRepositoryRoot()
