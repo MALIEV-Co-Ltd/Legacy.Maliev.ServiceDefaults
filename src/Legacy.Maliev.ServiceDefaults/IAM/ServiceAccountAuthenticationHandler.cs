@@ -37,7 +37,8 @@ public class ServiceAccountAuthenticationHandler : DelegatingHandler
         HttpRequestMessage request,
         CancellationToken cancellationToken)
     {
-        _logger.LogDebug("ServiceAccountAuthenticationHandler invoked for {Method} {Uri}", request.Method, request.RequestUri);
+        var requestTarget = SafeRequestTarget(request);
+        _logger.LogDebug("ServiceAccountAuthenticationHandler invoked for {Method} {RequestTarget}", request.Method, requestTarget);
 
         // Defensive check: Ensure InnerHandler is set
         if (InnerHandler == null)
@@ -53,7 +54,7 @@ public class ServiceAccountAuthenticationHandler : DelegatingHandler
         try
         {
             var token = _tokenProvider.GetToken();
-            _logger.LogDebug("Generated fresh service account token for request to {Uri}", request.RequestUri);
+            _logger.LogDebug("Generated fresh service account token for request to {RequestTarget}", requestTarget);
 
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
             _logger.LogDebug("Authorization header set on request");
@@ -62,7 +63,7 @@ public class ServiceAccountAuthenticationHandler : DelegatingHandler
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
-            _logger.LogInformation("Request to {Uri} was canceled during shutdown.", request.RequestUri);
+            _logger.LogInformation("Request to {RequestTarget} was canceled during shutdown.", requestTarget);
             throw;
         }
         catch (HttpRequestException ex)
@@ -72,10 +73,13 @@ public class ServiceAccountAuthenticationHandler : DelegatingHandler
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Unexpected error in ServiceAccountAuthenticationHandler.SendAsync for {Uri}", request.RequestUri);
+            _logger.LogError(ex, "Unexpected error in ServiceAccountAuthenticationHandler.SendAsync for {RequestTarget}", requestTarget);
             throw;
         }
     }
+
+    private static string SafeRequestTarget(HttpRequestMessage request) =>
+        request.RequestUri?.AbsolutePath is { Length: > 0 } path ? path : "(unknown)";
 
     /// <summary>
     /// Releases the resources used by the ServiceAccountAuthenticationHandler.
