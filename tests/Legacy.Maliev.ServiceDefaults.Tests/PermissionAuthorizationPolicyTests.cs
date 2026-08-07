@@ -323,6 +323,119 @@ public sealed class PermissionAuthorizationPolicyTests
     }
 
     /// <summary>
+    /// A production process must ignore the development-only IAM fail-open switch.
+    /// </summary>
+    [Fact]
+    public async Task HandleAsync_ProductionFailOpenSetting_DeniesAfterIamFailure()
+    {
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["ASPNETCORE_ENVIRONMENT"] = "Production",
+                ["Features:FailOpenOnIAMError"] = "true"
+            })
+            .Build();
+        await using var services = new ServiceCollection()
+            .AddSingleton<IConfiguration>(configuration)
+            .BuildServiceProvider();
+        var httpContext = new DefaultHttpContext();
+        var iamClient = new CoordinatedIamClient
+        {
+            StandardCheck = (_, _, _, _) =>
+                Task.FromException<bool>(new HttpRequestException("IAM unavailable"))
+        };
+        var principal = new ClaimsPrincipal(new ClaimsIdentity(
+        [
+            new Claim("sub", "user-123"),
+            new Claim("permissions", "*")
+        ], "test"));
+        var requirement = new PermissionRequirement("project.projects.read");
+        var context = new AuthorizationHandlerContext([requirement], principal, httpContext);
+
+        await CreateHandler(services, httpContext, iamClient).HandleAsync(context);
+
+        Assert.False(context.HasSucceeded);
+    }
+
+    /// <summary>
+    /// Development may opt into fail-open behavior for local Aspire snapshots.
+    /// </summary>
+    [Fact]
+    public async Task HandleAsync_DevelopmentFailOpenSetting_AllowsAfterIamFailure()
+    {
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["ASPNETCORE_ENVIRONMENT"] = "Development",
+                ["Features:FailOpenOnIAMError"] = "true"
+            })
+            .Build();
+        await using var services = new ServiceCollection()
+            .AddSingleton<IConfiguration>(configuration)
+            .BuildServiceProvider();
+        var httpContext = new DefaultHttpContext();
+        var iamClient = new CoordinatedIamClient
+        {
+            StandardCheck = (_, _, _, _) =>
+                Task.FromException<bool>(new HttpRequestException("IAM unavailable"))
+        };
+        var requirement = new PermissionRequirement("project.projects.read");
+        var context = new AuthorizationHandlerContext(
+            [requirement],
+            CreatePrincipal(),
+            httpContext);
+
+        await CreateHandler(services, httpContext, iamClient).HandleAsync(context);
+
+        Assert.True(context.HasSucceeded);
+    }
+
+    /// <summary>
+    /// Standalone wildcard claims must not authorize an end-user when IAM is unavailable.
+    /// </summary>
+    [Fact]
+    public async Task HandleAsync_StandardRequirement_UserWildcardClaim_DeniesWhenIamUnavailable()
+    {
+        await using var services = new ServiceCollection().BuildServiceProvider();
+        var httpContext = new DefaultHttpContext();
+        var principal = new ClaimsPrincipal(new ClaimsIdentity(
+        [
+            new Claim("sub", "user-123"),
+            new Claim("permissions", "*")
+        ], "test"));
+        var requirement = new PermissionRequirement("project.projects.read");
+        var context = new AuthorizationHandlerContext([requirement], principal, httpContext);
+
+        await CreateHandler(services, httpContext, new CoordinatedIamClient()).HandleAsync(context);
+
+        Assert.False(context.HasSucceeded);
+    }
+
+    /// <summary>
+    /// Bootstrap service tokens retain their existing wildcard behavior after the principal boundary.
+    /// </summary>
+    [Fact]
+    public async Task HandleAsync_StandardRequirement_TrustedServiceWildcardClaim_AllowsWhenIamUnavailable()
+    {
+        await using var services = new ServiceCollection().BuildServiceProvider();
+        var httpContext = new DefaultHttpContext();
+        var principal = new ClaimsPrincipal(new ClaimsIdentity(
+        [
+            new Claim("sub", "system:service:legacy-intranet"),
+            new Claim("user_type", "service"),
+            new Claim("role", "service-account"),
+            new Claim("purpose", "iam-registration"),
+            new Claim("permissions", "*")
+        ], "test"));
+        var requirement = new PermissionRequirement("project.projects.read");
+        var context = new AuthorizationHandlerContext([requirement], principal, httpContext);
+
+        await CreateHandler(services, httpContext, new CoordinatedIamClient()).HandleAsync(context);
+
+        Assert.True(context.HasSucceeded);
+    }
+
+    /// <summary>
     /// Canceling a same-key waiter must not enter IAM or corrupt the shared semaphore.
     /// </summary>
     [Fact]

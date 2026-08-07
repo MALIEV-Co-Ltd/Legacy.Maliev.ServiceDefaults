@@ -29,9 +29,9 @@ public sealed class IamServiceClientTests
             "PermissionAuthorizationHandler.cs"));
 
         Assert.Contains("_logger.LogDebug(\"Checking permission {Permission}", source, StringComparison.Ordinal);
-        Assert.Contains("_logger.LogDebug(\"JWT contains wildcard permission", source, StringComparison.Ordinal);
+        Assert.Contains("_logger.LogDebug(\"Trusted service JWT contains wildcard permission", source, StringComparison.Ordinal);
         Assert.DoesNotContain("_logger.LogInformation(\"Checking permission {Permission}", source, StringComparison.Ordinal);
-        Assert.DoesNotContain("_logger.LogInformation(\"JWT contains wildcard permission", source, StringComparison.Ordinal);
+        Assert.DoesNotContain("_logger.LogInformation(\"Trusted service JWT contains wildcard permission", source, StringComparison.Ordinal);
     }
 
     /// <summary>
