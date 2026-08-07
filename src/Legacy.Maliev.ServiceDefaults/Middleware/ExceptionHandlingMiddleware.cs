@@ -43,10 +43,13 @@ public class ExceptionHandlingMiddleware
         {
             await _next(context);
         }
-        catch (OperationCanceledException)
+        catch (OperationCanceledException) when (context.RequestAborted.IsCancellationRequested)
         {
-            _logger.LogWarning("Request was cancelled");
-            await HandleExceptionAsync(context, new OperationCanceledException("Request was cancelled"));
+            // A disconnected client is not an application failure.  Re-throw so
+            // Kestrel can stop the request without writing a second response or
+            // filling the error log with expected cancellation noise.
+            _logger.LogDebug("Request was cancelled by the client: {TraceId}", context.TraceIdentifier);
+            throw;
         }
         catch (Exception ex)
         {
@@ -91,10 +94,10 @@ public class ExceptionHandlingMiddleware
         return exception switch
         {
             UnauthorizedAccessException => (HttpStatusCode.Unauthorized, "Unauthorized access"),
-            ArgumentNullException => (HttpStatusCode.BadRequest, exception.Message),
-            ArgumentException => (HttpStatusCode.BadRequest, exception.Message),
+            ArgumentNullException => (HttpStatusCode.BadRequest, "The request is invalid."),
+            ArgumentException => (HttpStatusCode.BadRequest, "The request is invalid."),
             KeyNotFoundException => (HttpStatusCode.NotFound, "Resource not found"),
-            InvalidOperationException => (HttpStatusCode.BadRequest, exception.Message),
+            InvalidOperationException => (HttpStatusCode.BadRequest, "The request cannot be processed."),
             NotImplementedException => (HttpStatusCode.NotImplemented, "Feature not implemented"),
             TimeoutException => (HttpStatusCode.RequestTimeout, "Request timeout"),
             OperationCanceledException => (HttpStatusCode.RequestTimeout, "Request was cancelled"),
@@ -104,10 +107,10 @@ public class ExceptionHandlingMiddleware
             _ when IsPostgresUniqueConstraintViolation(exception) => (HttpStatusCode.Conflict, ExtractConstraintMessage(exception)),
 
             // Support for common domain exceptions via name matching if they aren't in this project
-            _ when exception.GetType().Name.Contains("NotFoundException") => (HttpStatusCode.NotFound, exception.Message),
-            _ when exception.GetType().Name.Contains("ConflictException") || exception.GetType().Name.Contains("DuplicateInquiryException") => (HttpStatusCode.Conflict, exception.Message),
-            _ when exception.GetType().Name.Contains("ServiceUnavailableException") || exception.GetType().Name.Contains("CountryServiceException") => (HttpStatusCode.ServiceUnavailable, exception.Message),
-            _ when exception.GetType().Name.Contains("ValidationException") => (HttpStatusCode.BadRequest, exception.Message),
+            _ when exception.GetType().Name.Contains("NotFoundException") => (HttpStatusCode.NotFound, "Resource not found"),
+            _ when exception.GetType().Name.Contains("ConflictException") || exception.GetType().Name.Contains("DuplicateInquiryException") => (HttpStatusCode.Conflict, "The request conflicts with an existing resource."),
+            _ when exception.GetType().Name.Contains("ServiceUnavailableException") || exception.GetType().Name.Contains("CountryServiceException") => (HttpStatusCode.ServiceUnavailable, "The requested service is temporarily unavailable."),
+            _ when exception.GetType().Name.Contains("ValidationException") => (HttpStatusCode.BadRequest, "The request is invalid."),
 
             _ => (HttpStatusCode.InternalServerError, "An internal server error occurred")
         };

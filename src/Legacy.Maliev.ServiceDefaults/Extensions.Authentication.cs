@@ -70,6 +70,17 @@ public static class AuthenticationExtensions
             return builder;
         }
 
+        // Issuer and audience validation must never be disabled implicitly outside
+        // the explicit testing environment.  A missing value would otherwise make
+        // the token handler accept a validly signed token from any issuer/audience,
+        // which is unsafe when the same signing key is shared by multiple services.
+        if (string.IsNullOrWhiteSpace(issuer) || string.IsNullOrWhiteSpace(audience))
+        {
+            throw new InvalidOperationException(
+                "Jwt:Issuer and Jwt:Audience are required outside the Testing environment. " +
+                "Configure both values before starting the service.");
+        }
+
         if (string.IsNullOrEmpty(publicKeyBase64))
         {
             if (!string.IsNullOrEmpty(securityKey) && IsSymmetricValidationAllowed(builder))
@@ -165,6 +176,13 @@ public static class AuthenticationExtensions
         if (string.IsNullOrEmpty(securityKey))
         {
             throw new InvalidOperationException("JWT SecurityKey not configured. Set Jwt:SecurityKey in configuration.");
+        }
+
+        if (string.IsNullOrWhiteSpace(issuer) || string.IsNullOrWhiteSpace(audience))
+        {
+            throw new InvalidOperationException(
+                "Jwt:Issuer and Jwt:Audience are required outside the Testing environment. " +
+                "Configure both values before starting the service.");
         }
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(securityKey));
