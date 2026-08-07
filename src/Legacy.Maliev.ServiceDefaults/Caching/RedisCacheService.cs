@@ -47,11 +47,13 @@ public class RedisCacheService : ICacheService
     /// <returns>The cached value if found, otherwise null.</returns>
     public async Task<T?> GetAsync<T>(string key, CancellationToken cancellationToken = default) where T : class
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         try
         {
             var database = _redis.GetDatabase();
             var prefixedKey = _instanceName + key;
-            var value = await database.StringGetAsync(prefixedKey);
+            var value = await database.StringGetAsync(prefixedKey).WaitAsync(cancellationToken);
 
             if (value.IsNull)
             {
@@ -65,6 +67,10 @@ public class RedisCacheService : ICacheService
             }
 
             return JsonSerializer.Deserialize<T>(value.ToString()!, _jsonOptions);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
         }
         catch (Exception ex)
         {
@@ -83,6 +89,8 @@ public class RedisCacheService : ICacheService
     /// <param name="cancellationToken">Cancellation token for the operation.</param>
     public async Task SetAsync<T>(string key, T value, TimeSpan ttl, CancellationToken cancellationToken = default) where T : class
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         try
         {
             var database = _redis.GetDatabase();
@@ -98,7 +106,11 @@ public class RedisCacheService : ICacheService
                 json = JsonSerializer.Serialize(value, _jsonOptions);
             }
 
-            await database.StringSetAsync(prefixedKey, json, ttl);
+            await database.StringSetAsync(prefixedKey, json, ttl).WaitAsync(cancellationToken);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
         }
         catch (Exception ex)
         {
@@ -113,11 +125,17 @@ public class RedisCacheService : ICacheService
     /// <param name="cancellationToken">Cancellation token for the operation.</param>
     public async Task RemoveAsync(string key, CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         try
         {
             var database = _redis.GetDatabase();
             var prefixedKey = _instanceName + key;
-            await database.KeyDeleteAsync(prefixedKey);
+            await database.KeyDeleteAsync(prefixedKey).WaitAsync(cancellationToken);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
         }
         catch (Exception ex)
         {
@@ -133,6 +151,8 @@ public class RedisCacheService : ICacheService
     /// <param name="cancellationToken">Cancellation token for the operation.</param>
     public async Task RemoveByPatternAsync(string pattern, CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         if (!_redis.IsConnected)
         {
             _logger.LogWarning("Redis is not connected. Cannot remove by pattern: {Pattern}", pattern);
@@ -150,13 +170,17 @@ public class RedisCacheService : ICacheService
             {
                 var server = _redis.GetServer(endpoint);
 
-                await foreach (var key in server.KeysAsync(pattern: prefixedPattern))
+                await foreach (var key in server.KeysAsync(pattern: prefixedPattern).WithCancellation(cancellationToken))
                 {
-                    await database.KeyDeleteAsync(key);
+                    await database.KeyDeleteAsync(key).WaitAsync(cancellationToken);
                 }
 
                 _logger.LogInformation("Finished removing keys matching pattern {Pattern} from Redis endpoint {Endpoint}", prefixedPattern, endpoint);
             }
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
         }
         catch (Exception ex)
         {
@@ -172,11 +196,17 @@ public class RedisCacheService : ICacheService
     /// <returns>True if the key exists, otherwise false.</returns>
     public async Task<bool> ExistsAsync(string key, CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         try
         {
             var database = _redis.GetDatabase();
             var prefixedKey = _instanceName + key;
-            return await database.KeyExistsAsync(prefixedKey);
+            return await database.KeyExistsAsync(prefixedKey).WaitAsync(cancellationToken);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
         }
         catch (Exception ex)
         {
@@ -195,6 +225,8 @@ public class RedisCacheService : ICacheService
     /// <returns>The new value of the counter.</returns>
     public async Task<long> IncrementAsync(string key, TimeSpan ttl, CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         try
         {
             var database = _redis.GetDatabase();
@@ -212,9 +244,13 @@ public class RedisCacheService : ICacheService
             var result = await database.ScriptEvaluateAsync(
                 script,
                 [prefixedKey],
-                [(int)ttl.TotalSeconds]);
+                [(int)ttl.TotalSeconds]).WaitAsync(cancellationToken);
 
             return (long)result;
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
         }
         catch (Exception ex)
         {

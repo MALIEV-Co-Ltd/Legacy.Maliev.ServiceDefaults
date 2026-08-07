@@ -1,4 +1,3 @@
-using System.Collections.Concurrent;
 using Maliev.Aspire.ServiceDefaults.IAM;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -24,13 +23,12 @@ public class PermissionAuthorizationHandler : AuthorizationHandler<PermissionReq
     private readonly IAuthMetrics? _authMetrics;
 
     /// <summary>
-    /// Per-requirement semaphores to serialize concurrent IAM calls for the same permission
-    /// within a request scope. Prevents duplicate IAM HTTP requests when multiple authorization
-    /// policy evaluations for the same (principal, permission, resource) run concurrently.
-    /// SemaphoreSlim instances are created on demand and held briefly — one per unique
-    /// (principalId, permission, resourcePath) combination.
+    /// Per-requirement semaphores to serialize concurrent IAM calls for the same permission.
+    /// Entries are reference-counted and removed as soon as the last waiter leaves, so a
+    /// high-cardinality principal/resource stream cannot permanently grow this registry.
     /// </summary>
-    private static readonly ConcurrentDictionary<string, SemaphoreSlim> _permissionSemaphores = new();
+    private static readonly object _permissionSemaphoreRegistryLock = new();
+    private static readonly Dictionary<string, PermissionSemaphoreEntry> _permissionSemaphores = new(StringComparer.Ordinal);
 
     /// <summary>
     /// Initializes a new instance of the PermissionAuthorizationHandler with the specified dependencies.
@@ -107,11 +105,13 @@ public class PermissionAuthorizationHandler : AuthorizationHandler<PermissionReq
         // Serialize concurrent calls for the same (principal, permission, resource) so that
         // only one IAM HTTP request is made and subsequent callers reuse the result.
         var semKey = $"{principalId}:{requirement.Permission}:{resourcePath}:{enforcementMode}";
-        var sem = _permissionSemaphores.GetOrAdd(semKey, _ => new SemaphoreSlim(1, 1));
+        var semaphoreLease = AcquirePermissionSemaphore(semKey);
+        var semaphoreAcquired = false;
 
-        await sem.WaitAsync(requestCancellation);
         try
         {
+            await semaphoreLease.Semaphore.WaitAsync(requestCancellation);
+            semaphoreAcquired = true;
             requestCancellation.ThrowIfCancellationRequested();
 
             // Re-check cache after acquiring semaphore — another caller may have populated it
@@ -147,8 +147,54 @@ public class PermissionAuthorizationHandler : AuthorizationHandler<PermissionReq
         }
         finally
         {
-            sem.Release();
+            if (semaphoreAcquired)
+            {
+                semaphoreLease.Semaphore.Release();
+            }
+
+            ReleasePermissionSemaphore(semKey, semaphoreLease.Entry);
         }
+    }
+
+    private static SemaphoreLease AcquirePermissionSemaphore(string key)
+    {
+        lock (_permissionSemaphoreRegistryLock)
+        {
+            if (!_permissionSemaphores.TryGetValue(key, out var entry))
+            {
+                entry = new PermissionSemaphoreEntry();
+                _permissionSemaphores.Add(key, entry);
+            }
+
+            entry.ReferenceCount++;
+            return new SemaphoreLease(entry);
+        }
+    }
+
+    private static void ReleasePermissionSemaphore(string key, PermissionSemaphoreEntry entry)
+    {
+        lock (_permissionSemaphoreRegistryLock)
+        {
+            entry.ReferenceCount--;
+            if (entry.ReferenceCount == 0 &&
+                _permissionSemaphores.Remove(key, out var removed) &&
+                ReferenceEquals(removed, entry))
+            {
+                entry.Semaphore.Dispose();
+            }
+        }
+    }
+
+    private sealed class PermissionSemaphoreEntry
+    {
+        public SemaphoreSlim Semaphore { get; } = new(1, 1);
+
+        public int ReferenceCount { get; set; }
+    }
+
+    private readonly record struct SemaphoreLease(PermissionSemaphoreEntry Entry)
+    {
+        public SemaphoreSlim Semaphore => Entry.Semaphore;
     }
 
     private async Task<bool> CheckRequirementAsync(

@@ -30,6 +30,11 @@ public class InMemoryCacheService : ICacheService
     /// <inheritdoc />
     public Task<T?> GetAsync<T>(string key, CancellationToken cancellationToken = default) where T : class
     {
+        if (cancellationToken.IsCancellationRequested)
+        {
+            return Task.FromCanceled<T?>(cancellationToken);
+        }
+
         try
         {
             if (_cache.TryGetValue<T>(key, out var value))
@@ -49,6 +54,11 @@ public class InMemoryCacheService : ICacheService
     /// <inheritdoc />
     public Task SetAsync<T>(string key, T value, TimeSpan ttl, CancellationToken cancellationToken = default) where T : class
     {
+        if (cancellationToken.IsCancellationRequested)
+        {
+            return Task.FromCanceled(cancellationToken);
+        }
+
         try
         {
             var options = new MemoryCacheEntryOptions
@@ -72,6 +82,11 @@ public class InMemoryCacheService : ICacheService
     /// <inheritdoc />
     public Task RemoveAsync(string key, CancellationToken cancellationToken = default)
     {
+        if (cancellationToken.IsCancellationRequested)
+        {
+            return Task.FromCanceled(cancellationToken);
+        }
+
         try
         {
             _cache.Remove(key);
@@ -88,6 +103,11 @@ public class InMemoryCacheService : ICacheService
     /// <inheritdoc />
     public Task RemoveByPatternAsync(string pattern, CancellationToken cancellationToken = default)
     {
+        if (cancellationToken.IsCancellationRequested)
+        {
+            return Task.FromCanceled(cancellationToken);
+        }
+
         try
         {
             // Convert Redis pattern to regex (simple implementation)
@@ -118,6 +138,11 @@ public class InMemoryCacheService : ICacheService
     /// <inheritdoc />
     public Task<bool> ExistsAsync(string key, CancellationToken cancellationToken = default)
     {
+        if (cancellationToken.IsCancellationRequested)
+        {
+            return Task.FromCanceled<bool>(cancellationToken);
+        }
+
         try
         {
             return Task.FromResult(_cache.TryGetValue(key, out _));
@@ -132,6 +157,11 @@ public class InMemoryCacheService : ICacheService
     /// <inheritdoc />
     public Task<long> IncrementAsync(string key, TimeSpan ttl, CancellationToken cancellationToken = default)
     {
+        if (cancellationToken.IsCancellationRequested)
+        {
+            return Task.FromCanceled<long>(cancellationToken);
+        }
+
         try
         {
             lock (_incrementLock)
