@@ -2,6 +2,7 @@ using Maliev.Aspire.ServiceDefaults.Caching;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
 
@@ -57,6 +58,11 @@ public static class CachingExtensions
     {
         var redisEnabled = builder.Configuration.GetValue<bool>("Cache:RedisEnabled", true);
         var redisConnectionString = builder.Configuration.GetConnectionString("redis") ?? string.Empty;
+        var localFallbackEnvironment = builder.Environment.IsDevelopment()
+            || builder.Environment.IsEnvironment("Testing");
+        var allowInMemoryFallback = localFallbackEnvironment
+            && builder.Configuration.GetValue("Cache:AllowInMemoryFallback", true);
+        var redisRequired = redisEnabled && !allowInMemoryFallback;
 
         // Append timeout parameters to prevent timeout exceptions on slower operations
         redisConnectionString = AppendRedisTimeouts(redisConnectionString);
@@ -68,6 +74,12 @@ public static class CachingExtensions
             {
                 // Register Redis connection multiplexer - connect eagerly so we fail fast if Redis is misconfigured
                 var connection = StackExchange.Redis.ConnectionMultiplexer.Connect(redisConnectionString);
+                if (!connection.IsConnected)
+                {
+                    connection.Dispose();
+                    throw new InvalidOperationException("Redis connection is not established.");
+                }
+
                 builder.Services.AddSingleton<IConnectionMultiplexer>(connection);
 
                 // Add Redis distributed cache
@@ -80,50 +92,33 @@ public static class CachingExtensions
                 // Register ICacheService with Redis implementation
                 builder.Services.AddScoped<ICacheService, RedisCacheService>();
 
-                // Log successful Redis configuration
-                builder.Services.AddSingleton<ILogger<IDistributedCache>>(sp =>
-                    sp.GetRequiredService<ILoggerFactory>().CreateLogger<IDistributedCache>());
-                var logger = builder.Services.BuildServiceProvider()
-                    .GetRequiredService<ILogger<IDistributedCache>>();
-                logger.LogInformation("Redis cache configured: {InstanceName}", instanceName);
+                builder.Services.AddSingleton(new RedisAvailabilityHealthCheck(() => connection.IsConnected));
+                builder.Services.AddHealthChecks().AddCheck<RedisAvailabilityHealthCheck>(
+                    "redis",
+                    tags: ["ready"]);
             }
             catch (Exception ex)
             {
-                ILogger<IDistributedCache>? logger = null;
-                try
+                if (redisRequired)
                 {
-                    logger = builder.Services.BuildServiceProvider()
-                        .GetRequiredService<ILogger<IDistributedCache>>();
+                    throw new InvalidOperationException(
+                        "Redis is required for this environment, but the configured connection is unavailable.",
+                        ex);
                 }
-                catch { /* logger not available yet */ }
-                if (logger != null)
-                    logger.LogWarning(ex, "Redis unavailable, using in-memory cache (limited to 50MB)");
-                else
-                    Console.WriteLine($"[WARNING] Redis unavailable: {ex.Message}. Falling back to in-memory cache.");
 
-                // Fallback to in-memory cache
-                builder.Services.AddDistributedMemoryCache(options =>
-                {
-                    options.SizeLimit = 50 * 1024 * 1024; // 50MB limit for low-spec nodes
-                    options.CompactionPercentage = 0.05; // Aggressive compaction at 95% full
-                });
-
-                // Register a no-op ICacheService for in-memory fallback
-                // Services that depend on ICacheService will get a working implementation
-                builder.Services.AddScoped<ICacheService, InMemoryCacheService>();
+                Console.WriteLine($"[WARNING] Redis unavailable: {ex.Message}. Falling back to in-memory cache by explicit configuration.");
+                RegisterInMemoryCache(builder.Services);
             }
+        }
+        else if (redisRequired)
+        {
+            throw new InvalidOperationException(
+                "Redis is required for this environment. Configure ConnectionStrings:redis or set Cache:RedisEnabled=false explicitly.");
         }
         else
         {
-            // Use in-memory cache when Redis is disabled or unavailable
-            builder.Services.AddDistributedMemoryCache(options =>
-            {
-                options.SizeLimit = 50 * 1024 * 1024; // 50MB limit
-                options.CompactionPercentage = 0.05; // Aggressive compaction
-            });
-
-            // Register in-memory ICacheService implementation
-            builder.Services.AddScoped<ICacheService, InMemoryCacheService>();
+            // Use in-memory cache when Redis is disabled or an explicit fallback is enabled.
+            RegisterInMemoryCache(builder.Services);
         }
 
         // Local memory cache with size limits
@@ -135,6 +130,17 @@ public static class CachingExtensions
         });
 
         return builder;
+    }
+
+    private static void RegisterInMemoryCache(IServiceCollection services)
+    {
+        services.AddDistributedMemoryCache(options =>
+        {
+            options.SizeLimit = 50 * 1024 * 1024; // 50MB limit for low-spec nodes
+            options.CompactionPercentage = 0.05; // Aggressive compaction at 95% full
+        });
+
+        services.AddScoped<ICacheService, InMemoryCacheService>();
     }
 
     /// <summary>
