@@ -15,6 +15,7 @@ public static class CachingExtensions
 {
     private const int DefaultRedisSyncTimeoutMs = 10000;
     private const int DefaultRedisAsyncTimeoutMs = 10000;
+    private const long LocalMemoryCacheEntryLimit = 25_000;
 
     private static string AppendRedisTimeouts(string connectionString)
     {
@@ -47,7 +48,9 @@ public static class CachingExtensions
     /// <summary>
     /// Adds distributed cache optimized for n1-standard-1 nodes (1 vCPU, 3.75GB RAM).
     /// Uses Redis when available with memory limits, falls back to in-memory cache.
-    /// Memory limits: 50MB distributed cache, 25MB local memory cache.
+    /// Memory limits: 50MB distributed cache, 25,000 bounded entry units for the
+    /// local in-memory fallback. IMemoryCache sizes are provider-defined units,
+    /// not bytes, so the local fallback uses one explicit unit per cache entry.
     /// </summary>
     /// <param name="builder">The host application builder.</param>
     /// <param name="instanceName">Instance name prefix for cache keys.</param>
@@ -124,7 +127,7 @@ public static class CachingExtensions
         // Local memory cache with size limits
         builder.Services.AddMemoryCache(options =>
         {
-            options.SizeLimit = 25 * 1024 * 1024; // 25MB local cache
+            options.SizeLimit = LocalMemoryCacheEntryLimit;
             options.CompactionPercentage = 0.10; // Aggressive compaction at 90% full
             options.ExpirationScanFrequency = TimeSpan.FromMinutes(1); // Check for expired items every minute
         });
