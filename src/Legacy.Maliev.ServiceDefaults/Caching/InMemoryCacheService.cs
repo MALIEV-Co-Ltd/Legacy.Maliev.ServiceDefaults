@@ -42,6 +42,8 @@ public class InMemoryCacheService : ICacheService
                 return Task.FromResult<T?>(value);
             }
 
+            RemoveStaleRegistration(key);
+
             return Task.FromResult<T?>(null);
         }
         catch (Exception ex)
@@ -169,7 +171,13 @@ public class InMemoryCacheService : ICacheService
 
         try
         {
-            return Task.FromResult(_cache.TryGetValue(key, out _));
+            bool exists = _cache.TryGetValue(key, out _);
+            if (!exists)
+            {
+                RemoveStaleRegistration(key);
+            }
+
+            return Task.FromResult(exists);
         }
         catch (Exception ex)
         {
@@ -239,6 +247,14 @@ public class InMemoryCacheService : ICacheService
     {
         ((ICollection<KeyValuePair<string, CacheKeyRegistration>>)_keys)
             .Remove(new KeyValuePair<string, CacheKeyRegistration>(registration.Key, registration));
+    }
+
+    private void RemoveStaleRegistration(string key)
+    {
+        if (_keys.TryGetValue(key, out var registration))
+        {
+            RemoveRegistration(registration);
+        }
     }
 
     private sealed class CacheKeyRegistration(InMemoryCacheService owner, string key)
