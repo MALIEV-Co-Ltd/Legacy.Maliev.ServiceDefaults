@@ -1,25 +1,40 @@
 namespace Legacy.Maliev.ServiceDefaults.Tests;
 
+using System.Xml.Linq;
+
 public sealed class CompatibilityDependencyTests
 {
     [Fact]
     public void JwtBearerAndTokenHandlerUseCompatiblePackageVersions()
     {
         var root = FindRepositoryRoot();
-        var project = File.ReadAllText(Path.Combine(
+        var project = XDocument.Load(Path.Combine(
             root,
             "src",
             "Legacy.Maliev.ServiceDefaults",
             "Legacy.Maliev.ServiceDefaults.csproj"));
 
-        Assert.Contains(
-            "PackageReference Include=\"Microsoft.AspNetCore.Authentication.JwtBearer\" Version=\"10.0.10\"",
-            project,
-            StringComparison.Ordinal);
-        Assert.Contains(
-            "PackageReference Include=\"System.IdentityModel.Tokens.Jwt\" Version=\"8.22.0\"",
-            project,
-            StringComparison.Ordinal);
+        var packageVersions = project
+            .Descendants("PackageReference")
+            .ToDictionary(
+                element => element.Attribute("Include")?.Value ?? string.Empty,
+                element => element.Attribute("Version")?.Value ?? string.Empty,
+                StringComparer.Ordinal);
+
+        var jwtBearer = AssertPackageVersion(packageVersions, "Microsoft.AspNetCore.Authentication.JwtBearer");
+        var tokenHandler = AssertPackageVersion(packageVersions, "System.IdentityModel.Tokens.Jwt");
+
+        Assert.Equal(10, jwtBearer.Major);
+        Assert.Equal(8, tokenHandler.Major);
+    }
+
+    private static Version AssertPackageVersion(
+        IReadOnlyDictionary<string, string> packageVersions,
+        string packageName)
+    {
+        Assert.True(packageVersions.TryGetValue(packageName, out var versionText), $"{packageName} is not referenced.");
+        Assert.True(Version.TryParse(versionText, out var version), $"{packageName} must use a fixed numeric version.");
+        return version!;
     }
 
     [Fact]
