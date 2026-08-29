@@ -34,6 +34,35 @@ public sealed class ServiceAccountAuthenticationHandlerTests
         Assert.Contains(logger.Messages, message => message.Contains("/search", StringComparison.Ordinal));
     }
 
+    /// <summary>Verifies identifiers and encoded customer data in path segments are reduced to route-safe placeholders.</summary>
+    [Theory]
+    [InlineData("https://orders.test/orders/69745/files/68b39a42-4934-4d27-a4ad-0d313ec0f545", "/orders/{id}/files/{id}", "69745", "68b39a42")]
+    [InlineData("https://customers.test/customers/customer%40example.test/profile", "/customers/{value}/profile", "customer@example.test", "customer%40example.test")]
+    [InlineData("https://files.test/uploads/9f4c3e8b917249e0b6d7c8a1f2e3d4c5", "/uploads/{id}", "9f4c3e8b", "9f4c3e8b917249e0b6d7c8a1f2e3d4c5")]
+    public async Task SendAsync_SanitizesDynamicPathSegments(
+        string url,
+        string expectedOperation,
+        string forbiddenDecoded,
+        string forbiddenEncoded)
+    {
+        var logger = new RecordingLogger<ServiceAccountAuthenticationHandler>();
+        var handler = new ServiceAccountAuthenticationHandler(new StubTokenProvider(), logger)
+        {
+            InnerHandler = new StubHandler()
+        };
+        using var client = new HttpClient(handler);
+
+        using var response = await client.GetAsync(url);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Contains(logger.Messages, message => message.Contains(expectedOperation, StringComparison.Ordinal));
+        Assert.All(logger.Messages, message =>
+        {
+            Assert.DoesNotContain(forbiddenDecoded, message, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain(forbiddenEncoded, message, StringComparison.OrdinalIgnoreCase);
+        });
+    }
+
     private sealed class StubTokenProvider : IServiceAccountTokenProvider
     {
         public string GetToken() => "test-token";

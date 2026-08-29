@@ -78,8 +78,39 @@ public class ServiceAccountAuthenticationHandler : DelegatingHandler
         }
     }
 
-    private static string SafeRequestTarget(HttpRequestMessage request) =>
-        request.RequestUri?.AbsolutePath is { Length: > 0 } path ? path : "(unknown)";
+    private static string SafeRequestTarget(HttpRequestMessage request)
+    {
+        if (request.RequestUri?.AbsolutePath is not { Length: > 0 } path)
+        {
+            return "(unknown)";
+        }
+
+        var segments = path.Split('/', StringSplitOptions.RemoveEmptyEntries);
+        if (segments.Length == 0)
+        {
+            return "/";
+        }
+
+        return "/" + string.Join('/', segments.Select(SanitizeSegment));
+    }
+
+    private static string SanitizeSegment(string segment)
+    {
+        if (long.TryParse(segment, out _) || Guid.TryParse(segment, out _))
+        {
+            return "{id}";
+        }
+
+        // Escaped path data can contain email addresses or other customer-provided values.
+        // Opaque long segments are commonly hashes, operation IDs, or storage references.
+        if (segment.Contains('%', StringComparison.Ordinal)
+            || (segment.Length >= 24 && segment.All(static value => char.IsLetterOrDigit(value) || value is '-' or '_')))
+        {
+            return "{value}";
+        }
+
+        return segment;
+    }
 
     /// <summary>
     /// Releases the resources used by the ServiceAccountAuthenticationHandler.
