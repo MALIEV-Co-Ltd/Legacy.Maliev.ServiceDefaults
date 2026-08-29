@@ -31,10 +31,11 @@ public static class ApiDocumentationExtensions
         }
 
         var urlPrefix = string.IsNullOrEmpty(servicePrefix) ? "" : $"/{servicePrefix}";
+        var openApiRoutePattern = $"{urlPrefix}/openapi/{{documentName}}.json";
         var openApiRoute = $"{urlPrefix}/openapi/{documentName}.json";
         var scalarRoute = $"{urlPrefix}/scalar";
 
-        app.MapOpenApi(openApiRoute);
+        app.MapOpenApi(openApiRoutePattern).WithDocumentPerVersion();
 
         app.MapScalarApiReference(scalarRoute, opt =>
         {
@@ -63,18 +64,23 @@ public static class ApiDocumentationExtensions
         string documentName = "v1")
     {
         builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddOpenApi(documentName, options =>
-        {
-            if (title != null || description != null)
+        builder.Services
+            .AddApiVersioning()
+            .AddMvc()
+            .AddApiExplorer(options =>
             {
-                options.AddDocumentTransformer((document, context, cancellationToken) =>
+                options.GroupNameFormat = "'v'V";
+                options.SubstituteApiVersionInUrl = true;
+            })
+            .AddOpenApi(options =>
+            {
+                options.Document.AddDocumentTransformer((document, context, cancellationToken) =>
                 {
                     if (title != null) document.Info.Title = title;
                     if (description != null) document.Info.Description = description;
                     return Task.CompletedTask;
                 });
-            }
-        });
+            });
 
         return builder;
     }
