@@ -92,6 +92,8 @@ public sealed class CompatibilityDependencyTests
             StringComparison.Ordinal)];
 
         Assert.Contains(".AllowAnonymous();", readinessBlock, StringComparison.Ordinal);
+        Assert.DoesNotContain("e.Value.Exception", readinessBlock, StringComparison.Ordinal);
+        Assert.DoesNotContain("e.Value.Data", readinessBlock, StringComparison.Ordinal);
     }
 
     private static string[] ReadDependabotUpdateBlock(string packageEcosystem)

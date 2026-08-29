@@ -220,7 +220,10 @@ public static class Extensions
             Predicate = _ => true, // All health checks must pass
             ResponseWriter = async (context, report) =>
             {
-                // Return detailed JSON health check response for monitoring and debugging
+                // Return a deliberately sanitized JSON response.  Readiness is
+                // anonymous so a probe does not need application credentials, and
+                // exception messages/data can contain connection strings, hostnames,
+                // provider details, or other infrastructure information.
                 context.Response.ContentType = "application/json";
                 var result = System.Text.Json.JsonSerializer.Serialize(new
                 {
@@ -230,10 +233,7 @@ public static class Extensions
                         e => new
                         {
                             status = e.Value.Status.ToString(),
-                            description = e.Value.Description ?? string.Empty,
-                            duration = e.Value.Duration.TotalMilliseconds,
-                            exception = e.Value.Exception?.Message ?? string.Empty,
-                            data = e.Value.Data
+                            duration = e.Value.Duration.TotalMilliseconds
                         }),
                     totalDuration = report.TotalDuration.TotalMilliseconds
                 });

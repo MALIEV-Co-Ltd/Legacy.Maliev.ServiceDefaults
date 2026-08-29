@@ -69,6 +69,32 @@ public class JwtAuthenticationSecurityTests
     }
 
     /// <summary>
+    /// Production must fail closed when a public signing key is present but the
+    /// token trust boundary is incomplete.
+    /// </summary>
+    [Theory]
+    [InlineData("Jwt:Issuer")]
+    [InlineData("Jwt:Audience")]
+    public void AddJwtAuthentication_ProductionMissingTrustBoundary_Throws(string missingKey)
+    {
+        using var rsa = RSA.Create(2048);
+        var values = new Dictionary<string, string?>
+        {
+            ["Jwt:PublicKey"] = ExportPublicKey(rsa),
+            ["Jwt:Issuer"] = Issuer,
+            ["Jwt:Audience"] = Audience
+        };
+        values[missingKey] = null;
+
+        var builder = CreateBuilder(Environments.Production, values);
+
+        var exception = Assert.Throws<InvalidOperationException>(() => builder.AddJwtAuthentication());
+
+        Assert.Contains("Jwt:Issuer", exception.Message, StringComparison.Ordinal);
+        Assert.Contains("Jwt:Audience", exception.Message, StringComparison.Ordinal);
+    }
+
+    /// <summary>
     /// Service-account tokens should prefer RS256 whenever the RSA private key is configured.
     /// </summary>
     [Fact]

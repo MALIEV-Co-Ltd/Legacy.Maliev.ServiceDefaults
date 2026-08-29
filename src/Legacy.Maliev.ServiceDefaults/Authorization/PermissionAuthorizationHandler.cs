@@ -1,10 +1,10 @@
-using System.Collections.Concurrent;
 using Maliev.Aspire.ServiceDefaults.IAM;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System.Security.Claims;
 
@@ -23,13 +23,12 @@ public class PermissionAuthorizationHandler : AuthorizationHandler<PermissionReq
     private readonly IAuthMetrics? _authMetrics;
 
     /// <summary>
-    /// Per-requirement semaphores to serialize concurrent IAM calls for the same permission
-    /// within a request scope. Prevents duplicate IAM HTTP requests when multiple authorization
-    /// policy evaluations for the same (principal, permission, resource) run concurrently.
-    /// SemaphoreSlim instances are created on demand and held briefly — one per unique
-    /// (principalId, permission, resourcePath) combination.
+    /// Per-requirement semaphores to serialize concurrent IAM calls for the same permission.
+    /// Entries are reference-counted and removed as soon as the last waiter leaves, so a
+    /// high-cardinality principal/resource stream cannot permanently grow this registry.
     /// </summary>
-    private static readonly ConcurrentDictionary<string, SemaphoreSlim> _permissionSemaphores = new();
+    private static readonly object _permissionSemaphoreRegistryLock = new();
+    private static readonly Dictionary<string, PermissionSemaphoreEntry> _permissionSemaphores = new(StringComparer.Ordinal);
 
     /// <summary>
     /// Initializes a new instance of the PermissionAuthorizationHandler with the specified dependencies.
@@ -106,11 +105,13 @@ public class PermissionAuthorizationHandler : AuthorizationHandler<PermissionReq
         // Serialize concurrent calls for the same (principal, permission, resource) so that
         // only one IAM HTTP request is made and subsequent callers reuse the result.
         var semKey = $"{principalId}:{requirement.Permission}:{resourcePath}:{enforcementMode}";
-        var sem = _permissionSemaphores.GetOrAdd(semKey, _ => new SemaphoreSlim(1, 1));
+        var semaphoreLease = AcquirePermissionSemaphore(semKey);
+        var semaphoreAcquired = false;
 
-        await sem.WaitAsync(requestCancellation);
         try
         {
+            await semaphoreLease.Semaphore.WaitAsync(requestCancellation);
+            semaphoreAcquired = true;
             requestCancellation.ThrowIfCancellationRequested();
 
             // Re-check cache after acquiring semaphore — another caller may have populated it
@@ -146,8 +147,54 @@ public class PermissionAuthorizationHandler : AuthorizationHandler<PermissionReq
         }
         finally
         {
-            sem.Release();
+            if (semaphoreAcquired)
+            {
+                semaphoreLease.Semaphore.Release();
+            }
+
+            ReleasePermissionSemaphore(semKey, semaphoreLease.Entry);
         }
+    }
+
+    private static SemaphoreLease AcquirePermissionSemaphore(string key)
+    {
+        lock (_permissionSemaphoreRegistryLock)
+        {
+            if (!_permissionSemaphores.TryGetValue(key, out var entry))
+            {
+                entry = new PermissionSemaphoreEntry();
+                _permissionSemaphores.Add(key, entry);
+            }
+
+            entry.ReferenceCount++;
+            return new SemaphoreLease(entry);
+        }
+    }
+
+    private static void ReleasePermissionSemaphore(string key, PermissionSemaphoreEntry entry)
+    {
+        lock (_permissionSemaphoreRegistryLock)
+        {
+            entry.ReferenceCount--;
+            if (entry.ReferenceCount == 0 &&
+                _permissionSemaphores.Remove(key, out var removed) &&
+                ReferenceEquals(removed, entry))
+            {
+                entry.Semaphore.Dispose();
+            }
+        }
+    }
+
+    private sealed class PermissionSemaphoreEntry
+    {
+        public SemaphoreSlim Semaphore { get; } = new(1, 1);
+
+        public int ReferenceCount { get; set; }
+    }
+
+    private readonly record struct SemaphoreLease(PermissionSemaphoreEntry Entry)
+    {
+        public SemaphoreSlim Semaphore => Entry.Semaphore;
     }
 
     private async Task<bool> CheckRequirementAsync(
@@ -204,9 +251,15 @@ public class PermissionAuthorizationHandler : AuthorizationHandler<PermissionReq
                 requestCancellation.ThrowIfCancellationRequested();
                 _logger.LogError(ex, "IAM service call failed for permission {Permission}", permission);
                 var config = _serviceProvider.GetService<IConfiguration>();
-                if (config?.GetValue<bool>("Features:FailOpenOnIAMError", false) ?? false)
+                if (IsFailOpenOnIamErrorAllowed(config))
                 {
                     hasPermission = true;
+                }
+                else if (config?.GetValue<bool>("Features:FailOpenOnIAMError", false) ?? false)
+                {
+                    _logger.LogWarning(
+                        "Ignoring Features:FailOpenOnIAMError outside Development or Testing for permission {Permission}",
+                        permission);
                 }
             }
         }
@@ -216,7 +269,7 @@ public class PermissionAuthorizationHandler : AuthorizationHandler<PermissionReq
         // Exact-snapshot Aspire has no IAM runtime by design. It may opt in to
         // proving server-to-server workflows with the exact scoped permissions
         // already signed into a service JWT. This remains disabled by default,
-        // never accepts wildcard claims, and never applies to end-user subjects.
+        // accepts only exact permission claims, and never applies to end-user subjects.
         if (!hasPermission && requireLiveCheck && IsExactLocalServiceGrant(user, principalId, permission))
         {
             hasPermission = true;
@@ -236,29 +289,26 @@ public class PermissionAuthorizationHandler : AuthorizationHandler<PermissionReq
                 .Distinct(StringComparer.OrdinalIgnoreCase)
                 .ToList();
 
-            // If user has wildcard permission in JWT, always allow.
-            //
-            // SECURITY NOTE: The wildcard "*" is intentionally allowed here.
-            // This code path is reached only when the IAM live-check fails or is unavailable
-            // AND the JWT contains "*". For user-facing calls (BFF -> downstream services via
-            // UserContextHandler), the JWT carries the end-user's real IAM-resolved permissions
-            // (not "*"). The service-account JWT (which carries "*") is used only for
-            // machine-to-machine bootstrap/seed operations (e.g. SeedCustomerClient), NOT for
-            // user-impersonated downstream calls. Downstream services receive the user's
-            // platform JWT via UserContextHandler; the JWT 'sub' claim contains the real user
-            // GUID, not the service identity. The 'X-User-Id' header (forwarded by
-            // UserContextHandler) carries the same user ID for audit purposes only and is not
-            // used for authorization decisions. See Maliev.Intranet.Bff/UserContextHandler.cs.
-            if (userPermissions.Contains("*"))
+            // A standalone wildcard is reserved for the short-lived service token emitted by
+            // ServiceAccountTokenProvider. End-user tokens must carry exact or suffix-scoped
+            // permissions; otherwise a stale/forged wildcard claim would bypass IAM during an
+            // outage. The JWT signature is validated before this handler runs, and the marker
+            // claims below are emitted together by the service-token provider.
+            if (userPermissions.Contains("*") && IsTrustedServiceWildcard(user, principalId))
             {
-                _logger.LogDebug("JWT contains wildcard permission - granting access for {Permission}", permission);
-                return true;
+                _logger.LogDebug("Trusted service JWT contains wildcard permission - granting access for {Permission}", permission);
+                hasPermission = true;
             }
 
             _logger.LogInformation("IAM check failed, falling back to claims. Found {Count} permission claims for Principal {PrincipalId}",
                 userPermissions.Count, principalId);
 
-            if (PermissionMatcher.Match(permission, userPermissions))
+            // Never pass the standalone wildcard into the generic matcher. The matcher keeps
+            // its historical semantics for callers that use it directly, while this handler
+            // applies the stronger principal-type boundary for request authorization.
+            if (!hasPermission && PermissionMatcher.Match(
+                    permission,
+                    userPermissions.Where(p => !string.Equals(p, "*", StringComparison.Ordinal))))
             {
                 hasPermission = true;
             }
@@ -307,6 +357,32 @@ public class PermissionAuthorizationHandler : AuthorizationHandler<PermissionReq
             (claim.Type == "permissions" || claim.Type == "permission") &&
             string.Equals(claim.Value, permission, StringComparison.Ordinal));
     }
+
+    private bool IsTrustedServiceWildcard(ClaimsPrincipal user, string principalId) =>
+        principalId.StartsWith("system:service:", StringComparison.OrdinalIgnoreCase) &&
+        HasClaimValue(user, "user_type", "service") &&
+        HasClaimValue(user, "role", "service-account") &&
+        HasClaimValue(user, "purpose", "iam-registration");
+
+    private bool IsFailOpenOnIamErrorAllowed(IConfiguration? configuration)
+    {
+        if (configuration?.GetValue<bool>("Features:FailOpenOnIAMError", false) != true)
+        {
+            return false;
+        }
+
+        var environmentName = _serviceProvider.GetService<IHostEnvironment>()?.EnvironmentName
+            ?? configuration["ASPNETCORE_ENVIRONMENT"]
+            ?? configuration["DOTNET_ENVIRONMENT"];
+
+        return string.Equals(environmentName, Environments.Development, StringComparison.OrdinalIgnoreCase)
+            || string.Equals(environmentName, "Testing", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static bool HasClaimValue(ClaimsPrincipal user, string claimType, string expectedValue) =>
+        user.Claims.Any(claim =>
+            string.Equals(claim.Type, claimType, StringComparison.Ordinal) &&
+            string.Equals(claim.Value, expectedValue, StringComparison.OrdinalIgnoreCase));
 
     private string ResolveResourcePath(string template, RouteValueDictionary routeValues)
     {

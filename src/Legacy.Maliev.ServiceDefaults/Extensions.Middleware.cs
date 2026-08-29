@@ -2,6 +2,7 @@ using Maliev.Aspire.ServiceDefaults.Middleware;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.DependencyInjection;
+using System.Net;
 
 namespace Microsoft.Extensions.Hosting;
 
@@ -23,13 +24,40 @@ public static class MiddlewareExtensions
 
         builder.Services.AddSingleton(options);
 
-        // Configure Forwarded Headers for microservices architecture
+        // Configure Forwarded Headers for microservices architecture.  Never trust
+        // arbitrary client-supplied X-Forwarded-* values in a public deployment:
+        // they influence scheme, client IP, rate limits, redirects, and audit logs.
         builder.Services.Configure<ForwardedHeadersOptions>(fhOptions =>
         {
             fhOptions.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
-            // Clear known networks and proxies to trust the immediate one (typical for K8s/Docker environments)
-            fhOptions.KnownIPNetworks.Clear();
             fhOptions.KnownProxies.Clear();
+            fhOptions.KnownIPNetworks.Clear();
+
+            var configuredProxyAddresses = builder.Configuration
+                .GetSection("ForwardedHeaders:KnownProxies")
+                .GetChildren()
+                .Select(section => section.Value)
+                .Where(value => !string.IsNullOrWhiteSpace(value));
+
+            foreach (var value in configuredProxyAddresses)
+            {
+                if (!IPAddress.TryParse(value, out var address))
+                {
+                    throw new InvalidOperationException(
+                        $"ForwardedHeaders:KnownProxies contains an invalid IP address: '{value}'.");
+                }
+
+                fhOptions.KnownProxies.Add(address);
+            }
+
+            // Aspire's local reverse proxy uses loopback. Keep the development
+            // convenience narrowly scoped; Production/Staging must configure the
+            // ingress or proxy addresses explicitly.
+            if (!fhOptions.KnownProxies.Any() &&
+                (builder.Environment.IsDevelopment() || builder.Environment.IsEnvironment("Testing")))
+            {
+                fhOptions.KnownProxies.Add(IPAddress.Loopback);
+            }
         });
 
         return builder;

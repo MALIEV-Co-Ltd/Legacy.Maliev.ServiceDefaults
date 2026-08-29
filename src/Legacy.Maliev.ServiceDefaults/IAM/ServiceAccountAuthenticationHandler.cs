@@ -37,7 +37,8 @@ public class ServiceAccountAuthenticationHandler : DelegatingHandler
         HttpRequestMessage request,
         CancellationToken cancellationToken)
     {
-        _logger.LogDebug("ServiceAccountAuthenticationHandler invoked for {Method} {Uri}", request.Method, request.RequestUri);
+        var requestTarget = SafeRequestTarget(request);
+        _logger.LogDebug("ServiceAccountAuthenticationHandler invoked for {Method} {RequestTarget}", request.Method, requestTarget);
 
         // Defensive check: Ensure InnerHandler is set
         if (InnerHandler == null)
@@ -53,7 +54,7 @@ public class ServiceAccountAuthenticationHandler : DelegatingHandler
         try
         {
             var token = _tokenProvider.GetToken();
-            _logger.LogDebug("Generated fresh service account token for request to {Uri}", request.RequestUri);
+            _logger.LogDebug("Generated fresh service account token for request to {RequestTarget}", requestTarget);
 
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
             _logger.LogDebug("Authorization header set on request");
@@ -62,7 +63,7 @@ public class ServiceAccountAuthenticationHandler : DelegatingHandler
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
-            _logger.LogInformation("Request to {Uri} was canceled during shutdown.", request.RequestUri);
+            _logger.LogInformation("Request to {RequestTarget} was canceled during shutdown.", requestTarget);
             throw;
         }
         catch (HttpRequestException ex)
@@ -72,9 +73,43 @@ public class ServiceAccountAuthenticationHandler : DelegatingHandler
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Unexpected error in ServiceAccountAuthenticationHandler.SendAsync for {Uri}", request.RequestUri);
+            _logger.LogError(ex, "Unexpected error in ServiceAccountAuthenticationHandler.SendAsync for {RequestTarget}", requestTarget);
             throw;
         }
+    }
+
+    private static string SafeRequestTarget(HttpRequestMessage request)
+    {
+        if (request.RequestUri?.AbsolutePath is not { Length: > 0 } path)
+        {
+            return "(unknown)";
+        }
+
+        var segments = path.Split('/', StringSplitOptions.RemoveEmptyEntries);
+        if (segments.Length == 0)
+        {
+            return "/";
+        }
+
+        return "/" + string.Join('/', segments.Select(SanitizeSegment));
+    }
+
+    private static string SanitizeSegment(string segment)
+    {
+        if (long.TryParse(segment, out _) || Guid.TryParse(segment, out _))
+        {
+            return "{id}";
+        }
+
+        // Escaped path data can contain email addresses or other customer-provided values.
+        // Opaque long segments are commonly hashes, operation IDs, or storage references.
+        if (segment.Contains('%', StringComparison.Ordinal)
+            || (segment.Length >= 24 && segment.All(static value => char.IsLetterOrDigit(value) || value is '-' or '_')))
+        {
+            return "{value}";
+        }
+
+        return segment;
     }
 
     /// <summary>

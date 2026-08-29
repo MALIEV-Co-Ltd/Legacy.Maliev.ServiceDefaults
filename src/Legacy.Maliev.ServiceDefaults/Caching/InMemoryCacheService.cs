@@ -12,7 +12,7 @@ public class InMemoryCacheService : ICacheService
 {
     private readonly IMemoryCache _cache;
     private readonly ILogger<InMemoryCacheService> _logger;
-    private readonly ConcurrentDictionary<string, byte> _keys;
+    private readonly ConcurrentDictionary<string, CacheKeyRegistration> _keys;
     private readonly object _incrementLock = new object();
 
     /// <summary>
@@ -24,12 +24,17 @@ public class InMemoryCacheService : ICacheService
     {
         _cache = cache;
         _logger = logger;
-        _keys = new ConcurrentDictionary<string, byte>();
+        _keys = new ConcurrentDictionary<string, CacheKeyRegistration>();
     }
 
     /// <inheritdoc />
     public Task<T?> GetAsync<T>(string key, CancellationToken cancellationToken = default) where T : class
     {
+        if (cancellationToken.IsCancellationRequested)
+        {
+            return Task.FromCanceled<T?>(cancellationToken);
+        }
+
         try
         {
             if (_cache.TryGetValue<T>(key, out var value))
@@ -37,11 +42,13 @@ public class InMemoryCacheService : ICacheService
                 return Task.FromResult<T?>(value);
             }
 
+            RemoveStaleRegistration(key);
+
             return Task.FromResult<T?>(null);
         }
         catch (Exception ex)
         {
-            _logger.LogWarning(ex, "Failed to retrieve from in-memory cache for key: {Key}", key);
+            _logger.LogWarning(ex, "Failed to retrieve from in-memory cache for key hash: {KeyHash}", CacheLogValue.Hash(key));
             return Task.FromResult<T?>(null);
         }
     }
@@ -49,22 +56,44 @@ public class InMemoryCacheService : ICacheService
     /// <inheritdoc />
     public Task SetAsync<T>(string key, T value, TimeSpan ttl, CancellationToken cancellationToken = default) where T : class
     {
+        if (cancellationToken.IsCancellationRequested)
+        {
+            return Task.FromCanceled(cancellationToken);
+        }
+
+        CacheKeyRegistration? registration = null;
         try
         {
+            registration = new CacheKeyRegistration(this, key);
             var options = new MemoryCacheEntryOptions
             {
                 AbsoluteExpirationRelativeToNow = ttl,
-                Size = 1 // Required when SizeLimit is set on MemoryCache
-            };
+                Size = 1 // One explicit entry unit for the bounded local cache.
+            }.RegisterPostEvictionCallback(static (_, _, _, state) =>
+            {
+                if (state is CacheKeyRegistration evicted
+                    && evicted.Owner.TryGetTarget(out var owner))
+                {
+                    owner.RemoveRegistration(evicted);
+                }
+            }, registration);
 
+            // Register before Set so an immediately expired or compacted entry cannot
+            // leave a key behind. The registration token prevents an old eviction
+            // callback from removing a newer value for the same key.
+            _keys[key] = registration;
             _cache.Set(key, value, options);
-            _keys.TryAdd(key, 0); // Track key for pattern matching
 
             return Task.CompletedTask;
         }
         catch (Exception ex)
         {
-            _logger.LogWarning(ex, "Failed to set in-memory cache for key: {Key}", key);
+            if (registration is not null)
+            {
+                RemoveRegistration(registration);
+            }
+
+            _logger.LogWarning(ex, "Failed to set in-memory cache for key hash: {KeyHash}", CacheLogValue.Hash(key));
             return Task.CompletedTask;
         }
     }
@@ -72,15 +101,25 @@ public class InMemoryCacheService : ICacheService
     /// <inheritdoc />
     public Task RemoveAsync(string key, CancellationToken cancellationToken = default)
     {
+        if (cancellationToken.IsCancellationRequested)
+        {
+            return Task.FromCanceled(cancellationToken);
+        }
+
         try
         {
+            _keys.TryGetValue(key, out var registration);
             _cache.Remove(key);
-            _keys.TryRemove(key, out _);
+            if (registration is not null)
+            {
+                RemoveRegistration(registration);
+            }
+
             return Task.CompletedTask;
         }
         catch (Exception ex)
         {
-            _logger.LogWarning(ex, "Failed to remove in-memory cache key: {Key}", key);
+            _logger.LogWarning(ex, "Failed to remove in-memory cache key hash: {KeyHash}", CacheLogValue.Hash(key));
             return Task.CompletedTask;
         }
     }
@@ -88,6 +127,11 @@ public class InMemoryCacheService : ICacheService
     /// <inheritdoc />
     public Task RemoveByPatternAsync(string pattern, CancellationToken cancellationToken = default)
     {
+        if (cancellationToken.IsCancellationRequested)
+        {
+            return Task.FromCanceled(cancellationToken);
+        }
+
         try
         {
             // Convert Redis pattern to regex (simple implementation)
@@ -97,20 +141,22 @@ public class InMemoryCacheService : ICacheService
 
             var regex = new System.Text.RegularExpressions.Regex(regexPattern);
 
-            var matchingKeys = _keys.Keys.Where(k => regex.IsMatch(k)).ToList();
+            var matchingKeys = _keys
+                .Where(pair => regex.IsMatch(pair.Key))
+                .ToList();
 
-            foreach (var key in matchingKeys)
+            foreach (var (key, registration) in matchingKeys)
             {
                 _cache.Remove(key);
-                _keys.TryRemove(key, out _);
+                RemoveRegistration(registration);
             }
 
-            _logger.LogInformation("Removed {Count} keys matching pattern {Pattern} from in-memory cache", matchingKeys.Count, pattern);
+            _logger.LogInformation("Removed {Count} keys matching pattern hash {PatternHash} from in-memory cache", matchingKeys.Count, CacheLogValue.Hash(pattern));
             return Task.CompletedTask;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to remove keys by pattern {Pattern} from in-memory cache", pattern);
+            _logger.LogError(ex, "Failed to remove keys by pattern hash {PatternHash} from in-memory cache", CacheLogValue.Hash(pattern));
             return Task.CompletedTask;
         }
     }
@@ -118,13 +164,24 @@ public class InMemoryCacheService : ICacheService
     /// <inheritdoc />
     public Task<bool> ExistsAsync(string key, CancellationToken cancellationToken = default)
     {
+        if (cancellationToken.IsCancellationRequested)
+        {
+            return Task.FromCanceled<bool>(cancellationToken);
+        }
+
         try
         {
-            return Task.FromResult(_cache.TryGetValue(key, out _));
+            bool exists = _cache.TryGetValue(key, out _);
+            if (!exists)
+            {
+                RemoveStaleRegistration(key);
+            }
+
+            return Task.FromResult(exists);
         }
         catch (Exception ex)
         {
-            _logger.LogWarning(ex, "Failed to check key existence in in-memory cache: {Key}", key);
+            _logger.LogWarning(ex, "Failed to check in-memory cache key hash: {KeyHash}", CacheLogValue.Hash(key));
             return Task.FromResult(false);
         }
     }
@@ -132,6 +189,12 @@ public class InMemoryCacheService : ICacheService
     /// <inheritdoc />
     public Task<long> IncrementAsync(string key, TimeSpan ttl, CancellationToken cancellationToken = default)
     {
+        if (cancellationToken.IsCancellationRequested)
+        {
+            return Task.FromCanceled<long>(cancellationToken);
+        }
+
+        CacheKeyRegistration? registration = null;
         try
         {
             lock (_incrementLock)
@@ -146,23 +209,58 @@ public class InMemoryCacheService : ICacheService
                 {
                     // Key doesn't exist, start at 1
                     newValue = 1L;
-                    _keys.TryAdd(key, 0);
                 }
+
+                registration = new CacheKeyRegistration(this, key);
+                _keys[key] = registration;
 
                 // Set the new value with TTL
                 _cache.Set(key, newValue, new MemoryCacheEntryOptions
                 {
                     AbsoluteExpirationRelativeToNow = ttl,
-                    Size = 1 // Required when SizeLimit is set on MemoryCache
-                });
+                    Size = 1 // One explicit entry unit for the bounded local cache.
+                }.RegisterPostEvictionCallback(static (_, _, _, state) =>
+                {
+                    if (state is CacheKeyRegistration evicted
+                        && evicted.Owner.TryGetTarget(out var owner))
+                    {
+                        owner.RemoveRegistration(evicted);
+                    }
+                }, registration));
 
                 return Task.FromResult(newValue);
             }
         }
         catch (Exception ex)
         {
-            _logger.LogWarning(ex, "Failed to increment in-memory cache key: {Key}", key);
+            if (registration is not null)
+            {
+                RemoveRegistration(registration);
+            }
+
+            _logger.LogWarning(ex, "Failed to increment in-memory cache key hash: {KeyHash}", CacheLogValue.Hash(key));
             return Task.FromResult(0L);
         }
+    }
+
+    private void RemoveRegistration(CacheKeyRegistration registration)
+    {
+        ((ICollection<KeyValuePair<string, CacheKeyRegistration>>)_keys)
+            .Remove(new KeyValuePair<string, CacheKeyRegistration>(registration.Key, registration));
+    }
+
+    private void RemoveStaleRegistration(string key)
+    {
+        if (_keys.TryGetValue(key, out var registration))
+        {
+            RemoveRegistration(registration);
+        }
+    }
+
+    private sealed class CacheKeyRegistration(InMemoryCacheService owner, string key)
+    {
+        public WeakReference<InMemoryCacheService> Owner { get; } = new(owner);
+
+        public string Key { get; } = key;
     }
 }
