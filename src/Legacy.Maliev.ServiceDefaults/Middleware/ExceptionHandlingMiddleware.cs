@@ -53,22 +53,30 @@ public class ExceptionHandlingMiddleware
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An unhandled exception occurred: {Message}. Exception type: {ExceptionType}. Stack trace: {StackTrace}",
-                ex.Message, ex.GetType().Name, ex.StackTrace);
             await HandleExceptionAsync(context, ex);
         }
     }
 
     private async Task HandleExceptionAsync(HttpContext context, Exception exception)
     {
+        var (statusCode, message) = MapExceptionToResponse(exception);
+        _logger.LogCritical(
+            "{EventName} Service={Service} Method={Method} Path={Path} StatusCode={StatusCode} ExceptionType={ExceptionType} IncidentId={IncidentId} OccurredAtUtc={OccurredAtUtc}",
+            "UnhandledRequestFailure",
+            _environment.ApplicationName,
+            context.Request.Method,
+            context.Request.Path.Value ?? "/",
+            context.Response.HasStarted ? context.Response.StatusCode : (int)statusCode,
+            exception.GetType().Name,
+            context.TraceIdentifier,
+            DateTimeOffset.UtcNow.ToString("O"));
+
         if (context.Response.HasStarted)
         {
-            _logger.LogWarning("Response has already started; cannot write JSON error response for {ExceptionType}: {Message}",
-                exception.GetType().Name, exception.Message);
+            _logger.LogWarning("Response has already started; cannot write JSON error response for {ExceptionType}",
+                exception.GetType().Name);
             return;
         }
-
-        var (statusCode, message) = MapExceptionToResponse(exception);
 
         var response = new
         {
