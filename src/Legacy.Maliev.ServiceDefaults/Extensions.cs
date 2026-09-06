@@ -71,6 +71,17 @@ public static class Extensions
         builder.Logging.AddFilter("IAM.Handler.Factory", LogLevel.Warning);
         builder.Logging.AddFilter("Microsoft.AspNetCore.Authorization", LogLevel.Warning);
 
+        builder.Logging.AddJsonConsole(options =>
+        {
+            options.IncludeScopes = true;
+            options.UseUtcTimestamp = true;
+            options.TimestampFormat = "O";
+        });
+        builder.Logging.Configure(options =>
+            options.ActivityTrackingOptions |= ActivityTrackingOptions.TraceId
+                | ActivityTrackingOptions.SpanId
+                | ActivityTrackingOptions.ParentId);
+
         // --- OpenTelemetry ---
         builder.Logging.AddOpenTelemetry(logging =>
         {
