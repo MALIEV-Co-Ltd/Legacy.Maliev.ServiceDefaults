@@ -20,6 +20,99 @@ public class JwtAuthenticationSecurityTests
     private const string Audience = "https://api.maliev.com";
     private const string SecurityKey = "test-key-at-least-32-characters-long"; // gitleaks:allow
 
+    [Fact]
+    public void AddJwtAuthentication_TestingRegistersLocalValidatorAndCallerOverrides()
+    {
+        var builder = CreateBuilder("Testing", new Dictionary<string, string?>
+        {
+            ["Jwt:SecurityKey"] = SecurityKey,
+        });
+        builder.AddJwtAuthentication(options => options.SaveToken = true);
+
+        using var serviceProvider = builder.Services.BuildServiceProvider();
+        JwtBearerOptions options = serviceProvider.GetRequiredService<IOptionsMonitor<JwtBearerOptions>>()
+            .Get(JwtBearerDefaults.AuthenticationScheme);
+        Assert.True(options.SaveToken);
+        Assert.False(options.MapInboundClaims);
+        Assert.False(options.TokenValidationParameters.ValidateIssuer);
+        Assert.False(options.TokenValidationParameters.ValidateAudience);
+        Assert.False(options.TokenValidationParameters.ValidateLifetime);
+        Assert.False(options.TokenValidationParameters.ValidateIssuerSigningKey);
+        Assert.NotNull(options.TokenValidationParameters.SignatureValidator);
+        Assert.Contains(options.TokenValidationParameters.IssuerSigningKeys, key => key.KeyId == "test-symmetric-key");
+    }
+
+    [Theory]
+    [InlineData(true, true)]
+    [InlineData(false, false)]
+    public void AddJwtAuthentication_DevelopmentSymmetricFallbackRequiresExplicitAllowance(bool allowed, bool succeeds)
+    {
+        var builder = CreateBuilder(Environments.Development, new Dictionary<string, string?>
+        {
+            ["Jwt:SecurityKey"] = SecurityKey,
+            ["Jwt:Issuer"] = Issuer,
+            ["Jwt:Audience"] = Audience,
+            ["Jwt:AllowSymmetricValidation"] = allowed.ToString(),
+        });
+
+        if (!succeeds)
+        {
+            Assert.Throws<InvalidOperationException>(() => builder.AddJwtAuthentication());
+            return;
+        }
+
+        builder.AddJwtAuthentication();
+        using var provider = builder.Services.BuildServiceProvider();
+        JwtBearerOptions options = provider.GetRequiredService<IOptionsMonitor<JwtBearerOptions>>()
+            .Get(JwtBearerDefaults.AuthenticationScheme);
+        Assert.IsType<SymmetricSecurityKey>(options.TokenValidationParameters.IssuerSigningKey);
+        Assert.True(options.RequireHttpsMetadata);
+        Assert.True(options.TokenValidationParameters.ValidateIssuer);
+        Assert.True(options.TokenValidationParameters.ValidateAudience);
+    }
+
+    [Fact]
+    public void AddJwtAuthenticationSymmetric_ProductionAlwaysRejects()
+    {
+        var builder = CreateBuilder(Environments.Production, new Dictionary<string, string?>
+        {
+            ["Jwt:SecurityKey"] = SecurityKey,
+            ["Jwt:Issuer"] = Issuer,
+            ["Jwt:Audience"] = Audience,
+        });
+        Assert.Throws<InvalidOperationException>(() => builder.AddJwtAuthenticationSymmetric());
+    }
+
+    [Fact]
+    public void AddJwtAuthenticationSymmetric_MissingKeyAndTrustBoundaryFailClosed()
+    {
+        var missingKey = CreateBuilder(Environments.Development, new Dictionary<string, string?>
+        {
+            ["Jwt:Issuer"] = Issuer,
+            ["Jwt:Audience"] = Audience,
+        });
+        Assert.Throws<InvalidOperationException>(() => missingKey.AddJwtAuthenticationSymmetric());
+
+        var missingAudience = CreateBuilder(Environments.Development, new Dictionary<string, string?>
+        {
+            ["Jwt:SecurityKey"] = SecurityKey,
+            ["Jwt:Issuer"] = Issuer,
+        });
+        Assert.Throws<InvalidOperationException>(() => missingAudience.AddJwtAuthenticationSymmetric());
+    }
+
+    [Fact]
+    public void AddJwtAuthentication_InvalidEncodedPublicKeyFailsBeforeRegistration()
+    {
+        var invalidBase64 = CreateBuilder(Environments.Production, new Dictionary<string, string?>
+        {
+            ["Jwt:PublicKey"] = "not-base64",
+            ["Jwt:Issuer"] = Issuer,
+            ["Jwt:Audience"] = Audience,
+        });
+        Assert.Throws<FormatException>(() => invalidBase64.AddJwtAuthentication());
+    }
+
     /// <summary>
     /// Production RSA validation must not also trust the shared HMAC key.
     /// </summary>

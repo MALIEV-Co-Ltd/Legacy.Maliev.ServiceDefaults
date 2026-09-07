@@ -45,6 +45,7 @@ public static class LegacyServiceAuthenticationExtensions
             !Uri.TryCreate(configured, UriKind.Absolute, out var uri) ||
             string.IsNullOrWhiteSpace(uri.Host) ||
             !string.IsNullOrEmpty(uri.UserInfo) ||
+            (uri.AbsolutePath.Length > 1 && uri.AbsolutePath != "/") ||
             !string.IsNullOrEmpty(uri.Query) ||
             !string.IsNullOrEmpty(uri.Fragment))
             throw new InvalidOperationException("Services:Auth must be an absolute service origin without credentials, query, or fragment.");

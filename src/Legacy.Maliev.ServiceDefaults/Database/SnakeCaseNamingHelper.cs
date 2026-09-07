@@ -90,7 +90,8 @@ public static class SnakeCaseNamingHelper
                 // Add underscore before uppercase letter if:
                 // 1. Previous char is lowercase, OR
                 // 2. Next char exists and is lowercase (handles acronyms like "HTTPSConnection" -> "https_connection")
-                if (char.IsLower(input[i - 1]) || (i < input.Length - 1 && char.IsLower(input[i + 1])))
+                if (input[i - 1] != '_' &&
+                    (char.IsLower(input[i - 1]) || (i < input.Length - 1 && char.IsLower(input[i + 1]))))
                 {
                     result.Append('_');
                 }
