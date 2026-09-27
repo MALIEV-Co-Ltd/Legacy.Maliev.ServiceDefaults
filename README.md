@@ -16,6 +16,30 @@ repository and must not be copied back implicitly.
 - PostgreSQL, Redis caching, RabbitMQ/MassTransit, rate limits, CORS, and middleware
 - ASP.NET Core OpenAPI with Scalar
 
+### Native logging ownership after source `5ac7d045`
+
+The original `maliev-web` commit `5ac7d045c51194edd9e64d8564f1b726b001be34`
+removed its shared `Maliev.NativeLogging` project. Its applications then configured
+the built-in JSON console logger and production exception handler locally. This
+Legacy extraction deliberately uses one shared ServiceDefaults registration
+instead: `AddServiceDefaults` configures the `maliev-cloud-json` console
+formatter, and `UseStandardMiddleware` installs the exception handler. The old
+NativeLogging and LoggerService assemblies are not package dependencies.
+
+The shared formatter retains UTC `O` timestamps, scopes, activity trace/span
+correlation, and structured `LogLevel`/category/message fields. It additionally
+emits Cloud Logging `severity` and records exception type without exception
+message or stack text. Unlike the source's `ClearProviders` and minimum
+Information setting, it preserves providers and filters already registered by
+each host and permits a host to enable a more verbose level. These are
+intentional compatibility and safety differences, not byte-for-byte JSON or
+application-local configuration parity. The existing native JSON and wire tests
+exercise the formatter and standard middleware; the source-`5ac7` contract test
+checks that the retired package/API is absent. Each consuming application still
+needs its own startup, package/container, and error-path validation before its
+source-commit owner can be marked migrated (tracked separately by Workflows
+[#143](https://github.com/MALIEV-Co-Ltd/Legacy.Maliev.Workflows/issues/143)).
+
 ### Outbound write safety
 
 The shared HTTP resilience policy retries transient failures for safe read
