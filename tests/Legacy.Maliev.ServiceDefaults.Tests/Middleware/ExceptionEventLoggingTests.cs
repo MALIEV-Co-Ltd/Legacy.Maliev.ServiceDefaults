@@ -56,7 +56,7 @@ public sealed class ExceptionEventLoggingTests
         Assert.Equal("UnhandledRequestFailure", entry.Values["EventName"]);
         Assert.Equal("Legacy.Maliev.OrderService", entry.Values["Service"]);
         Assert.Equal("POST", entry.Values["Method"]);
-        Assert.Equal("/orders", entry.Values["Path"]);
+        Assert.Equal("/", entry.Values["Path"]);
         Assert.Equal(status, entry.Values["StatusCode"]);
         Assert.Equal(failure.GetType().Name, entry.Values["ExceptionType"]);
         Assert.Equal(context.TraceIdentifier, entry.Values["IncidentId"]);
@@ -106,6 +106,28 @@ public sealed class ExceptionEventLoggingTests
         Assert.Equal(404, json.RootElement.GetProperty("statusCode").GetInt32());
         Assert.Equal(context.TraceIdentifier, json.RootElement.GetProperty("traceId").GetString());
         Assert.DoesNotContain("private-", json.RootElement.ToString(), StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task MatchedFailure_LogsRouteTemplateWithoutLiteralIdentifier()
+    {
+        var logger = new CaptureLogger();
+        var context = new DefaultHttpContext();
+        context.Response.Body = new MemoryStream();
+        context.Request.Path = "/orders/private-customer-id";
+        context.SetEndpoint(new Microsoft.AspNetCore.Routing.RouteEndpointBuilder(
+            _ => Task.CompletedTask,
+            Microsoft.AspNetCore.Routing.Patterns.RoutePatternFactory.Parse("/orders/{id}"),
+            0).Build());
+        var middleware = new ExceptionHandlingMiddleware(
+            _ => throw new InvalidOperationException("private-message"), logger, new TestEnvironment());
+
+        await middleware.InvokeAsync(context);
+
+        var entry = Assert.Single(logger.Entries);
+        Assert.Equal("/orders/{id}", entry.Values["Path"]);
+        Assert.DoesNotContain("private-", entry.Message, StringComparison.Ordinal);
+        Assert.Equal(StatusCodes.Status400BadRequest, context.Response.StatusCode);
     }
 
     [Fact]

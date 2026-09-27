@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System.Net;
@@ -61,10 +60,8 @@ public class ExceptionHandlingMiddleware
     private async Task HandleExceptionAsync(HttpContext context, Exception exception)
     {
         var (statusCode, message) = MapExceptionToResponse(exception);
-        // Not-found routes may contain customer identifiers; log only the route template.
-        var path = statusCode == HttpStatusCode.NotFound
-            ? (context.GetEndpoint() as RouteEndpoint)?.RoutePattern.RawText ?? "/"
-            : context.Request.Path.Value ?? "/";
+        // Any literal route segment may contain customer data or a token.
+        var path = RouteLogPath.FromContext(context);
         var logLevel = statusCode == HttpStatusCode.NotFound ? LogLevel.Debug : LogLevel.Critical;
         _logger.Log(
             logLevel,
