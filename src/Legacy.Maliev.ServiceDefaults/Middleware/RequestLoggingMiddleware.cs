@@ -42,7 +42,7 @@ public class RequestLoggingMiddleware
         _logger.LogInformation(
             "HTTP {Method} {Path} started",
             context.Request.Method,
-            context.Request.Path);
+            RouteLogPath.FromContext(context));
 
         try
         {
@@ -55,7 +55,7 @@ public class RequestLoggingMiddleware
             _logger.LogInformation(
                 "HTTP {Method} {Path} responded {StatusCode} in {ElapsedMs}ms",
                 context.Request.Method,
-                context.Request.Path,
+                RouteLogPath.FromContext(context),
                 context.Response.StatusCode,
                 stopwatch.ElapsedMilliseconds);
         }

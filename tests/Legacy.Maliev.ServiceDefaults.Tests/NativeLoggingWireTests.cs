@@ -165,7 +165,7 @@ public sealed class NativeLoggingWireTests
         Assert.Equal("UnhandledRequestFailure", state.GetProperty("EventName").GetString());
         Assert.Equal(typeof(NativeLoggingWireTests).Assembly.GetName().Name, state.GetProperty("Service").GetString());
         Assert.Equal("POST", state.GetProperty("Method").GetString());
-        Assert.Equal("/controlled", state.GetProperty("Path").GetString());
+        Assert.Equal("/", state.GetProperty("Path").GetString());
         Assert.Equal((int)status, state.GetProperty("StatusCode").GetInt32());
         Assert.Equal(validation ? "ArgumentException" : "Exception", state.GetProperty("ExceptionType").GetString());
         Assert.Equal(responseJson.RootElement.GetProperty("traceId").GetString(), state.GetProperty("IncidentId").GetString());
