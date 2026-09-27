@@ -72,6 +72,64 @@ public sealed class ExceptionEventLoggingTests
         Assert.DoesNotContain("private-", json.RootElement.ToString(), StringComparison.Ordinal);
     }
 
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task NotFoundException_EmitsDebugEventWithoutSecrets_AndPreserves404(bool domainException)
+    {
+        var logger = new CaptureLogger();
+        var context = new DefaultHttpContext();
+        context.Response.Body = new MemoryStream();
+        context.TraceIdentifier = "request-correlation";
+        context.Request.Method = "GET";
+        context.Request.Path = "/orders/private-email@example.test";
+        context.Request.QueryString = new QueryString("?token=private-query");
+        context.Request.Headers.Authorization = "Bearer private-header";
+        Exception failure = domainException
+            ? new SampleNotFoundException("private-message")
+            : new KeyNotFoundException("private-message");
+        var middleware = new ExceptionHandlingMiddleware(_ => throw failure, logger, new TestEnvironment());
+
+        await middleware.InvokeAsync(context);
+
+        var entry = Assert.Single(logger.Entries);
+        Assert.Equal(LogLevel.Debug, entry.Level);
+        Assert.Null(entry.Exception);
+        Assert.Equal("UnhandledRequestFailure", entry.Values["EventName"]);
+        Assert.Equal(404, entry.Values["StatusCode"]);
+        Assert.Equal("/", entry.Values["Path"]);
+        Assert.Equal(context.TraceIdentifier, entry.Values["IncidentId"]);
+        Assert.DoesNotContain("private-", entry.Message, StringComparison.Ordinal);
+        Assert.Equal(404, context.Response.StatusCode);
+        context.Response.Body.Position = 0;
+        using var json = await JsonDocument.ParseAsync(context.Response.Body);
+        Assert.Equal(404, json.RootElement.GetProperty("statusCode").GetInt32());
+        Assert.Equal(context.TraceIdentifier, json.RootElement.GetProperty("traceId").GetString());
+        Assert.DoesNotContain("private-", json.RootElement.ToString(), StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task DirectNotFoundResponse_DoesNotEmitExceptionEvent()
+    {
+        var logger = new CaptureLogger();
+        var context = new DefaultHttpContext();
+        var middleware = new ExceptionHandlingMiddleware(
+            current =>
+            {
+                current.Response.StatusCode = StatusCodes.Status404NotFound;
+                return Task.CompletedTask;
+            },
+            logger,
+            new TestEnvironment());
+
+        await middleware.InvokeAsync(context);
+
+        Assert.Equal(404, context.Response.StatusCode);
+        Assert.Empty(logger.Entries);
+    }
+
+    private sealed class SampleNotFoundException(string message) : Exception(message);
+
     private sealed class CaptureLogger : ILogger<ExceptionHandlingMiddleware>
     {
         public List<Entry> Entries { get; } = [];
