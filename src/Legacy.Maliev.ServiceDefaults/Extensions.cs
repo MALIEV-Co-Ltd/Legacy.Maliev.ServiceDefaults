@@ -5,6 +5,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
+using Maliev.Aspire.ServiceDefaults.Logging;
 using Maliev.Aspire.ServiceDefaults.Telemetry;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
@@ -71,7 +73,8 @@ public static class Extensions
         builder.Logging.AddFilter("IAM.Handler.Factory", LogLevel.Warning);
         builder.Logging.AddFilter("Microsoft.AspNetCore.Authorization", LogLevel.Warning);
 
-        builder.Logging.AddJsonConsole(options =>
+        builder.Logging.AddConsole(options => options.FormatterName = MalievCloudJsonConsoleFormatter.FormatterName);
+        builder.Logging.AddConsoleFormatter<MalievCloudJsonConsoleFormatter, JsonConsoleFormatterOptions>(options =>
         {
             options.IncludeScopes = true;
             options.UseUtcTimestamp = true;

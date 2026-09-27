@@ -57,6 +57,7 @@ public sealed class NativeLoggingWireTests
 
         var entry = Assert.Single(ReadEntries(output.ToString()), value => value.GetProperty("Category").GetString() == "Wire.Native");
         Assert.Equal("Critical", entry.GetProperty("LogLevel").GetString());
+        Assert.Equal("CRITICAL", entry.GetProperty("severity").GetString());
         Assert.Equal("Controlled event 7", entry.GetProperty("Message").GetString());
         AssertUtc(entry.GetProperty("Timestamp").GetString()!);
         var scopes = entry.GetProperty("Scopes").EnumerateArray().ToArray();
@@ -68,6 +69,43 @@ public sealed class NativeLoggingWireTests
         Assert.Equal("Controlled event 7", captured.Message);
         Assert.DoesNotContain(existing.Entries, value => value.Message == "Suppressed event");
         Assert.DoesNotContain("Suppressed event", output.ToString(), StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void Defaults_MapAllCloudSeveritiesWithoutSerializingExceptionText()
+    {
+        var original = Console.Out;
+        using var output = new StringWriter(CultureInfo.InvariantCulture);
+        try
+        {
+            Console.SetOut(output);
+            var builder = Host.CreateApplicationBuilder();
+            builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"] = null;
+            builder.Logging.SetMinimumLevel(LogLevel.Trace);
+            builder.AddServiceDefaults();
+            using var host = builder.Build();
+            var logger = ((ILoggerFactory)host.Services.GetService(typeof(ILoggerFactory))!).CreateLogger("Wire.Severity");
+            logger.LogTrace("Trace event");
+            logger.LogDebug("Debug event");
+            logger.LogInformation("Info event");
+            logger.LogWarning("Warning event");
+            logger.LogError(new InvalidOperationException("private-exception-detail"), "Safe error event");
+            logger.LogCritical("Critical event");
+        }
+        finally
+        {
+            Console.SetOut(original);
+        }
+
+        var events = ReadEntries(output.ToString())
+            .Where(value => value.GetProperty("Category").GetString() == "Wire.Severity")
+            .ToArray();
+        Assert.Equal(6, events.Length);
+        Assert.Equal(
+            ["DEBUG", "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
+            events.Select(value => value.GetProperty("severity").GetString() ?? string.Empty).ToArray());
+        Assert.All(events, value => AssertUtc(value.GetProperty("Timestamp").GetString()!));
+        Assert.DoesNotContain("private-exception-detail", output.ToString(), StringComparison.Ordinal);
     }
 
     [Theory]

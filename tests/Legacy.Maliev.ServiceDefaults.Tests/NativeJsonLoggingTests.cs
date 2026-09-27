@@ -21,7 +21,7 @@ public sealed class NativeJsonLoggingTests
         var json = host.Services.GetRequiredService<IOptions<JsonConsoleFormatterOptions>>().Value;
         var logging = host.Services.GetRequiredService<IOptions<LoggerFactoryOptions>>().Value;
 
-        Assert.Equal(ConsoleFormatterNames.Json, console.FormatterName);
+        Assert.Equal("maliev-cloud-json", console.FormatterName);
         Assert.True(json.IncludeScopes);
         Assert.True(json.UseUtcTimestamp);
         Assert.Equal("O", json.TimestampFormat);
