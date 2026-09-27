@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System.Net;
@@ -60,12 +61,18 @@ public class ExceptionHandlingMiddleware
     private async Task HandleExceptionAsync(HttpContext context, Exception exception)
     {
         var (statusCode, message) = MapExceptionToResponse(exception);
-        _logger.LogCritical(
+        // Not-found routes may contain customer identifiers; log only the route template.
+        var path = statusCode == HttpStatusCode.NotFound
+            ? (context.GetEndpoint() as RouteEndpoint)?.RoutePattern.RawText ?? "/"
+            : context.Request.Path.Value ?? "/";
+        var logLevel = statusCode == HttpStatusCode.NotFound ? LogLevel.Debug : LogLevel.Critical;
+        _logger.Log(
+            logLevel,
             "{EventName} Service={Service} Method={Method} Path={Path} StatusCode={StatusCode} ExceptionType={ExceptionType} IncidentId={IncidentId} OccurredAtUtc={OccurredAtUtc}",
             "UnhandledRequestFailure",
             _environment.ApplicationName,
             context.Request.Method,
-            context.Request.Path.Value ?? "/",
+            path,
             context.Response.HasStarted ? context.Response.StatusCode : (int)statusCode,
             exception.GetType().Name,
             context.TraceIdentifier,
