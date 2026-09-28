@@ -10,6 +10,7 @@ namespace Maliev.Aspire.ServiceDefaults.Middleware;
 public class CorrelationIdMiddleware
 {
     private const string CorrelationIdHeaderName = "X-Correlation-ID";
+    internal static readonly object ValidatedCorrelationIdKey = new();
     private readonly RequestDelegate _next;
     private readonly ILogger<CorrelationIdMiddleware> _logger;
 
@@ -38,15 +39,14 @@ public class CorrelationIdMiddleware
 
         // Add to HttpContext.Items for access in controllers/services
         context.Items["CorrelationId"] = correlationId;
+        context.Items[ValidatedCorrelationIdKey] = correlationId;
 
         // Create logging scope
         var scopeProperties = new Dictionary<string, object?>
         {
             ["CorrelationId"] = correlationId,
             ["RouteTemplate"] = RouteLogPath.FromContext(context),
-            ["RequestMethod"] = context.Request.Method,
-            ["UserAgent"] = context.Request.Headers.UserAgent.ToString(),
-            ["RemoteIp"] = context.Connection.RemoteIpAddress?.ToString()
+            ["RequestMethod"] = context.Request.Method
         };
 
         using (_logger.BeginScope(scopeProperties))
@@ -55,11 +55,13 @@ public class CorrelationIdMiddleware
         }
     }
 
-    private string GetOrCreateCorrelationId(HttpContext context)
+    private static string GetOrCreateCorrelationId(HttpContext context)
     {
-        if (context.Request.Headers.TryGetValue(CorrelationIdHeaderName, out var correlationId))
+        if (context.Request.Headers.TryGetValue(CorrelationIdHeaderName, out var supplied) &&
+            supplied.Count == 1 && supplied[0] is { Length: > 0 and <= 64 } candidate &&
+            candidate.All(character => char.IsAsciiLetterOrDigit(character) || character is '-' or '_'))
         {
-            return correlationId.ToString();
+            return candidate;
         }
 
         return Guid.NewGuid().ToString();
