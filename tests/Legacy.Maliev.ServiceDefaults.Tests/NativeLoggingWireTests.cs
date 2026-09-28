@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using OpenTelemetry;
+using OpenTelemetry.Logs;
 
 namespace Legacy.Maliev.ServiceDefaults.Tests;
 
@@ -116,6 +118,7 @@ public sealed class NativeLoggingWireTests
         var original = Console.Out;
         using var output = new StringWriter(CultureInfo.InvariantCulture);
         var capture = new CapturingProvider();
+        var otelCapture = new CapturingLogProcessor();
         string body;
         string correlation;
         try
@@ -130,14 +133,16 @@ public sealed class NativeLoggingWireTests
             builder.WebHost.UseTestServer();
             builder.Logging.AddProvider(capture);
             builder.AddServiceDefaults();
+            builder.Logging.AddOpenTelemetry(logging => logging.AddProcessor(otelCapture));
             builder.AddStandardMiddleware();
             await using (var app = builder.Build())
             {
                 app.UseStandardMiddleware();
-                app.Run(_ => throw (validation ? new ArgumentException("private-exception") : new Exception("private-exception")));
+                app.MapPost("/controlled/{value}", (RequestDelegate)(_ =>
+                    throw (validation ? new ArgumentException("private-exception") : new Exception("private-exception"))));
                 await app.StartAsync();
                 using var client = app.GetTestClient();
-                using var request = new HttpRequestMessage(HttpMethod.Post, "/controlled?token=private-query");
+                using var request = new HttpRequestMessage(HttpMethod.Post, "/controlled/private-path?token=private-query");
                 request.Headers.Add("Authorization", "Bearer private-authorization");
                 request.Headers.Add("Cookie", "session=private-cookie");
                 request.Headers.Add("X-Correlation-ID", "wire-correlation");
@@ -165,12 +170,28 @@ public sealed class NativeLoggingWireTests
         Assert.Equal("UnhandledRequestFailure", state.GetProperty("EventName").GetString());
         Assert.Equal(typeof(NativeLoggingWireTests).Assembly.GetName().Name, state.GetProperty("Service").GetString());
         Assert.Equal("POST", state.GetProperty("Method").GetString());
-        Assert.Equal("/", state.GetProperty("Path").GetString());
+        Assert.Equal("/controlled/{value}", state.GetProperty("Path").GetString());
         Assert.Equal((int)status, state.GetProperty("StatusCode").GetInt32());
         Assert.Equal(validation ? "ArgumentException" : "Exception", state.GetProperty("ExceptionType").GetString());
         Assert.Equal(responseJson.RootElement.GetProperty("traceId").GetString(), state.GetProperty("IncidentId").GetString());
         AssertUtc(state.GetProperty("OccurredAtUtc").GetString()!);
         Assert.Contains(critical.GetProperty("Scopes").EnumerateArray(), scope => scope.TryGetProperty("CorrelationId", out var value) && value.GetString() == correlation);
+        Assert.Contains(critical.GetProperty("Scopes").EnumerateArray(), scope => scope.TryGetProperty("RouteTemplate", out var value) && value.GetString() == "/controlled/{value}");
+        Assert.DoesNotContain(critical.GetProperty("Scopes").EnumerateArray(), scope => scope.TryGetProperty("RequestPath", out _));
+        var otelFailure = Assert.Single(otelCapture.Records, item => item.Attributes.GetValueOrDefault("ExceptionType") as string ==
+            (validation ? "ArgumentException" : "Exception"));
+        Assert.Equal("/controlled/{value}", otelFailure.Attributes["Path"]);
+        Assert.Equal(responseJson.RootElement.GetProperty("traceId").GetString(), otelFailure.Attributes["IncidentId"]);
+        Assert.Empty(otelFailure.Scopes);
+        Assert.All(otelCapture.Records, item =>
+        {
+            Assert.DoesNotContain("private-", item.Body ?? string.Empty, StringComparison.Ordinal);
+            Assert.DoesNotContain("private-", item.FormattedMessage ?? string.Empty, StringComparison.Ordinal);
+            Assert.All(item.Attributes.Values, value => Assert.DoesNotContain(
+                "private-", value?.ToString() ?? string.Empty, StringComparison.Ordinal));
+            Assert.All(item.Scopes, value => Assert.DoesNotContain(
+                "private-", value.Value?.ToString() ?? string.Empty, StringComparison.Ordinal));
+        });
         var captured = Assert.Single(capture.Entries, value => value.Level == LogLevel.Critical);
         Assert.Null(captured.Exception);
         Assert.DoesNotContain("private-", output.ToString(), StringComparison.Ordinal);
@@ -205,4 +226,27 @@ public sealed class NativeLoggingWireTests
     }
 
     private sealed record Entry(string Category, LogLevel Level, string Message, Exception? Exception);
+
+    private sealed class CapturingLogProcessor : BaseProcessor<LogRecord>
+    {
+        public ConcurrentQueue<LogSnapshot> Records { get; } = new();
+
+        public override void OnEnd(LogRecord record)
+        {
+            var attributes = record.Attributes?.ToDictionary(item => item.Key, item => item.Value)
+                ?? new Dictionary<string, object?>();
+            var scopes = new List<KeyValuePair<string, object?>>();
+            record.ForEachScope((scope, values) =>
+            {
+                foreach (var value in scope)
+                {
+                    values.Add(value);
+                }
+            }, scopes);
+            Records.Enqueue(new LogSnapshot(attributes, scopes, record.Body, record.FormattedMessage));
+        }
+    }
+
+    private sealed record LogSnapshot(Dictionary<string, object?> Attributes,
+        List<KeyValuePair<string, object?>> Scopes, string? Body, string? FormattedMessage);
 }

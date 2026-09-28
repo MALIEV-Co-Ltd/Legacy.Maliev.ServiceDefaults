@@ -93,7 +93,16 @@ public sealed class MalievCloudJsonConsoleFormatter(IOptionsMonitor<JsonConsoleF
         var scopes = new List<object?>();
         scopeProvider.ForEachScope((scope, values) =>
         {
-            values.Add(GetStructuredState(scope) ?? ToSafeValue(scope));
+            var structured = GetStructuredState(scope);
+            if (structured is not null)
+            {
+                // The ASP.NET Core hosting scope contains a literal RequestPath,
+                // including customer identifiers and token-shaped path segments.
+                // The service scope supplies a separately sanitized RouteTemplate.
+                structured.Remove("RequestPath");
+            }
+
+            values.Add(structured ?? ToSafeValue(scope));
         }, scopes);
         return scopes.Count == 0 ? null : scopes;
     }

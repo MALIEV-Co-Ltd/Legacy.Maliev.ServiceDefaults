@@ -43,7 +43,7 @@ public class CorrelationIdMiddleware
         var scopeProperties = new Dictionary<string, object?>
         {
             ["CorrelationId"] = correlationId,
-            ["RequestPath"] = context.Request.Path.Value,
+            ["RouteTemplate"] = RouteLogPath.FromContext(context),
             ["RequestMethod"] = context.Request.Method,
             ["UserAgent"] = context.Request.Headers.UserAgent.ToString(),
             ["RemoteIp"] = context.Connection.RemoteIpAddress?.ToString()
