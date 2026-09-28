@@ -139,6 +139,12 @@ public class JwtAuthenticationSecurityTests
 
         Assert.IsType<RsaSecurityKey>(options.TokenValidationParameters.IssuerSigningKey);
         Assert.Null(options.TokenValidationParameters.IssuerSigningKeys);
+
+        var handler = new JwtSecurityTokenHandler();
+        var symmetricKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(SecurityKey));
+        Assert.ThrowsAny<SecurityTokenException>(() => handler.ValidateToken(
+            CreateToken(handler, symmetricKey, SecurityAlgorithms.HmacSha256, Issuer, Audience),
+            options.TokenValidationParameters, out _));
     }
 
     [Fact]
@@ -163,6 +169,58 @@ public class JwtAuthenticationSecurityTests
 
         handler.ValidateToken(rs256, parameters, out _);
         Assert.ThrowsAny<SecurityTokenException>(() => handler.ValidateToken(rs384, parameters, out _));
+    }
+
+    [Fact]
+    public void AddJwtAuthentication_DevelopmentDualKeyAcceptsOnlyRs256AndHs256()
+    {
+        using var rsa = RSA.Create(2048);
+        var builder = CreateBuilder(Environments.Development, new Dictionary<string, string?>
+        {
+            ["Jwt:PublicKey"] = ExportPublicKey(rsa),
+            ["Jwt:SecurityKey"] = SecurityKey,
+            ["Jwt:Issuer"] = Issuer,
+            ["Jwt:Audience"] = Audience,
+            ["Jwt:AllowSymmetricValidation"] = "true"
+        });
+        builder.AddJwtAuthentication();
+
+        using var serviceProvider = builder.Services.BuildServiceProvider();
+        var parameters = serviceProvider.GetRequiredService<IOptionsMonitor<JwtBearerOptions>>()
+            .Get(JwtBearerDefaults.AuthenticationScheme).TokenValidationParameters;
+        var handler = new JwtSecurityTokenHandler();
+        var rsaKey = new RsaSecurityKey(rsa);
+        var symmetricKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(SecurityKey));
+
+        handler.ValidateToken(CreateToken(handler, rsaKey, SecurityAlgorithms.RsaSha256, Issuer, Audience), parameters, out _);
+        handler.ValidateToken(CreateToken(handler, symmetricKey, SecurityAlgorithms.HmacSha256, Issuer, Audience), parameters, out _);
+        Assert.ThrowsAny<SecurityTokenException>(() => handler.ValidateToken(
+            CreateToken(handler, rsaKey, SecurityAlgorithms.RsaSha384, Issuer, Audience), parameters, out _));
+    }
+
+    [Fact]
+    public void AddJwtAuthentication_DevelopmentSymmetricOptOutRejectsHs256()
+    {
+        using var rsa = RSA.Create(2048);
+        var builder = CreateBuilder(Environments.Development, new Dictionary<string, string?>
+        {
+            ["Jwt:PublicKey"] = ExportPublicKey(rsa),
+            ["Jwt:SecurityKey"] = SecurityKey,
+            ["Jwt:Issuer"] = Issuer,
+            ["Jwt:Audience"] = Audience,
+            ["Jwt:AllowSymmetricValidation"] = "false"
+        });
+        builder.AddJwtAuthentication();
+
+        using var serviceProvider = builder.Services.BuildServiceProvider();
+        var parameters = serviceProvider.GetRequiredService<IOptionsMonitor<JwtBearerOptions>>()
+            .Get(JwtBearerDefaults.AuthenticationScheme).TokenValidationParameters;
+        var handler = new JwtSecurityTokenHandler();
+        var symmetricKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(SecurityKey));
+
+        handler.ValidateToken(CreateToken(handler, new RsaSecurityKey(rsa), SecurityAlgorithms.RsaSha256, Issuer, Audience), parameters, out _);
+        Assert.ThrowsAny<SecurityTokenException>(() => handler.ValidateToken(
+            CreateToken(handler, symmetricKey, SecurityAlgorithms.HmacSha256, Issuer, Audience), parameters, out _));
     }
 
     [Fact]

@@ -120,6 +120,8 @@ public static class AuthenticationExtensions
                 new RsaSecurityKey(rsa),
                 symmetricKey
             };
+            tokenValidationParameters.ValidAlgorithms =
+                [SecurityAlgorithms.RsaSha256, SecurityAlgorithms.HmacSha256];
         }
         else
         {
