@@ -106,6 +106,7 @@ public static class AuthenticationExtensions
             ValidAudience = audience,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
+            ValidAlgorithms = [SecurityAlgorithms.RsaSha256],
             ClockSkew = TimeSpan.FromMinutes(5), // Allow 5 minutes clock skew
             NameClaimType = "sub",
             RoleClaimType = "role"
@@ -119,6 +120,8 @@ public static class AuthenticationExtensions
                 new RsaSecurityKey(rsa),
                 symmetricKey
             };
+            tokenValidationParameters.ValidAlgorithms =
+                [SecurityAlgorithms.RsaSha256, SecurityAlgorithms.HmacSha256];
         }
         else
         {
