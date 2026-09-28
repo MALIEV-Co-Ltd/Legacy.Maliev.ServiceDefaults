@@ -8,8 +8,12 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+using OpenTelemetry;
+using OpenTelemetry.Logs;
 
 namespace Legacy.Maliev.ServiceDefaults.Tests;
 
@@ -109,15 +113,19 @@ public sealed class NativeLoggingWireTests
     }
 
     [Theory]
-    [InlineData(false, HttpStatusCode.InternalServerError, "An internal server error occurred")]
-    [InlineData(true, HttpStatusCode.BadRequest, "The request is invalid.")]
-    public async Task StandardPipeline_ControlledHttpFailure_EmitsOneCorrelatedRedactedEvent(bool validation, HttpStatusCode status, string message)
+    [InlineData(false, HttpStatusCode.InternalServerError, "An internal server error occurred", "wire-correlation")]
+    [InlineData(true, HttpStatusCode.BadRequest, "The request is invalid.", "wire-correlation")]
+    [InlineData(false, HttpStatusCode.InternalServerError, "An internal server error occurred", "private-email@example.test")]
+    public async Task StandardPipeline_ControlledHttpFailure_EmitsOneCorrelatedRedactedEvent(
+        bool validation, HttpStatusCode status, string message, string suppliedCorrelation)
     {
         var original = Console.Out;
         using var output = new StringWriter(CultureInfo.InvariantCulture);
         var capture = new CapturingProvider();
+        var otelCapture = new CapturingLogExporter();
         string body;
         string correlation;
+        string requestTraceId;
         try
         {
             Console.SetOut(output);
@@ -130,17 +138,28 @@ public sealed class NativeLoggingWireTests
             builder.WebHost.UseTestServer();
             builder.Logging.AddProvider(capture);
             builder.AddServiceDefaults();
+            builder.Logging.AddOpenTelemetry(logging =>
+                logging.AddProcessor(new SimpleLogRecordExportProcessor(otelCapture)));
             builder.AddStandardMiddleware();
             await using (var app = builder.Build())
             {
                 app.UseStandardMiddleware();
-                app.Run(_ => throw (validation ? new ArgumentException("private-exception") : new Exception("private-exception")));
+                app.MapPost("/controlled/{value}", (RequestDelegate)(context =>
+                {
+                    context.Items["CorrelationId"] = "private-unvalidated-override";
+                    app.Logger.LogInformation("Controlled request event");
+                    throw (validation ? new ArgumentException("private-exception") : new Exception("private-exception"));
+                }));
                 await app.StartAsync();
                 using var client = app.GetTestClient();
-                using var request = new HttpRequestMessage(HttpMethod.Post, "/controlled?token=private-query");
+                using var request = new HttpRequestMessage(HttpMethod.Post, "/controlled/private-path?token=private-query");
                 request.Headers.Add("Authorization", "Bearer private-authorization");
                 request.Headers.Add("Cookie", "session=private-cookie");
-                request.Headers.Add("X-Correlation-ID", "wire-correlation");
+                request.Headers.Add("User-Agent", "private-agent");
+                request.Headers.Add("X-Correlation-ID", suppliedCorrelation);
+                using var activity = new Activity("controlled-request").SetIdFormat(ActivityIdFormat.W3C).Start();
+                requestTraceId = activity.TraceId.ToString();
+                request.Headers.Add("traceparent", activity.Id);
                 using var response = await client.SendAsync(request);
                 Assert.Equal(status, response.StatusCode);
                 Assert.Equal("application/json", response.Content.Headers.ContentType?.MediaType);
@@ -153,7 +172,15 @@ public sealed class NativeLoggingWireTests
             Console.SetOut(original);
         }
 
-        Assert.Equal("wire-correlation", correlation);
+        if (suppliedCorrelation == "wire-correlation")
+        {
+            Assert.Equal(suppliedCorrelation, correlation);
+        }
+        else
+        {
+            Assert.True(Guid.TryParse(correlation, out _));
+            Assert.NotEqual(suppliedCorrelation, correlation);
+        }
         using var responseJson = JsonDocument.Parse(body);
         Assert.Equal((int)status, responseJson.RootElement.GetProperty("statusCode").GetInt32());
         Assert.Equal(message, responseJson.RootElement.GetProperty("error").GetString());
@@ -165,17 +192,75 @@ public sealed class NativeLoggingWireTests
         Assert.Equal("UnhandledRequestFailure", state.GetProperty("EventName").GetString());
         Assert.Equal(typeof(NativeLoggingWireTests).Assembly.GetName().Name, state.GetProperty("Service").GetString());
         Assert.Equal("POST", state.GetProperty("Method").GetString());
-        Assert.Equal("/", state.GetProperty("Path").GetString());
+        Assert.Equal("/controlled/{value}", state.GetProperty("Path").GetString());
         Assert.Equal((int)status, state.GetProperty("StatusCode").GetInt32());
         Assert.Equal(validation ? "ArgumentException" : "Exception", state.GetProperty("ExceptionType").GetString());
         Assert.Equal(responseJson.RootElement.GetProperty("traceId").GetString(), state.GetProperty("IncidentId").GetString());
         AssertUtc(state.GetProperty("OccurredAtUtc").GetString()!);
         Assert.Contains(critical.GetProperty("Scopes").EnumerateArray(), scope => scope.TryGetProperty("CorrelationId", out var value) && value.GetString() == correlation);
+        Assert.Contains(critical.GetProperty("Scopes").EnumerateArray(), scope => scope.TryGetProperty("RouteTemplate", out var value) && value.GetString() == "/controlled/{value}");
+        Assert.DoesNotContain(critical.GetProperty("Scopes").EnumerateArray(), scope => scope.TryGetProperty("RequestPath", out _));
+        Assert.DoesNotContain(critical.GetProperty("Scopes").EnumerateArray(), scope =>
+            scope.TryGetProperty("UserAgent", out _) || scope.TryGetProperty("RemoteIp", out _));
+        var otelFailure = Assert.Single(otelCapture.Records, item => item.Attributes.GetValueOrDefault("ExceptionType") as string ==
+            (validation ? "ArgumentException" : "Exception"));
+        Assert.Equal("/controlled/{value}", otelFailure.Attributes["Path"]);
+        Assert.Equal(responseJson.RootElement.GetProperty("traceId").GetString(), otelFailure.Attributes["IncidentId"]);
+        Assert.Equal(requestTraceId, otelFailure.TraceId);
+        Assert.Matches("^[0-9a-f]{16}$", otelFailure.SpanId);
+        Assert.Empty(otelFailure.Scopes);
+        var otelGeneric = Assert.Single(otelCapture.Records, item => item.Body == "Controlled request event");
+        Assert.Equal(correlation, otelGeneric.Attributes["CorrelationId"]);
+        Assert.Equal("/controlled/{value}", otelGeneric.Attributes["RouteTemplate"]);
+        Assert.Empty(otelGeneric.Scopes);
+        Assert.All(otelCapture.Records, item =>
+        {
+            Assert.DoesNotContain("private-", item.Body ?? string.Empty, StringComparison.Ordinal);
+            Assert.DoesNotContain("private-", item.FormattedMessage ?? string.Empty, StringComparison.Ordinal);
+            Assert.All(item.Attributes.Values, value => Assert.DoesNotContain(
+                "private-", value?.ToString() ?? string.Empty, StringComparison.Ordinal));
+            Assert.All(item.Scopes, value => Assert.DoesNotContain(
+                "private-", value.Value?.ToString() ?? string.Empty, StringComparison.Ordinal));
+        });
         var captured = Assert.Single(capture.Entries, value => value.Level == LogLevel.Critical);
         Assert.Null(captured.Exception);
         Assert.DoesNotContain("private-", output.ToString(), StringComparison.Ordinal);
         Assert.DoesNotContain("private-", body, StringComparison.Ordinal);
         Assert.All(capture.Entries, entry => Assert.DoesNotContain("private-", entry.Message, StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public async Task CorrelationBoundary_RejectsUntrustedOrOversizedIdentifiers()
+    {
+        foreach (var supplied in new[] { "private-email@example.test", "private/path", new string('a', 65) })
+        {
+            var context = new DefaultHttpContext();
+            context.Request.Headers["X-Correlation-ID"] = supplied;
+            var middleware = new CorrelationIdMiddleware(_ => Task.CompletedTask,
+                NullLogger<CorrelationIdMiddleware>.Instance);
+
+            await middleware.InvokeAsync(context);
+
+            Assert.True(Guid.TryParse(context.Response.Headers["X-Correlation-ID"], out _));
+            Assert.NotEqual(supplied, context.Items["CorrelationId"]);
+        }
+    }
+
+    [Fact]
+    public void OpenTelemetryBackgroundEvent_HasNoInventedRequestContext()
+    {
+        var capture = new CapturingLogExporter();
+        var builder = Host.CreateApplicationBuilder();
+        builder.AddServiceDefaults();
+        builder.Logging.AddOpenTelemetry(logging =>
+            logging.AddProcessor(new SimpleLogRecordExportProcessor(capture)));
+        using var host = builder.Build();
+        host.Services.GetRequiredService<ILoggerFactory>().CreateLogger("Background.Probe")
+            .LogInformation("Background controlled event");
+
+        var record = Assert.Single(capture.Records, item => item.Body == "Background controlled event");
+        Assert.False(record.Attributes.ContainsKey("CorrelationId"));
+        Assert.False(record.Attributes.ContainsKey("RouteTemplate"));
     }
 
     private static JsonElement[] ReadEntries(string output) => output
@@ -205,4 +290,34 @@ public sealed class NativeLoggingWireTests
     }
 
     private sealed record Entry(string Category, LogLevel Level, string Message, Exception? Exception);
+
+    private sealed class CapturingLogExporter : BaseExporter<LogRecord>
+    {
+        public ConcurrentQueue<LogSnapshot> Records { get; } = new();
+
+        public override ExportResult Export(in Batch<LogRecord> batch)
+        {
+            foreach (var record in batch)
+            {
+                var attributes = record.Attributes?.ToDictionary(item => item.Key, item => item.Value)
+                    ?? new Dictionary<string, object?>();
+                var scopes = new List<KeyValuePair<string, object?>>();
+                record.ForEachScope((scope, values) =>
+                {
+                    foreach (var value in scope)
+                    {
+                        values.Add(value);
+                    }
+                }, scopes);
+                Records.Enqueue(new LogSnapshot(attributes, scopes, record.Body, record.FormattedMessage,
+                    record.TraceId.ToString(), record.SpanId.ToString()));
+            }
+
+            return ExportResult.Success;
+        }
+    }
+
+    private sealed record LogSnapshot(Dictionary<string, object?> Attributes,
+        List<KeyValuePair<string, object?>> Scopes, string? Body, string? FormattedMessage,
+        string TraceId, string SpanId);
 }

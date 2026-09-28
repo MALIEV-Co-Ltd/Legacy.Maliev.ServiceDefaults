@@ -49,7 +49,8 @@ public sealed class NativeJsonLoggingTests
         Assert.Contains(filters.Rules, rule => rule.CategoryName == "Polly"
             && rule.LogLevel == LogLevel.Error);
         var telemetry = host.Services.GetRequiredService<IOptions<OpenTelemetryLoggerOptions>>().Value;
-        Assert.True(telemetry.IncludeScopes);
+        // Framework hosting scopes include literal request paths; OTLP must not export them.
+        Assert.False(telemetry.IncludeScopes);
         Assert.True(telemetry.IncludeFormattedMessage);
     }
 

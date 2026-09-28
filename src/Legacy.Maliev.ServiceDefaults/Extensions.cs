@@ -30,6 +30,7 @@ public static class Extensions
     /// <returns>The configured <see cref="IHostApplicationBuilder"/>.</returns>
     public static IHostApplicationBuilder AddServiceDefaults(this IHostApplicationBuilder builder)
     {
+        builder.Services.AddHttpContextAccessor();
         // Disable GSSAPI authentication globally to avoid SPNEGO negotiation noise in postgres-server logs.
         // This resolves the "DETAIL: No credentials were supplied... SPNEGO cannot find mechanisms to negotiate" error.
         Environment.SetEnvironmentVariable("NPGSQL_GSSAPI_AUTHENTICATION", "false");
@@ -89,7 +90,12 @@ public static class Extensions
         builder.Logging.AddOpenTelemetry(logging =>
         {
             logging.IncludeFormattedMessage = true;
-            logging.IncludeScopes = true;
+            // ASP.NET Core adds a hosting scope with the literal request path.
+            // LogRecord scopes cannot be filtered before OTLP export; keep trace/span
+            // correlation and structured event attributes without exporting raw paths.
+            logging.IncludeScopes = false;
+            logging.AddProcessor(services => new SafeRequestLogContextProcessor(
+                services.GetRequiredService<IHttpContextAccessor>()));
 
             if (!string.IsNullOrWhiteSpace(builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]))
             {
