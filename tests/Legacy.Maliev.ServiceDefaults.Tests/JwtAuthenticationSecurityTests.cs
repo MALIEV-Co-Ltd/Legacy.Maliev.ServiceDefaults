@@ -141,6 +141,60 @@ public class JwtAuthenticationSecurityTests
         Assert.Null(options.TokenValidationParameters.IssuerSigningKeys);
     }
 
+    [Fact]
+    public void AddJwtAuthentication_ProductionRejectsRsaAlgorithmsOtherThanRs256()
+    {
+        using var rsa = RSA.Create(2048);
+        var builder = CreateBuilder(Environments.Production, new Dictionary<string, string?>
+        {
+            ["Jwt:PublicKey"] = ExportPublicKey(rsa),
+            ["Jwt:Issuer"] = Issuer,
+            ["Jwt:Audience"] = Audience
+        });
+        builder.AddJwtAuthentication();
+
+        using var serviceProvider = builder.Services.BuildServiceProvider();
+        var parameters = serviceProvider.GetRequiredService<IOptionsMonitor<JwtBearerOptions>>()
+            .Get(JwtBearerDefaults.AuthenticationScheme).TokenValidationParameters;
+        var handler = new JwtSecurityTokenHandler();
+        var signingKey = new RsaSecurityKey(rsa);
+        var rs256 = CreateToken(handler, signingKey, SecurityAlgorithms.RsaSha256, Issuer, Audience);
+        var rs384 = CreateToken(handler, signingKey, SecurityAlgorithms.RsaSha384, Issuer, Audience);
+
+        handler.ValidateToken(rs256, parameters, out _);
+        Assert.ThrowsAny<SecurityTokenException>(() => handler.ValidateToken(rs384, parameters, out _));
+    }
+
+    [Fact]
+    public void AddJwtAuthentication_ProductionRejectsWrongIssuerAudienceAndSignature()
+    {
+        using var rsa = RSA.Create(2048);
+        using var otherRsa = RSA.Create(2048);
+        var builder = CreateBuilder(Environments.Production, new Dictionary<string, string?>
+        {
+            ["Jwt:PublicKey"] = ExportPublicKey(rsa),
+            ["Jwt:Issuer"] = Issuer,
+            ["Jwt:Audience"] = Audience
+        });
+        builder.AddJwtAuthentication();
+
+        using var serviceProvider = builder.Services.BuildServiceProvider();
+        var parameters = serviceProvider.GetRequiredService<IOptionsMonitor<JwtBearerOptions>>()
+            .Get(JwtBearerDefaults.AuthenticationScheme).TokenValidationParameters;
+        var handler = new JwtSecurityTokenHandler();
+        var signingKey = new RsaSecurityKey(rsa);
+
+        Assert.ThrowsAny<SecurityTokenException>(() => handler.ValidateToken(
+            CreateToken(handler, signingKey, SecurityAlgorithms.RsaSha256, "https://other.example", Audience),
+            parameters, out _));
+        Assert.ThrowsAny<SecurityTokenException>(() => handler.ValidateToken(
+            CreateToken(handler, signingKey, SecurityAlgorithms.RsaSha256, Issuer, "other-audience"),
+            parameters, out _));
+        Assert.ThrowsAny<SecurityTokenException>(() => handler.ValidateToken(
+            CreateToken(handler, new RsaSecurityKey(otherRsa), SecurityAlgorithms.RsaSha256, Issuer, Audience),
+            parameters, out _));
+    }
+
     /// <summary>
     /// Production must fail closed when only the legacy HMAC key is configured.
     /// </summary>
@@ -272,5 +326,20 @@ public class JwtAuthenticationSecurityTests
     private static string ExportPublicKey(RSA rsa)
     {
         return Convert.ToBase64String(Encoding.UTF8.GetBytes(rsa.ExportSubjectPublicKeyInfoPem()));
+    }
+
+    private static string CreateToken(
+        JwtSecurityTokenHandler handler,
+        SecurityKey key,
+        string algorithm,
+        string issuer,
+        string audience)
+    {
+        var token = new JwtSecurityToken(
+            issuer: issuer,
+            audience: audience,
+            expires: DateTime.UtcNow.AddMinutes(10),
+            signingCredentials: new SigningCredentials(key, algorithm));
+        return handler.WriteToken(token);
     }
 }
