@@ -25,6 +25,7 @@ public sealed class Source5acLoggingRemovalContractTests
         {
             var source = File.ReadAllText(path);
             Assert.DoesNotContain("using Maliev.NativeLogging", source, StringComparison.Ordinal);
+            Assert.DoesNotContain("Maliev.LoggerService", source, StringComparison.Ordinal);
             Assert.DoesNotContain("AddMalievJsonConsole", source, StringComparison.Ordinal);
             Assert.DoesNotContain("UseMalievProductionExceptionHandler", source, StringComparison.Ordinal);
         }

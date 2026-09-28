@@ -26,6 +26,14 @@ instead: `AddServiceDefaults` configures the `maliev-cloud-json` console
 formatter, and `UseStandardMiddleware` installs the exception handler. The old
 NativeLogging and LoggerService assemblies are not package dependencies.
 
+Source commit `cbac7d7155da2208c77d56103b6a2cb19196fc83` changed the
+obsolete LoggerService API to obtain its symmetric JWT key from configuration.
+Source commit `9e51e6c5da29de8e617b65b59d46882cde6d3b64` subsequently removed
+that API, its deployment files, and its authentication startup entirely. There
+is no LoggerService runtime to port or signing secret to provision. Legacy
+services instead use the shared RS256-only production validator in this package;
+the native logging and JWT contract tests guard both sides of that replacement.
+
 The shared formatter retains UTC `O` timestamps, scopes, activity trace/span
 correlation, and structured `LogLevel`/category/message fields. It additionally
 emits Cloud Logging `severity` and records exception type without exception
