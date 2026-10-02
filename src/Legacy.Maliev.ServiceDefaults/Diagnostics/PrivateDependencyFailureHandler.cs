@@ -26,7 +26,7 @@ internal sealed class PrivateDependencyFailureHandler(ILogger<PrivateDependencyF
             Record(exception.StatusCode is { } status ? (int)status : null);
             throw;
         }
-        catch (Exception exception) when (exception is TimeoutException or OperationCanceledException)
+        catch (Exception exception) when (exception is TimeoutException or OperationCanceledException or Polly.Timeout.TimeoutRejectedException)
         {
             Record(null);
             throw;
