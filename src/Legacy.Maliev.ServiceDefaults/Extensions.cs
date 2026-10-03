@@ -7,6 +7,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
 using Maliev.Aspire.ServiceDefaults.Logging;
+using Maliev.Aspire.ServiceDefaults.Diagnostics;
 using Maliev.Aspire.ServiceDefaults.Telemetry;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
@@ -229,6 +230,7 @@ public static class Extensions
 
         // Liveness endpoint - simple check that always returns healthy (for Kubernetes ingress)
         app.MapGet($"/{servicePrefix}/liveness", () => "Healthy")
+            .WithMetadata(new PrivateRequestHealthEndpoint("liveness"))
             .WithTags("kubernetes")
             .AllowAnonymous();
 
@@ -260,6 +262,7 @@ public static class Extensions
                 await context.Response.WriteAsync(result);
             }
         })
+        .WithMetadata(new PrivateRequestHealthEndpoint("readiness"))
         .WithTags("kubernetes")
         // Infrastructure probes must remain reachable when an application uses
         // an authenticated fallback policy. Business endpoints stay protected by

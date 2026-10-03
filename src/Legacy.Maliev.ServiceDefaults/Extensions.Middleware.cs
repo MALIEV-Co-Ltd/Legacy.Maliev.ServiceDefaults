@@ -1,4 +1,5 @@
 using Maliev.Aspire.ServiceDefaults.Middleware;
+using Maliev.Aspire.ServiceDefaults.Diagnostics;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.DependencyInjection;
@@ -71,6 +72,11 @@ public static class MiddlewareExtensions
     public static IApplicationBuilder UseStandardMiddleware(this IApplicationBuilder app)
     {
         var options = app.ApplicationServices.GetService<MiddlewareOptions>() ?? new MiddlewareOptions();
+        var observation = app.ApplicationServices.GetService<PrivateRequestObservationState>();
+        if (observation is not null)
+        {
+            PrivateRequestObservationPipeline.UseDiagnosticBoundary(app, observation);
+        }
 
         // Order matters! 
         // ForwardedHeaders must be first to ensure other middleware sees the correct IP/Protocol
@@ -85,6 +91,11 @@ public static class MiddlewareExtensions
         }
 
         app.UseMiddleware<ExceptionHandlingMiddleware>();
+
+        if (observation is not null)
+        {
+            PrivateRequestObservationPipeline.UseCompletedResponseObserver(app, observation);
+        }
 
         return app;
     }
