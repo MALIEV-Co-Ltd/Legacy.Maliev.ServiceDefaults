@@ -68,8 +68,13 @@ public sealed class PrivateFailureConsoleFormatter : ConsoleFormatter
             return;
         }
 
+        bool synthetic = false;
+        string? diagnosticId = null;
         foreach (var field in fields.Take(64))
         {
+            if (field.Key == "Synthetic" && field.Value is true) synthetic = true;
+            else if (field.Key == "DiagnosticId" && field.Value is string nonce
+                && Guid.TryParseExact(nonce, "N", out var parsed)) diagnosticId = parsed.ToString("N");
             if (payload.ContainsKey(field.Key))
             {
                 continue;
@@ -84,6 +89,11 @@ public sealed class PrivateFailureConsoleFormatter : ConsoleFormatter
             {
                 payload.Add(field.Key, identifier);
             }
+        }
+        if (synthetic && diagnosticId is not null && !payload.ContainsKey("Synthetic"))
+        {
+            payload.Add("Synthetic", true);
+            payload.Add("DiagnosticId", diagnosticId);
         }
     }
 
