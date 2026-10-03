@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using System.Net;
+using Maliev.Aspire.ServiceDefaults.Diagnostics;
 using Maliev.Aspire.ServiceDefaults.Logging;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -22,6 +23,10 @@ internal sealed class PrivateRequestObservationHttpFixture : IAsyncDisposable
     private int _downstreamCalls;
     private int _status = 200;
     private int _syntheticOverwriteCallbacks;
+    private int _healthOverwriteCallbacks;
+    private int _lateRequestsWithoutEndpoint;
+    private int _lateRequestsWithEndpoint;
+    private int _startedResponsesBeforeObserver;
     private HttpClient? _client;
 
     private PrivateRequestObservationHttpFixture(WebApplication app,
@@ -37,12 +42,18 @@ internal sealed class PrivateRequestObservationHttpFixture : IAsyncDisposable
     public PrivateRequestClock Clock { get; }
     public int DownstreamCalls => Volatile.Read(ref _downstreamCalls);
     public int SyntheticOverwriteCallbacks => Volatile.Read(ref _syntheticOverwriteCallbacks);
+    public int HealthOverwriteCallbacks => Volatile.Read(ref _healthOverwriteCallbacks);
+    public int LateRequestsWithoutEndpoint => Volatile.Read(ref _lateRequestsWithoutEndpoint);
+    public int LateRequestsWithEndpoint => Volatile.Read(ref _lateRequestsWithEndpoint);
+    public int StartedResponsesBeforeObserver => Volatile.Read(ref _startedResponsesBeforeObserver);
     public int Status { set => Volatile.Write(ref _status, value); }
 
     public static async Task<PrivateRequestObservationHttpFixture> CreateAsync(
         string? peer = "127.0.0.1", bool selected = true, bool mapHealth = true,
         bool rewriteHeaders = false, bool repeatRegistration = false,
-        bool mapBusinessReadiness = false, bool rewriteSyntheticHeaders = false)
+        bool mapBusinessReadiness = false, bool rewriteSyntheticHeaders = false,
+        bool lateRouting = false, bool shortCircuitBeforeLateRouting = false,
+        bool startedResponseBeforeObserver = false)
     {
         var builder = WebApplication.CreateBuilder(new WebApplicationOptions
         {
@@ -99,14 +110,66 @@ internal sealed class PrivateRequestObservationHttpFixture : IAsyncDisposable
                 context.Connection.RemoteIpAddress = peer is null ? null : IPAddress.Parse(peer);
                 await next(context);
             });
-            app.UseRouting();
-            app.UseStandardMiddleware();
+            if (!lateRouting) app.UseRouting();
+            else
+            {
+                app.Use(async (context, next) =>
+                {
+                    if (context.GetEndpoint() is null)
+                        Interlocked.Increment(ref startedFixture._lateRequestsWithoutEndpoint);
+                    await next(context);
+                });
+            }
+            if (startedResponseBeforeObserver)
+            {
+                // Isolate the real observer contract: the standard security/correlation middleware
+                // deliberately writes headers and does not support an already-started response.
+                app.Use(async (context, next) =>
+                {
+                    if (HttpMethods.IsGet(context.Request.Method)
+                        && context.Request.Path == "/fixture/business")
+                    {
+                        await context.Response.WriteAsync("Benign started response");
+                        if (context.Response.HasStarted)
+                            Interlocked.Increment(ref startedFixture._startedResponsesBeforeObserver);
+                    }
+                    await next(context);
+                });
+                PrivateRequestObservationPipeline.UseCompletedResponseObserver(app,
+                    app.Services.GetRequiredService<PrivateRequestObservationState>());
+            }
+            else app.UseStandardMiddleware();
+            if (lateRouting)
+            {
+                if (shortCircuitBeforeLateRouting)
+                {
+                    app.Use(async (context, next) =>
+                    {
+                        if (HttpMethods.IsGet(context.Request.Method)
+                            && context.Request.Path == "/review/readiness")
+                        {
+                            context.Response.StatusCode = StatusCodes.Status200OK;
+                            await context.Response.WriteAsync("Benign pre-routing response");
+                            return;
+                        }
+                        await next(context);
+                    });
+                }
+                app.UseRouting();
+                app.Use(async (context, next) =>
+                {
+                    if (context.GetEndpoint() is not null)
+                        Interlocked.Increment(ref startedFixture._lateRequestsWithEndpoint);
+                    await next(context);
+                });
+            }
             if (rewriteHeaders)
             {
                 app.Use(async (context, next) =>
                 {
                     context.Response.OnStarting(() =>
                     {
+                        Interlocked.Increment(ref startedFixture._healthOverwriteCallbacks);
                         context.Response.Headers["X-Maliev-Health-Instance"] = "downstream-value";
                         context.Response.Headers.CacheControl = "public";
                         return Task.CompletedTask;
@@ -125,7 +188,8 @@ internal sealed class PrivateRequestObservationHttpFixture : IAsyncDisposable
             app.MapMethods("/fixture/{**path}", ["GET", "POST", "HEAD"], context =>
             {
                 Interlocked.Increment(ref startedFixture._downstreamCalls);
-                context.Response.StatusCode = Volatile.Read(ref startedFixture._status);
+                if (!startedResponseBeforeObserver)
+                    context.Response.StatusCode = Volatile.Read(ref startedFixture._status);
                 return Task.CompletedTask;
             });
             app.MapGet("/ordinary-failure", (RequestDelegate)(_ =>
