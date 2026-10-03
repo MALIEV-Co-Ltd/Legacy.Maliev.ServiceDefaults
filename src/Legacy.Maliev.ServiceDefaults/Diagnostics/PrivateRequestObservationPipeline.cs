@@ -84,6 +84,15 @@ internal static class PrivateRequestObservationPipeline
         app.Use(async (context, next) =>
         {
             if (state.IsRegisteredGetHealth(context)) state.AttachHeaders(context);
+            else if (!context.Response.HasStarted)
+            {
+                // Routing may select the registered endpoint downstream of this observer.
+                context.Response.OnStarting(() =>
+                {
+                    if (state.IsRegisteredGetHealth(context)) state.WriteHeaders(context, null);
+                    return Task.CompletedTask;
+                });
+            }
             await next(context);
             // Thrown failures escape to the existing outer MALIEV handler, never a second observer incident.
             state.RecordCompletedResponse(context, logger);
