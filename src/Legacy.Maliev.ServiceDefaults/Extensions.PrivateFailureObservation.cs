@@ -14,6 +14,17 @@ public static class PrivateFailureObservationExtensions
     /// <param name="dependency">A bounded code-owned dependency identifier, never a URL or customer value.</param>
     /// <returns>The unchanged client builder.</returns>
     public static IHttpClientBuilder AddPrivateFailureObservation(this IHttpClientBuilder builder, string dependency)
+        => SelectObservation(builder, dependency, observeOperation: false);
+
+    /// <summary>Adds terminal failure observation with a finite resource-and-method operation taxonomy.</summary>
+    /// <param name="builder">The explicitly selected named or typed HTTP client.</param>
+    /// <param name="dependency">A bounded code-owned dependency identifier, never a URL or customer value.</param>
+    /// <returns>The unchanged client builder.</returns>
+    /// <remarks>Unknown resources or methods emit UnknownOperation; request transport details are never exported.</remarks>
+    public static IHttpClientBuilder AddPrivateFailureOperationObservation(this IHttpClientBuilder builder, string dependency)
+        => SelectObservation(builder, dependency, observeOperation: true);
+
+    private static IHttpClientBuilder SelectObservation(IHttpClientBuilder builder, string dependency, bool observeOperation)
     {
         ArgumentNullException.ThrowIfNull(builder);
         if (string.IsNullOrWhiteSpace(builder.Name) || builder.Name.Length > 256 || builder.Name.Any(char.IsWhiteSpace))
@@ -31,19 +42,20 @@ public static class PrivateFailureObservationExtensions
             .FirstOrDefault(selection => string.Equals(selection.ClientName, builder.Name, StringComparison.Ordinal));
         if (existing is not null)
         {
-            if (!string.Equals(existing.Dependency, dependency, StringComparison.Ordinal))
+            if (!string.Equals(existing.Dependency, dependency, StringComparison.Ordinal)
+                || existing.ObserveOperation != observeOperation)
             {
-                throw new InvalidOperationException("The selected client already has a different failure observation identity.");
+                throw new InvalidOperationException("The selected client already has a different failure observation identity or mode.");
             }
             return builder;
         }
 
-        builder.Services.AddSingleton(new PrivateFailureClientSelection(builder.Name, dependency));
+        builder.Services.AddSingleton(new PrivateFailureClientSelection(builder.Name, dependency, observeOperation));
         builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IHttpMessageHandlerBuilderFilter, PrivateFailureHandlerBuilderFilter>());
         return builder;
     }
 
-    private sealed record PrivateFailureClientSelection(string ClientName, string Dependency);
+    private sealed record PrivateFailureClientSelection(string ClientName, string Dependency, bool ObserveOperation);
 
     private sealed class PrivateFailureHandlerBuilderFilter(IEnumerable<PrivateFailureClientSelection> selections)
         : IHttpMessageHandlerBuilderFilter
@@ -55,7 +67,8 @@ public static class PrivateFailureObservationExtensions
             if (selection is not null)
             {
                 builder.AdditionalHandlers.Insert(0, new PrivateDependencyFailureHandler(
-                    builder.Services.GetRequiredService<ILogger<PrivateDependencyFailureHandler>>(), selection.Dependency));
+                    builder.Services.GetRequiredService<ILogger<PrivateDependencyFailureHandler>>(), selection.Dependency,
+                    selection.ObserveOperation));
             }
         };
     }
