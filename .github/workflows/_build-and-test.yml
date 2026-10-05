@@ -79,12 +79,13 @@ jobs:
             $dependencies = @($manifest.SelectNodes("//*[local-name()='dependency' and @id='Microsoft.AspNet.WebApi.Client']"))
             if ($dependencies.Count -ne 1) { throw 'Formatter runtime dependency is missing.' }
             $excluded = @($dependencies[0].exclude -split '[,;]' | ForEach-Object { $_.Trim() })
+            New-Item artifacts/coverage-evidence -ItemType Directory -Force | Out-Null
+            $manifest.Save((Join-Path (Get-Location) 'artifacts/coverage-evidence/formatter-package.nuspec'))
+            @{ dependency = $dependencies[0].id; version = $dependencies[0].version; includedAssets = $dependencies[0].GetAttribute('include'); excludedAssets = $excluded } |
+              ConvertTo-Json | Set-Content artifacts/coverage-evidence/formatter-package.json
             if ('Compile' -notin $excluded -or 'Runtime' -in $excluded -or 'All' -in $excluded) {
               throw 'Formatter must remain available at runtime without exposing compile extensions.'
             }
-            New-Item artifacts/coverage-evidence -ItemType Directory -Force | Out-Null
-            @{ dependency = $dependencies[0].id; version = $dependencies[0].version; excludedAssets = $excluded; runtimeRetained = $true } |
-              ConvertTo-Json | Set-Content artifacts/coverage-evidence/formatter-package.json
           } finally { $archive.Dispose() }
       - name: Prepare private validation evidence
         if: always()
