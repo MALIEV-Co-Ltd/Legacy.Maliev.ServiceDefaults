@@ -9,6 +9,8 @@ internal sealed class PrivateDependencyFailureHandler(
 {
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
+        var context = PrivateDependencyObservationContext.Get(request);
+        context?.Bind(() => RecordCore(request, null));
         try
         {
             var response = await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
@@ -18,8 +20,9 @@ internal sealed class PrivateDependencyFailureHandler(
             }
             return response;
         }
-        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        catch (OperationCanceledException exception) when (cancellationToken.IsCancellationRequested)
         {
+            context?.CaptureTerminalCancellation(exception);
             throw;
         }
         catch (HttpRequestException exception)
@@ -35,6 +38,13 @@ internal sealed class PrivateDependencyFailureHandler(
     }
 
     private void Record(HttpRequestMessage request, int? status)
+    {
+        if (PrivateDependencyObservationContext.Get(request) is { } context)
+            context.RecordOnce(() => RecordCore(request, status));
+        else RecordCore(request, status);
+    }
+
+    private void RecordCore(HttpRequestMessage request, int? status)
     {
         try
         {

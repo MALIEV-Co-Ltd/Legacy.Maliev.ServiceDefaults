@@ -1,3 +1,4 @@
+using System.Data.Common;
 using Maliev.Aspire.ServiceDefaults.Middleware;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
@@ -12,8 +13,14 @@ public sealed class ExceptionHandlingMiddlewareTests
     [Fact]
     public async Task InvokeAsync_ProductionArgumentException_UsesSanitizedClientMessage()
     {
+        var passwordCanary = Guid.NewGuid().ToString("N");
+        var syntheticConnection = new DbConnectionStringBuilder
+        {
+            ["Host"] = "private-db",
+            ["Password"] = passwordCanary,
+        };
         var middleware = new ExceptionHandlingMiddleware(
-            _ => throw new ArgumentException("connection=Host=private-db;Password=secret"),
+            _ => throw new ArgumentException("connection=" + syntheticConnection.ConnectionString + ";detail=secret"),
             NullLogger<ExceptionHandlingMiddleware>.Instance,
             new TestHostEnvironment(Environments.Production));
         var context = CreateContext();
@@ -25,6 +32,7 @@ public sealed class ExceptionHandlingMiddlewareTests
         Assert.Contains("The request is invalid.", body, StringComparison.Ordinal);
         Assert.DoesNotContain("private-db", body, StringComparison.Ordinal);
         Assert.DoesNotContain("secret", body, StringComparison.Ordinal);
+        Assert.DoesNotContain(passwordCanary, body, StringComparison.Ordinal);
     }
 
     [Fact]
