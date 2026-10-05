@@ -41,6 +41,12 @@ jobs:
           dotnet test tests/Legacy.Maliev.ServiceDefaults.Tests/Legacy.Maliev.ServiceDefaults.Tests.csproj \
             --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true \
             --filter "FullyQualifiedName~RetainedTypedHttpResponseTests"
+      - name: Verify legacy token owner deadline and cache lifecycle
+        shell: bash
+        run: |
+          dotnet test tests/Legacy.Maliev.ServiceDefaults.Tests/Legacy.Maliev.ServiceDefaults.Tests.csproj \
+            --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true \
+            --filter "FullyQualifiedName~LegacyTokenExchangeDeadlineTests|FullyQualifiedName~LegacyServiceAuthenticationTests"
       - name: Verify private coverage evidence controls
         shell: pwsh
         run: ./eng/Test-CoverageEvidence.ps1
