@@ -29,9 +29,46 @@ jobs:
         with:
           solution: Legacy.Maliev.ServiceDefaults.slnx
           use-local-maliev-dependencies: 'true'
+      - name: Verify IAM cache ownership and permission compatibility
+        shell: bash
+        run: |
+          dotnet test tests/Legacy.Maliev.ServiceDefaults.Tests/Legacy.Maliev.ServiceDefaults.Tests.csproj \
+            --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true \
+            --filter "FullyQualifiedName~IamPermissionCacheIsolationTests|FullyQualifiedName~IamServiceClientTests|FullyQualifiedName~PermissionAuthorizationPolicyTests|FullyQualifiedName~PermissionAuthorizationSemaphoreTests"
+      - name: Verify private coverage evidence controls
+        shell: pwsh
+        run: ./eng/Test-CoverageEvidence.ps1
+      - name: Collect complete raw owned production coverage
+        shell: bash
+        run: |
+          dotnet test tests/Legacy.Maliev.ServiceDefaults.Tests/Legacy.Maliev.ServiceDefaults.Tests.csproj \
+            --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true \
+            --collect "XPlat Code Coverage" --settings eng/coverage.runsettings \
+            --logger "trx;LogFileName=owned-raw.trx" --results-directory artifacts/owned-raw
+      - name: Require complete owned assembly evidence
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Path artifacts/coverage-evidence -Force | Out-Null
+          $reports = @(& ./eng/Get-OwnedCoverageReport.ps1 -ResultsDirectory artifacts/owned-raw)
+          if ($reports.Count -ne 1) { throw 'Expected exactly one complete owned coverage report.' }
+          & ./eng/Assert-OwnedCoverageEvidence.ps1 -CoveragePath $reports[0].FullName -ResultsDirectory artifacts/owned-raw |
+            Tee-Object -FilePath artifacts/coverage-evidence/checker-results.log
       - name: Verify package can be produced
         shell: bash
         run: |
           export GITHUB_ACTIONS=false
           dotnet pack src/Legacy.Maliev.ServiceDefaults/Legacy.Maliev.ServiceDefaults.csproj \
             --configuration Release --no-build --no-restore --output artifacts
+      - name: Prepare private validation evidence
+        if: always()
+        shell: pwsh
+        run: |
+          & ./eng/Export-CoverageEvidence.ps1 -ResultsDirectory artifacts/owned-raw -OutputDirectory artifacts/coverage-evidence
+      - name: Retain private validation evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: owned-validation-${{ github.run_id }}-${{ github.run_attempt }}
+          path: artifacts/coverage-evidence
+          if-no-files-found: error
+          retention-days: 3
