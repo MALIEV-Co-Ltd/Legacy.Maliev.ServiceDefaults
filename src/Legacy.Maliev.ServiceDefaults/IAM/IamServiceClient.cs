@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Hosting;
 using System.Collections.Concurrent;
 using System.Net.Http.Json;
+using System.Runtime.CompilerServices;
 
 namespace Maliev.Aspire.ServiceDefaults.IAM;
 
@@ -26,10 +27,11 @@ public partial class IamServiceClient : IIamServiceClient
     private const int CacheCleanupThreshold = 2048;
     private static readonly IConfiguration EmptyConfiguration = new ConfigurationBuilder().Build();
 
-    // Static: the client is registered scoped, so an instance cache would reset on
-    // every request. Keys embed the principal, so sharing across scopes is safe.
-    private static readonly ConcurrentDictionary<string, CachedPermissionResult> _permissionCache = new();
-    private static readonly ConcurrentDictionary<string, Lazy<Task<bool>>> _inFlightPermissionChecks = new();
+    // Scoped clients share a bucket only through their host's singleton HTTP factory.
+    // Equal principals or IAM URLs do not establish trust between independent hosts.
+    private static readonly ConditionalWeakTable<IHttpClientFactory, PermissionCacheState> PermissionCaches = new();
+    private readonly ConcurrentDictionary<string, CachedPermissionResult> _permissionCache;
+    private readonly ConcurrentDictionary<string, Lazy<Task<bool>>> _inFlightPermissionChecks;
     private static int _missingLiveCheckCredentialLogged;
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly ILogger<IamServiceClient> _logger;
@@ -68,6 +70,9 @@ public partial class IamServiceClient : IIamServiceClient
         _logger = logger;
         _environment = environment;
         _configuration = configuration;
+        var cache = PermissionCaches.GetValue(httpClientFactory, static _ => new PermissionCacheState());
+        _permissionCache = cache.Results;
+        _inFlightPermissionChecks = cache.InFlight;
     }
 
     private HttpClient GetHttpClient() => _httpClientFactory.CreateClient("IAMService");
@@ -246,6 +251,12 @@ public partial class IamServiceClient : IIamServiceClient
     }
 
     private readonly record struct CachedPermissionResult(bool Allowed, DateTime ExpiresAtUtc);
+
+    private sealed class PermissionCacheState
+    {
+        internal ConcurrentDictionary<string, CachedPermissionResult> Results { get; } = new();
+        internal ConcurrentDictionary<string, Lazy<Task<bool>>> InFlight { get; } = new();
+    }
 
     /// <inheritdoc />
     public async Task<Dictionary<string, bool>> CheckPermissionsAsync(
