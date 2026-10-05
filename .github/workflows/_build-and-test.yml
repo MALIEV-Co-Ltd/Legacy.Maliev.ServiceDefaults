@@ -35,6 +35,12 @@ jobs:
           dotnet test tests/Legacy.Maliev.ServiceDefaults.Tests/Legacy.Maliev.ServiceDefaults.Tests.csproj \
             --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true \
             --filter "FullyQualifiedName~IamPermissionCacheIsolationTests|FullyQualifiedName~IamServiceClientTests|FullyQualifiedName~PermissionAuthorizationPolicyTests|FullyQualifiedName~PermissionAuthorizationSemaphoreTests"
+      - name: Verify retained typed HTTP response boundaries
+        shell: bash
+        run: |
+          dotnet test tests/Legacy.Maliev.ServiceDefaults.Tests/Legacy.Maliev.ServiceDefaults.Tests.csproj \
+            --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true \
+            --filter "FullyQualifiedName~RetainedTypedHttpResponseTests"
       - name: Verify private coverage evidence controls
         shell: pwsh
         run: ./eng/Test-CoverageEvidence.ps1

@@ -57,6 +57,21 @@ service that needs retryable writes must expose an idempotency contract and
 own that retry at its application boundary; changing the shared policy is not
 an acceptable substitute.
 
+### Retained typed HTTP responses
+
+`Maliev.Service.WebApi.WebApiResponseReader.ReadAsAsync<T>(response, cancellationToken)`
+returns the retained `Maliev.Service.WebApi.Model.ApiResponse<T>` model. Successful
+responses use the original `Microsoft.AspNet.WebApi.Client` 6.0 formatter; null,
+empty and malformed content follow that formatter's behavior. Non-success
+responses retain the type's default item and the original status, headers and
+unread body. The caller owns response disposal on success, failure and exceptions.
+The cancellation token is checked before reading and forwarded to the formatter.
+
+This extracts the typed-response portion of the legacy `GetAs<T>`,
+`GetExternalAs<T>` and `Post<T>` helpers. Transport, endpoint configuration,
+credentials and token acquisition remain owned by the consuming application.
+Each Intranet consumer requires its own integration validation before adoption.
+
 ## Local validation
 
 ```powershell
