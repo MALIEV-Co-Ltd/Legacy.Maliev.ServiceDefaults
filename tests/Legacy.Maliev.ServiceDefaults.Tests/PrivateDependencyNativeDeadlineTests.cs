@@ -148,6 +148,69 @@ public sealed class PrivateDependencyNativeDeadlineTests
         Assert.Empty(fixture.Events.Failures);
     }
 
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task Concurrent_distinct_requests_keep_terminal_response_and_native_deadline_operations_independent(bool typed)
+    {
+        using var fixture = new Fixture(typed, false, TimeSpan.FromSeconds(1));
+        fixture.Transport.CustomerResponse = new(HttpStatusCode.ServiceUnavailable) { Content = new StringContent(Canary) };
+        using var orders = Request();
+        var pendingOrders = SendObservedAsync(fixture.Client, orders);
+        await fixture.Transport.Entered.Task.WaitAsync(TimeSpan.FromSeconds(10));
+        using var customers = new HttpRequestMessage(HttpMethod.Post, "/customers/" + Canary);
+
+        using var response = await SendObservedAsync(fixture.Client, customers);
+        Assert.Same(fixture.Transport.CustomerResponse, response);
+        var failure = await Assert.ThrowsAsync<TaskCanceledException>(() => pendingOrders.WaitAsync(TimeSpan.FromSeconds(10)));
+
+        Assert.Same(fixture.Transport.TerminalCancellation, Assert.IsType<TimeoutException>(failure.InnerException).InnerException);
+        Assert.Equal(2, fixture.Transport.Calls);
+        Assert.Equal(2, fixture.Events.Failures.Count);
+        fixture.AssertSafeFailure(Assert.Single(fixture.Events.Failures, record => Equals(record.Fields["Operation"], "Orders.Get")), null, "Orders.Get");
+        fixture.AssertSafeFailure(Assert.Single(fixture.Events.Failures, record => Equals(record.Fields["Operation"], "Customers.Post")), 503, "Customers.Post");
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task Native_deadline_throwing_provider_does_not_replace_the_real_native_exception(bool typed)
+    {
+        using var fixture = new Fixture(typed, false, TimeSpan.FromSeconds(1));
+        fixture.Events.ThrowOnFailure = true;
+        using var request = Request();
+        var pending = SendObservedAsync(fixture.Client, request);
+        await fixture.Transport.Entered.Task.WaitAsync(TimeSpan.FromSeconds(10));
+
+        var failure = await Assert.ThrowsAsync<TaskCanceledException>(() => pending.WaitAsync(TimeSpan.FromSeconds(10)));
+
+        Assert.Same(fixture.Transport.TerminalCancellation, Assert.IsType<TimeoutException>(failure.InnerException).InnerException);
+        Assert.NotSame(fixture.Transport.TerminalCancellation, failure);
+        fixture.AssertFailure(null);
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task Completed_native_send_leaves_retained_request_options_free_of_observation_or_unsafe_references(bool typed)
+    {
+        using var fixture = new Fixture(typed, true, TimeSpan.FromSeconds(1));
+        using var request = Request();
+        var unrelated = new object();
+        var callerKey = new HttpRequestOptionsKey<object>("CallerOwnedSyntheticOption");
+        request.Options.Set(callerKey, unrelated);
+        var pending = SendObservedAsync(fixture.Client, request);
+        await fixture.Transport.Entered.Task.WaitAsync(TimeSpan.FromSeconds(10));
+
+        var failure = await Assert.ThrowsAsync<TaskCanceledException>(() => pending.WaitAsync(TimeSpan.FromSeconds(10)));
+
+        Assert.Same(fixture.Transport.TerminalCancellation, Assert.IsType<TimeoutException>(failure.InnerException).InnerException);
+        Assert.True(request.Options.TryGetValue(callerKey, out var retained));
+        Assert.Same(unrelated, retained);
+        Assert.All(request.Options.Where(pair => pair.Key != callerKey.Key), pair => Assert.Null(pair.Value));
+        fixture.AssertFailure(null);
+    }
+
     private static HttpRequestMessage Request() => new(HttpMethod.Get, "/orders/" + Canary + "?secret=" + Canary);
 
     // Until the additive API exists, use the unchanged real send. Missing implementation must
@@ -199,8 +262,10 @@ public sealed class PrivateDependencyNativeDeadlineTests
         }
 
         public void AssertFailure(int? status)
+            => AssertSafeFailure(Assert.Single(Events.Failures), status, "Orders.Get");
+
+        public void AssertSafeFailure(Failure failure, int? status, string operation)
         {
-            var failure = Assert.Single(Events.Failures);
             Assert.Equal(LogLevel.Error, failure.Level);
             Assert.Equal(5101, failure.Id.Id);
             Assert.Equal("DependencyRequestFailure", failure.Id.Name);
@@ -208,7 +273,7 @@ public sealed class PrivateDependencyNativeDeadlineTests
             Assert.Null(failure.Exception);
             Assert.Equal("DependencyRequestFailure", failure.Fields["EventName"]);
             Assert.Equal("ControlledDependency", failure.Fields["Dependency"]);
-            Assert.Equal("Orders.Get", failure.Fields["Operation"]);
+            Assert.Equal(operation, failure.Fields["Operation"]);
             if (status is { } known) Assert.Equal(known, failure.Fields["StatusCode"]);
             else Assert.False(failure.Fields.ContainsKey("StatusCode"));
             Assert.DoesNotContain(Canary, failure.Message, StringComparison.Ordinal);
@@ -218,7 +283,7 @@ public sealed class PrivateDependencyNativeDeadlineTests
             using var writer = new StringWriter();
             new PrivateFailureConsoleFormatter().Write(entry, null, writer);
             using var wire = JsonDocument.Parse(writer.ToString());
-            Assert.Equal("Orders.Get", wire.RootElement.GetProperty("Operation").GetString());
+            Assert.Equal(operation, wire.RootElement.GetProperty("Operation").GetString());
             Assert.DoesNotContain(Canary, writer.ToString(), StringComparison.Ordinal);
             Assert.DoesNotContain("native-deadline.example.invalid", writer.ToString(), StringComparison.Ordinal);
         }
@@ -241,6 +306,7 @@ public sealed class PrivateDependencyNativeDeadlineTests
         public OperationCanceledException? TerminalCancellation { get; private set; }
         public Exception? Failure { get; set; }
         public HttpResponseMessage? Response { get; set; }
+        public HttpResponseMessage? CustomerResponse { get; set; }
         public int Calls { get; private set; }
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
@@ -248,6 +314,8 @@ public sealed class PrivateDependencyNativeDeadlineTests
             Calls++;
             Token = cancellationToken;
             Entered.TrySetResult();
+            if (CustomerResponse is { } customerResponse && request.RequestUri!.AbsolutePath.StartsWith("/customers/", StringComparison.Ordinal))
+                return customerResponse;
             if (Failure is { } failure) ExceptionDispatchInfo.Capture(failure).Throw();
             if (Response is { } response) return response;
             try { await Task.Delay(Timeout.InfiniteTimeSpan, cancellationToken); }
@@ -269,9 +337,10 @@ public sealed class PrivateDependencyNativeDeadlineTests
     private sealed class EventProvider : ILoggerProvider
     {
         public ConcurrentQueue<Failure> Failures { get; } = new();
-        public ILogger CreateLogger(string categoryName) => new Recorder(categoryName, Failures);
+        public bool ThrowOnFailure { get; set; }
+        public ILogger CreateLogger(string categoryName) => new Recorder(categoryName, this);
         public void Dispose() { }
-        private sealed class Recorder(string category, ConcurrentQueue<Failure> failures) : ILogger
+        private sealed class Recorder(string category, EventProvider provider) : ILogger
         {
             public IDisposable? BeginScope<TState>(TState state) where TState : notnull => null;
             public bool IsEnabled(LogLevel logLevel) => logLevel != LogLevel.None;
@@ -280,7 +349,8 @@ public sealed class PrivateDependencyNativeDeadlineTests
                 if (id.Id != 5101) return;
                 var fields = Assert.IsAssignableFrom<IEnumerable<KeyValuePair<string, object?>>>(state)
                     .ToDictionary(pair => pair.Key, pair => pair.Value, StringComparer.Ordinal);
-                failures.Enqueue(new(level, category, id, formatter(state, exception), exception, fields));
+                provider.Failures.Enqueue(new(level, category, id, formatter(state, exception), exception, fields));
+                if (provider.ThrowOnFailure) throw new InvalidOperationException(Canary);
             }
         }
     }
