@@ -40,8 +40,8 @@ public sealed class RetainedTypedHttpResponseTests
     [InlineData("POST", 201)]
     public async Task IntranetCurrencyConsumerReadsRealHttpSuccessThroughOriginalFormatter(string method, int status)
     {
-        using var server = Server(status, "[{\"code\":\"THB\",\"name\":\"บาท\"}]");
-        using var client = server.CreateClient();
+        await using var server = await Server(status, "[{\"code\":\"THB\",\"name\":\"บาท\"}]");
+        using var client = server.GetTestClient();
         using var request = new HttpRequestMessage(new HttpMethod(method), "/currencies/");
         using var response = await client.SendAsync(request);
         var model = await Parse<List<Currency>>(response);
@@ -63,8 +63,8 @@ public sealed class RetainedTypedHttpResponseTests
     [InlineData(503)]
     public async Task NonSuccessPreservesExactStatusHeadersAndUnparsedBodyForCaller(int status)
     {
-        using var server = Server(status, "malformed private failure body");
-        using var client = server.CreateClient();
+        await using var server = await Server(status, "malformed private failure body");
+        using var client = server.GetTestClient();
         using var response = await client.GetAsync("/currencies/");
         var model = await Parse<List<Currency>>(response);
         Assert.Same(response, Read(model, "Response"));
@@ -177,13 +177,21 @@ public sealed class RetainedTypedHttpResponseTests
         return Assert.IsAssignableFrom<object>(task.GetType().GetProperty("Result")!.GetValue(task));
     }
 
-    private static TestServer Server(int status, string body) => new(new WebHostBuilder().Configure(app => app.Run(async context =>
+    private static async Task<WebApplication> Server(int status, string body)
     {
-        context.Response.StatusCode = status;
-        context.Response.ContentType = "application/json";
-        context.Response.Headers.Location = "/currencies/THB";
-        await context.Response.WriteAsync(body);
-    })));
+        var builder = WebApplication.CreateBuilder();
+        builder.WebHost.UseTestServer();
+        var app = builder.Build();
+        app.Run(async context =>
+        {
+            context.Response.StatusCode = status;
+            context.Response.ContentType = "application/json";
+            context.Response.Headers.Location = "/currencies/THB";
+            await context.Response.WriteAsync(body);
+        });
+        await app.StartAsync();
+        return app;
+    }
 
     public sealed class Currency
     {
