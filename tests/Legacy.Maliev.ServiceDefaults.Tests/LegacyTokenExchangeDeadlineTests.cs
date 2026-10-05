@@ -16,7 +16,9 @@ public sealed class LegacyTokenExchangeDeadlineTests
     public async Task Whole_exchange_deadline_releases_waiters_and_retry_without_caching_late_result(bool stallHeaders)
     {
         using var fixture = new Fixture(stallHeaders, false, TimeSpan.FromMilliseconds(200));
-        var calls = Enumerable.Range(0, 8).Select(_ => fixture.Client.GetAsync("/consume")).ToArray();
+        // The normal policy retries safe GET failures; source qualification/order mutations use POST.
+        // Retain that policy and exercise its existing unsafe-method no-retry path.
+        var calls = Enumerable.Range(0, 8).Select(_ => fixture.Client.PostAsync("/consume", null)).ToArray();
         try
         {
             await fixture.Exchange.Entered.Task.WaitAsync(TimeSpan.FromSeconds(3));
@@ -27,7 +29,7 @@ public sealed class LegacyTokenExchangeDeadlineTests
             }
             Assert.Equal(1, fixture.Exchange.Requests);
             Assert.Equal(0, fixture.Downstream.Requests);
-            using var recovered = await fixture.Client.GetAsync("/consume").WaitAsync(TimeSpan.FromSeconds(3));
+            using var recovered = await fixture.Client.PostAsync("/consume", null).WaitAsync(TimeSpan.FromSeconds(3));
             Assert.Equal(HttpStatusCode.OK, recovered.StatusCode);
             Assert.Equal(2, fixture.Exchange.Requests);
             Assert.Equal("fresh-token", fixture.Downstream.LastBearer);
@@ -35,7 +37,7 @@ public sealed class LegacyTokenExchangeDeadlineTests
             fixture.Exchange.Release.TrySetResult();
             await fixture.Exchange.LateContent.Disposed.Task.WaitAsync(TimeSpan.FromSeconds(3));
             Assert.Equal(1, fixture.Exchange.LateContent.Disposals);
-            using var cached = await fixture.Client.GetAsync("/consume");
+            using var cached = await fixture.Client.PostAsync("/consume", null);
             Assert.Equal(HttpStatusCode.OK, cached.StatusCode);
             Assert.Equal("fresh-token", fixture.Downstream.LastBearer);
             Assert.Equal(2, fixture.Exchange.Requests);
