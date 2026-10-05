@@ -1,3 +1,4 @@
+using System.Data.Common;
 using MassTransit;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,14 +32,20 @@ public sealed class MessagingRegistrationBehaviorTests
     }
 
     [Theory]
-    [InlineData("amqp://localhost:5673", "localhost", 5673)]
-    [InlineData("amqps://localhost:5674", "localhost", 5674)]
-    [InlineData("host=localhost;port=5675;username=synthetic;password=synthetic", "localhost", 5675)]
-    [InlineData("host=localhost;port=5676;user=synthetic;pass=synthetic", "localhost", 5676)]
+    [InlineData("amqp://localhost:5673", "localhost", 5673, null)]
+    [InlineData("amqps://localhost:5674", "localhost", 5674, null)]
+    [InlineData("host=localhost;port=5675;username=synthetic", "localhost", 5675, "password")]
+    [InlineData("host=localhost;port=5676;user=synthetic", "localhost", 5676, "pass")]
     // MassTransit normalizes its default AMQP port out of the published bus URI.
-    [InlineData("localhost", "localhost", -1)]
-    public void RabbitRegistration_UsesConfiguredDestination_WithoutStartingTransport(string connection, string hostname, int port)
+    [InlineData("localhost", "localhost", -1, null)]
+    public void RabbitRegistration_UsesConfiguredDestination_WithoutStartingTransport(string connection, string hostname, int port, string? passwordKey)
     {
+        if (passwordKey is not null)
+        {
+            var syntheticConnection = new DbConnectionStringBuilder { ConnectionString = connection };
+            syntheticConnection[passwordKey] = Guid.NewGuid().ToString("N");
+            connection = syntheticConnection.ConnectionString;
+        }
         var builder = Builder(Environments.Production);
         builder.Configuration["ConnectionStrings:RabbitMQ"] = connection;
         builder.AddMassTransitWithRabbitMq();
