@@ -35,6 +35,12 @@ jobs:
           dotnet test tests/Legacy.Maliev.ServiceDefaults.Tests/Legacy.Maliev.ServiceDefaults.Tests.csproj \
             --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true \
             --filter "FullyQualifiedName~IamPermissionCacheIsolationTests|FullyQualifiedName~IamServiceClientTests|FullyQualifiedName~PermissionAuthorizationPolicyTests|FullyQualifiedName~PermissionAuthorizationSemaphoreTests"
+      - name: Verify retained typed HTTP response boundaries
+        shell: bash
+        run: |
+          dotnet test tests/Legacy.Maliev.ServiceDefaults.Tests/Legacy.Maliev.ServiceDefaults.Tests.csproj \
+            --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true \
+            --filter "FullyQualifiedName~RetainedTypedHttpResponseTests"
       - name: Verify private coverage evidence controls
         shell: pwsh
         run: ./eng/Test-CoverageEvidence.ps1
@@ -59,6 +65,35 @@ jobs:
           export GITHUB_ACTIONS=false
           dotnet pack src/Legacy.Maliev.ServiceDefaults/Legacy.Maliev.ServiceDefaults.csproj \
             --configuration Release --no-build --no-restore --output artifacts
+      - name: Verify formatter runtime dependency and compile isolation
+        shell: pwsh
+        run: |
+          $packages = @(Get-ChildItem artifacts -Filter 'Legacy.Maliev.ServiceDefaults.*.nupkg' -File)
+          if ($packages.Count -ne 1) { throw 'Expected one owned package.' }
+          $archive = [System.IO.Compression.ZipFile]::OpenRead($packages[0].FullName)
+          try {
+            $entry = @($archive.Entries | Where-Object FullName -Like '*.nuspec')
+            if ($entry.Count -ne 1) { throw 'Expected one package manifest.' }
+            $reader = [System.IO.StreamReader]::new($entry[0].Open())
+            try { [xml]$manifest = $reader.ReadToEnd() } finally { $reader.Dispose() }
+            $dependencies = @($manifest.SelectNodes("//*[local-name()='dependency' and @id='Microsoft.AspNet.WebApi.Client']"))
+            if ($dependencies.Count -ne 1) { throw 'Formatter runtime dependency is missing.' }
+            $excluded = @($dependencies[0].exclude -split '[,;]' | ForEach-Object { $_.Trim() })
+            New-Item artifacts/coverage-evidence -ItemType Directory -Force | Out-Null
+            $manifest.Save((Join-Path (Get-Location) 'artifacts/coverage-evidence/formatter-package.nuspec'))
+            @{ dependency = $dependencies[0].id; version = $dependencies[0].version; includedAssets = $dependencies[0].GetAttribute('include'); excludedAssets = $excluded } |
+              ConvertTo-Json | Set-Content artifacts/coverage-evidence/formatter-package.json
+            $included = @($dependencies[0].GetAttribute('include') -split '[,;]' | ForEach-Object { $_.Trim() })
+            if ([string]::IsNullOrWhiteSpace($dependencies[0].GetAttribute('include'))) { $included = @('All') }
+            $compileAllowed = ('All' -in $included -or 'Compile' -in $included) -and 'Compile' -notin $excluded -and 'All' -notin $excluded
+            $runtimeAllowed = ('All' -in $included -or 'Runtime' -in $included) -and 'Runtime' -notin $excluded -and 'All' -notin $excluded
+            if ($compileAllowed -or !$runtimeAllowed) {
+              throw 'Formatter must remain available at runtime without exposing compile extensions.'
+            }
+          } finally { $archive.Dispose() }
+      - name: Verify exact produced package through an isolated consumer
+        shell: pwsh
+        run: ./eng/Test-TypedResponsePackageConsumer.ps1
       - name: Prepare private validation evidence
         if: always()
         shell: pwsh
