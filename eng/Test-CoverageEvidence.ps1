@@ -81,3 +81,36 @@ $unavailable = Join-Path $PSScriptRoot '../artifacts/evidence-controls/unavailab
 $availability = Get-Content -LiteralPath (Join-Path $unavailable 'availability.json') -Raw | ConvertFrom-Json
 if ($availability.CoverageAvailable -or $availability.TestResultsAvailable) { throw 'Missing evidence was represented as available.' }
 Write-Output 'PASS: byte-identical attachments accepted/conflicting reports rejected; owned assembly/generated sources and raw hits/outcomes retained; collisions rejected; private output omitted; missing evidence unavailable.'
+$gateInput = Join-Path $PSScriptRoot '../artifacts/evidence-controls/success-gate'
+New-Item -ItemType Directory -Path $gateInput -Force | Out-Null
+$caseCoverage = '<coverage><packages><package name="Legacy.Maliev.ServiceDefaults"><classes><class filename="src/Legacy.Maliev.ServiceDefaults/Foo.cs"><lines><line number="1" hits="1" /></lines></class><class filename="src/Legacy.Maliev.ServiceDefaults/foo.cs"><lines><line number="1" hits="0" /></lines></class></classes></package></packages></coverage>'
+$gateCoverage = Join-Path $gateInput 'coverage.cobertura.xml'
+[IO.File]::WriteAllText($gateCoverage, $caseCoverage)
+$passingTrx = '<TestRun><Results><UnitTestResult testName="Evidence.Control.Run" outcome="Passed" /></Results><ResultSummary><Counters total="1" executed="1" passed="1" failed="0" /></ResultSummary></TestRun>'
+$gateTrx = Join-Path $gateInput 'suite.trx'
+[IO.File]::WriteAllText($gateTrx, $passingTrx)
+$gate = Join-Path $PSScriptRoot 'Assert-OwnedCoverageEvidence.ps1'
+$measured = (& $gate -CoveragePath $gateCoverage -ResultsDirectory $gateInput) | ConvertFrom-Json
+if ($measured.Total -ne 2 -or $measured.Covered -ne 1 -or $measured.PassedTests -ne 1) {
+    throw 'Case-distinct physical paths or complete test outcomes were collapsed.'
+}
+function Assert-GateRejected([string] $Directory, [string] $ExpectedMessage) {
+    $rejected = $false
+    try { & $gate -CoveragePath $gateCoverage -ResultsDirectory $Directory | Out-Null }
+    catch {
+        if (-not $_.Exception.Message.Equals($ExpectedMessage, [StringComparison]::Ordinal)) { throw }
+        $rejected = $true
+    }
+    if (-not $rejected) { throw 'Invalid complete-test evidence was accepted.' }
+}
+Assert-GateRejected (Join-Path $gateInput 'missing') 'Expected exactly one complete full-suite TRX.'
+[IO.File]::WriteAllText($gateTrx, '<TestRun><Results /><ResultSummary><Counters total="0" executed="0" passed="0" /></ResultSummary></TestRun>')
+Assert-GateRejected $gateInput 'Full-suite TRX contains no results.'
+[IO.File]::WriteAllText($gateTrx, $passingTrx.Replace('passed="1"', 'passed="2"'))
+Assert-GateRejected $gateInput 'Full-suite TRX counters do not match results.'
+[IO.File]::WriteAllText($gateTrx, $passingTrx)
+$duplicateTrx = Join-Path $gateInput 'duplicate.trx'
+[IO.File]::WriteAllText($duplicateTrx, $passingTrx)
+Assert-GateRejected $gateInput 'Expected exactly one complete full-suite TRX.'
+Remove-Item -LiteralPath $duplicateTrx
+Write-Output 'PASS: case-distinct physical source lines preserved; complete passing TRX required; missing, empty, duplicate and inconsistent counters rejected.'

@@ -51,7 +51,7 @@ jobs:
           New-Item -ItemType Directory -Path artifacts/coverage-evidence -Force | Out-Null
           $reports = @(& ./eng/Get-OwnedCoverageReport.ps1 -ResultsDirectory artifacts/owned-raw)
           if ($reports.Count -ne 1) { throw 'Expected exactly one complete owned coverage report.' }
-          & ./eng/Assert-OwnedCoverageEvidence.ps1 -CoveragePath $reports[0].FullName |
+          & ./eng/Assert-OwnedCoverageEvidence.ps1 -CoveragePath $reports[0].FullName -ResultsDirectory artifacts/owned-raw |
             Tee-Object -FilePath artifacts/coverage-evidence/checker-results.log
       - name: Verify package can be produced
         shell: bash
