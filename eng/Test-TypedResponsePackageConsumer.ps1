@@ -17,8 +17,16 @@ try {
 } finally { $archive.Dispose() }
 if ($version -notmatch '^[0-9A-Za-z.+-]+$') { throw 'Invalid produced package version.' }
 
-# The owned dependency is already built at the frozen checkout by the normal solution gate.
+# Prepare the frozen source dependency explicitly; the Defaults CI build does not build this checkout.
 $contractsProject = Join-Path $env:GITHUB_WORKSPACE '.dependencies/Legacy.Maliev.CompatibilityContracts/src/Legacy.Maliev.CompatibilityContracts/Legacy.Maliev.CompatibilityContracts.csproj'
+& dotnet restore $contractsProject --source https://api.nuget.org/v3/index.json
+if ($LASTEXITCODE -ne 0) { throw 'Could not restore the frozen Contracts dependency.' }
+$dependencyBuild = @(& dotnet build $contractsProject --configuration Release --no-restore 2>&1)
+$dependencyBuildExit = $LASTEXITCODE
+$dependencyBuild | ForEach-Object { Write-Host $_ }
+if ($dependencyBuildExit -ne 0 -or ($dependencyBuild -join "`n") -notmatch '(?m)^\s*0 Warning\(s\)\s*$' -or ($dependencyBuild -join "`n") -notmatch '(?m)^\s*0 Error\(s\)\s*$') {
+    throw 'Frozen Contracts dependency requires a zero-warning, zero-error build.'
+}
 & dotnet pack $contractsProject --configuration Release --no-build --no-restore --output $packageRoot
 if ($LASTEXITCODE -ne 0) { throw 'Could not prepare the frozen Contracts dependency package.' }
 
@@ -93,7 +101,7 @@ internal sealed class ObservedContent : HttpContent
     $build = @(& dotnet build $consumerProject --configuration Release --no-restore 2>&1)
     $buildExit = $LASTEXITCODE
     $build | ForEach-Object { Write-Host $_ }
-    if ($buildExit -ne 0 -or ($build -join "`n") -notmatch '0 Warning\(s\)' -or ($build -join "`n") -notmatch '0 Error\(s\)') {
+    if ($buildExit -ne 0 -or ($build -join "`n") -notmatch '(?m)^\s*0 Warning\(s\)\s*$' -or ($build -join "`n") -notmatch '(?m)^\s*0 Error\(s\)\s*$') {
         throw 'Packed consumer requires a zero-warning, zero-error build.'
     }
     & dotnet run --project $consumerProject --configuration Release --no-build --no-restore
@@ -110,7 +118,7 @@ internal sealed class ObservedContent : HttpContent
     $actualHash = [Convert]::ToBase64String([System.Security.Cryptography.SHA512]::HashData([System.IO.File]::ReadAllBytes($packages[0].FullName)))
     if ($assets.libraries["Legacy.Maliev.ServiceDefaults/$version"].sha512 -ne $actualHash) { throw 'Consumer did not restore the exact produced package.' }
     New-Item -ItemType Directory -Path $EvidenceDirectory -Force | Out-Null
-    @{ package = $packages[0].Name; version = $version; packageSha512 = $actualHash; projectReference = $false; buildWarnings = 0; buildErrors = 0; runtime = 'pass'; formatterCompileAssets = $compile; formatterRuntimeAssets = $runtime } |
+    @{ package = $packages[0].Name; version = $version; packageSha512 = $actualHash; projectReference = $false; dependencyBuildWarnings = 0; dependencyBuildErrors = 0; buildWarnings = 0; buildErrors = 0; runtime = 'pass'; formatterCompileAssets = $compile; formatterRuntimeAssets = $runtime } |
         ConvertTo-Json -Depth 5 | Set-Content -LiteralPath (Join-Path $EvidenceDirectory 'packed-consumer.json')
 } finally {
     $resolvedScratch = [System.IO.Path]::GetFullPath($scratch)
