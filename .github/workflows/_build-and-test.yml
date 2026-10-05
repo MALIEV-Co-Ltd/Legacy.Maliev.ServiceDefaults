@@ -65,6 +65,27 @@ jobs:
           export GITHUB_ACTIONS=false
           dotnet pack src/Legacy.Maliev.ServiceDefaults/Legacy.Maliev.ServiceDefaults.csproj \
             --configuration Release --no-build --no-restore --output artifacts
+      - name: Verify formatter runtime dependency and compile isolation
+        shell: pwsh
+        run: |
+          $packages = @(Get-ChildItem artifacts -Filter 'Legacy.Maliev.ServiceDefaults.*.nupkg' -File)
+          if ($packages.Count -ne 1) { throw 'Expected one owned package.' }
+          $archive = [System.IO.Compression.ZipFile]::OpenRead($packages[0].FullName)
+          try {
+            $entry = @($archive.Entries | Where-Object FullName -Like '*.nuspec')
+            if ($entry.Count -ne 1) { throw 'Expected one package manifest.' }
+            $reader = [System.IO.StreamReader]::new($entry[0].Open())
+            try { [xml]$manifest = $reader.ReadToEnd() } finally { $reader.Dispose() }
+            $dependencies = @($manifest.SelectNodes("//*[local-name()='dependency' and @id='Microsoft.AspNet.WebApi.Client']"))
+            if ($dependencies.Count -ne 1) { throw 'Formatter runtime dependency is missing.' }
+            $excluded = @($dependencies[0].exclude -split '[,;]' | ForEach-Object { $_.Trim() })
+            if ('Compile' -notin $excluded -or 'Runtime' -in $excluded -or 'All' -in $excluded) {
+              throw 'Formatter must remain available at runtime without exposing compile extensions.'
+            }
+            New-Item artifacts/coverage-evidence -ItemType Directory -Force | Out-Null
+            @{ dependency = $dependencies[0].id; version = $dependencies[0].version; excludedAssets = $excluded; runtimeRetained = $true } |
+              ConvertTo-Json | Set-Content artifacts/coverage-evidence/formatter-package.json
+          } finally { $archive.Dispose() }
       - name: Prepare private validation evidence
         if: always()
         shell: pwsh

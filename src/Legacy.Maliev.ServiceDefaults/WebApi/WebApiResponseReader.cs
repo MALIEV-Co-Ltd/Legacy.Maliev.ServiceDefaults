@@ -1,3 +1,5 @@
+extern alias LegacyHttpFormatter;
+
 using Maliev.Service.WebApi.Model;
 
 namespace Maliev.Service.WebApi;
@@ -19,7 +21,8 @@ public static class WebApiResponseReader
         var result = new ApiResponse<T> { Response = response };
         if (response.IsSuccessStatusCode)
         {
-            result.Item = await response.Content.ReadAsAsync<T>(cancellationToken).ConfigureAwait(false);
+            result.Item = await LegacyHttpFormatter::System.Net.Http.HttpContentExtensions
+                .ReadAsAsync<T>(response.Content, cancellationToken).ConfigureAwait(false);
         }
         return result;
     }

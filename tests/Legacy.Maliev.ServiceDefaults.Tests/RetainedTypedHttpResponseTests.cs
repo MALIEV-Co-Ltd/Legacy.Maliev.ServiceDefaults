@@ -1,4 +1,5 @@
 using System.Net;
+using System.Net.Http.Json;
 using System.Reflection;
 using System.Text;
 using Maliev.Aspire.ServiceDefaults.Diagnostics;
@@ -11,6 +12,16 @@ namespace Legacy.Maliev.ServiceDefaults.Tests;
 
 public sealed class RetainedTypedHttpResponseTests
 {
+    [Fact]
+    public async Task ProjectConsumerKeepsSdkJsonExtensionUnambiguousAndFormatterRuntimeAvailable()
+    {
+        await using var server = await Server(201, "{\"code\":\"THB\"}");
+        using var client = server.GetTestClient();
+        using var response = await client.PostAsJsonAsync("/currencies/", new Currency { Code = "THB" }, CancellationToken.None);
+        var model = await Parse<Currency>(response);
+        Assert.Equal("THB", Assert.IsType<Currency>(Read(model, "Item")).Code);
+    }
+
     [Fact]
     public void SourceResponseModelRetainsGenericClrNameMutablePropertiesAndDefaults()
     {
