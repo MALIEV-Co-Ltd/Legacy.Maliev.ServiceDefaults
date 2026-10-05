@@ -53,6 +53,27 @@ public sealed class LegacyTokenExchangeDeadlineTests
         }
     }
 
+    /// <summary>The normal safe-read retry may recover after an owner deadline without admitting the late token.</summary>
+    [Fact]
+    public async Task Safe_GET_retry_recovers_after_owner_deadline_with_fresh_token()
+    {
+        using var fixture = new Fixture(false, false, TimeSpan.FromMilliseconds(200));
+        try
+        {
+            using var response = await fixture.Client.GetAsync("/consume").WaitAsync(TimeSpan.FromSeconds(8));
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal(2, fixture.Exchange.Requests);
+            Assert.Equal(1, fixture.Downstream.Requests);
+            Assert.Equal("fresh-token", fixture.Downstream.LastBearer);
+            fixture.Exchange.Release.TrySetResult();
+            await fixture.Exchange.LateContent.Disposed.Task.WaitAsync(TimeSpan.FromSeconds(3));
+            Assert.Equal(1, fixture.Exchange.LateContent.Disposals);
+            Assert.Equal("fresh-token", await fixture.Provider.GetAccessTokenAsync());
+            Assert.Equal(2, fixture.Exchange.Requests);
+        }
+        finally { fixture.Exchange.Release.TrySetResult(); }
+    }
+
     /// <summary>Caller cancellation does not cancel the owner; successful coalescing and cache expiry remain intact.</summary>
     [Fact]
     public async Task Caller_cancellation_preserves_shared_refresh_and_live_cache_expiry()
