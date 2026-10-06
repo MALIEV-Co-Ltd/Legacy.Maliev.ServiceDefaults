@@ -14,7 +14,7 @@ public static class PrivateDependencyHttpClientExtensions
     /// </remarks>
     public static Task<HttpResponseMessage> SendWithPrivateFailureObservationAsync(
         this HttpClient client, HttpRequestMessage request, CancellationToken cancellationToken = default)
-        => SendCore(client, request, cancellationToken, null);
+        => SendCore(client, request, cancellationToken, null, HttpCompletionOption.ResponseHeadersRead);
 
     /// <summary>Sends with a caller-owned failure ownership signal that survives send cleanup.</summary>
     /// <param name="client">The unchanged factory-owned HTTP client.</param>
@@ -28,11 +28,27 @@ public static class PrivateDependencyHttpClientExtensions
         PrivateDependencyFailureObservation observation)
     {
         ArgumentNullException.ThrowIfNull(observation);
-        return SendCore(client, request, cancellationToken, observation);
+        return SendCore(client, request, cancellationToken, observation, HttpCompletionOption.ResponseHeadersRead);
+    }
+
+    /// <summary>Sends with the caller's original native completion option and a surviving ownership signal.</summary>
+    /// <param name="client">The unchanged factory-owned HTTP client.</param>
+    /// <param name="request">The caller-owned request.</param>
+    /// <param name="cancellationToken">The original caller cancellation token.</param>
+    /// <param name="observation">Fresh state for this send.</param>
+    /// <param name="completionOption">The caller's original buffering and native deadline boundary.</param>
+    /// <returns>The original response returned by the client.</returns>
+    /// <remarks>Native buffering is preserved; failures outside the selected handler are not classified as proven handler deadlines.</remarks>
+    public static Task<HttpResponseMessage> SendWithPrivateFailureObservationAsync(
+        this HttpClient client, HttpRequestMessage request, CancellationToken cancellationToken,
+        PrivateDependencyFailureObservation observation, HttpCompletionOption completionOption)
+    {
+        ArgumentNullException.ThrowIfNull(observation);
+        return SendCore(client, request, cancellationToken, observation, completionOption);
     }
 
     private static Task<HttpResponseMessage> SendCore(HttpClient client, HttpRequestMessage request,
-        CancellationToken cancellationToken, PrivateDependencyFailureObservation? observation)
+        CancellationToken cancellationToken, PrivateDependencyFailureObservation? observation, HttpCompletionOption completionOption)
     {
         ArgumentNullException.ThrowIfNull(client);
         ArgumentNullException.ThrowIfNull(request);
@@ -45,7 +61,7 @@ public static class PrivateDependencyHttpClientExtensions
         try
         {
             // Preserve native synchronous request validation and the client's real pending CTS snapshot.
-            var pending = client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+            var pending = client.SendAsync(request, completionOption, cancellationToken);
             return ObserveAsync(pending, request, context, cancellationToken);
         }
         catch
