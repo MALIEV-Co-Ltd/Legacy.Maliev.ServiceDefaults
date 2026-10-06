@@ -14,13 +14,33 @@ public static class PrivateDependencyHttpClientExtensions
     /// </remarks>
     public static Task<HttpResponseMessage> SendWithPrivateFailureObservationAsync(
         this HttpClient client, HttpRequestMessage request, CancellationToken cancellationToken = default)
+        => SendCore(client, request, cancellationToken, null);
+
+    /// <summary>Sends with a caller-owned failure ownership signal that survives send cleanup.</summary>
+    /// <param name="client">The unchanged factory-owned HTTP client.</param>
+    /// <param name="request">The caller-owned request.</param>
+    /// <param name="cancellationToken">The original caller cancellation token.</param>
+    /// <param name="observation">Fresh state for this send; contains no transport details.</param>
+    /// <returns>The original response returned by the client.</returns>
+    /// <remarks>Requires explicit private failure selection. Later response-body reads remain outside this boundary.</remarks>
+    public static Task<HttpResponseMessage> SendWithPrivateFailureObservationAsync(
+        this HttpClient client, HttpRequestMessage request, CancellationToken cancellationToken,
+        PrivateDependencyFailureObservation observation)
+    {
+        ArgumentNullException.ThrowIfNull(observation);
+        return SendCore(client, request, cancellationToken, observation);
+    }
+
+    private static Task<HttpResponseMessage> SendCore(HttpClient client, HttpRequestMessage request,
+        CancellationToken cancellationToken, PrivateDependencyFailureObservation? observation)
     {
         ArgumentNullException.ThrowIfNull(client);
         ArgumentNullException.ThrowIfNull(request);
         if (PrivateDependencyObservationContext.Get(request) is not null)
             throw new InvalidOperationException("Dependency observation already owns this request.");
 
-        var context = new PrivateDependencyObservationContext();
+        observation?.Begin();
+        var context = new PrivateDependencyObservationContext(observation);
         request.Options.Set(PrivateDependencyObservationContext.Key, context);
         try
         {

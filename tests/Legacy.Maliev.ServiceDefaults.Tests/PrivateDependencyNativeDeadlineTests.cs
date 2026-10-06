@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Runtime.ExceptionServices;
 using System.Text.Json;
 using Maliev.Aspire.ServiceDefaults.Logging;
+using Maliev.Aspire.ServiceDefaults.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -15,6 +16,73 @@ namespace Legacy.Maliev.ServiceDefaults.Tests;
 public sealed class PrivateDependencyNativeDeadlineTests
 {
     private const string Canary = "synthetic-private-native-deadline-canary";
+
+    [Theory]
+    [InlineData(false, false)]
+    [InlineData(true, false)]
+    [InlineData(false, true)]
+    [InlineData(true, true)]
+    public async Task Recorded_send_ownership_survives_late_caller_cancellation_and_sink_failure(bool typed, bool throwingSink)
+    {
+        using var fixture = new Fixture(typed, false, TimeSpan.FromSeconds(1));
+        using var caller = new CancellationTokenSource();
+        using var request = Request();
+        var observation = new PrivateDependencyFailureObservation();
+        var claimedBeforeSink = false;
+        fixture.Events.OnFailure = () =>
+        {
+            claimedBeforeSink = observation.WasObserved;
+            caller.Cancel();
+        };
+        fixture.Events.ThrowOnFailure = throwingSink;
+        var pending = fixture.Client.SendWithPrivateFailureObservationAsync(request, caller.Token, observation);
+        await fixture.Transport.Entered.Task.WaitAsync(TimeSpan.FromSeconds(10));
+
+        var failure = await Assert.ThrowsAsync<TaskCanceledException>(() => pending.WaitAsync(TimeSpan.FromSeconds(10)));
+
+        Assert.IsType<TimeoutException>(failure.InnerException);
+        Assert.True(claimedBeforeSink);
+        Assert.True(caller.IsCancellationRequested);
+        Assert.True(observation.WasObserved);
+        Assert.Equal(1, fixture.Transport.Calls);
+        fixture.AssertFailure(null);
+        Assert.DoesNotContain(request.Options, option => option.Key == "Maliev.PrivateDependencyObservationContext" && option.Value is not null);
+    }
+
+    [Theory]
+    [InlineData(false, 0)]
+    [InlineData(true, 0)]
+    [InlineData(false, 1)]
+    [InlineData(true, 1)]
+    [InlineData(false, 2)]
+    [InlineData(true, 2)]
+    public async Task Unobserved_send_state_is_quiet_and_cannot_be_reused(bool typed, int outcome)
+    {
+        using var fixture = new Fixture(typed, false,
+            outcome == 2 ? TimeSpan.FromSeconds(1) : Timeout.InfiniteTimeSpan, selected: outcome != 2);
+        using var caller = new CancellationTokenSource();
+        using var request = Request();
+        var observation = new PrivateDependencyFailureObservation();
+        if (outcome == 0) fixture.Transport.Response = new(HttpStatusCode.OK);
+        var pending = fixture.Client.SendWithPrivateFailureObservationAsync(request, caller.Token, observation);
+        await fixture.Transport.Entered.Task.WaitAsync(TimeSpan.FromSeconds(10));
+        if (outcome == 0)
+        {
+            using var response = await pending;
+            Assert.Same(fixture.Transport.Response, response);
+        }
+        else
+        {
+            if (outcome == 1) caller.Cancel();
+            await Assert.ThrowsAnyAsync<OperationCanceledException>(() => pending.WaitAsync(TimeSpan.FromSeconds(10)));
+        }
+        Assert.False(observation.WasObserved);
+        Assert.Empty(fixture.Events.Failures);
+        Assert.DoesNotContain(request.Options, option => option.Key == "Maliev.PrivateDependencyObservationContext" && option.Value is not null);
+        using var second = Request();
+        Assert.Throws<InvalidOperationException>(() => { _ = fixture.Client.SendWithPrivateFailureObservationAsync(second, default, observation); });
+        Assert.Equal(1, fixture.Transport.Calls);
+    }
 
     [Theory]
     [InlineData(false, false)]
@@ -338,6 +406,7 @@ public sealed class PrivateDependencyNativeDeadlineTests
     {
         public ConcurrentQueue<Failure> Failures { get; } = new();
         public bool ThrowOnFailure { get; set; }
+        public Action? OnFailure { get; set; }
         public ILogger CreateLogger(string categoryName) => new Recorder(categoryName, this);
         public void Dispose() { }
         private sealed class Recorder(string category, EventProvider provider) : ILogger
@@ -347,6 +416,7 @@ public sealed class PrivateDependencyNativeDeadlineTests
             public void Log<TState>(LogLevel level, EventId id, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
             {
                 if (id.Id != 5101) return;
+                provider.OnFailure?.Invoke();
                 var fields = Assert.IsAssignableFrom<IEnumerable<KeyValuePair<string, object?>>>(state)
                     .ToDictionary(pair => pair.Key, pair => pair.Value, StringComparer.Ordinal);
                 provider.Failures.Enqueue(new(level, category, id, formatter(state, exception), exception, fields));
