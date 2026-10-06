@@ -199,6 +199,33 @@ public sealed class PrivateRequestObservationContractTests
     }
 
     [Theory]
+    [InlineData("/ordinary-failure")]
+    [InlineData("/throw/readiness")]
+    public async Task CompletedResponse_DownstreamExceptionReexecutionKeepsExistingFailureOwner(string path)
+    {
+        await using var host = await PrivateRequestObservationHttpFixture.CreateAsync(downstreamExceptionHandler: true);
+        using var response = await host.SendAsync(path);
+        Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+        Assert.Equal("Benign exception response", await response.Content.ReadAsStringAsync());
+        Assert.Equal(1, host.ExceptionHandlerCalls);
+        Assert.Equal(path, host.HandledExceptionPath);
+        Assert.Single(host.Records.Snapshot, record => record.Level == LogLevel.Critical
+            && record.State.GetValueOrDefault("EventName") as string == "FixtureOwnedUnhandledFailure");
+        Assert.Empty(host.Records.Observations);
+    }
+
+    [Fact]
+    public async Task CompletedResponse_IncidentHeaderAloneDoesNotSuppressReturnedFailure()
+    {
+        await using var host = await PrivateRequestObservationHttpFixture.CreateAsync(incidentHeaderOnReturnedFailure: true);
+        host.Status = 500;
+        using var response = await host.SendAsync("/fixture/ordinary");
+        Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+        Assert.Equal("fixture-header-only", Assert.Single(response.Headers.GetValues("X-Incident-Id")));
+        Assert.Equal("HandledOperationFailure", Assert.Single(host.Records.Observations).State["EventName"]);
+    }
+
+    [Theory]
     [InlineData(200, 0)]
     [InlineData(400, 0)]
     [InlineData(404, 0)]

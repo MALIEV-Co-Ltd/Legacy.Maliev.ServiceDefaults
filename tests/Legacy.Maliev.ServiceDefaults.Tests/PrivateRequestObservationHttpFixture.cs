@@ -3,6 +3,7 @@ using System.Net;
 using Maliev.Aspire.ServiceDefaults.Diagnostics;
 using Maliev.Aspire.ServiceDefaults.Logging;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
@@ -27,6 +28,8 @@ internal sealed class PrivateRequestObservationHttpFixture : IAsyncDisposable
     private int _lateRequestsWithoutEndpoint;
     private int _lateRequestsWithEndpoint;
     private int _startedResponsesBeforeObserver;
+    private int _exceptionHandlerCalls;
+    private string? _handledExceptionPath;
     private HttpClient? _client;
 
     private PrivateRequestObservationHttpFixture(WebApplication app,
@@ -46,6 +49,8 @@ internal sealed class PrivateRequestObservationHttpFixture : IAsyncDisposable
     public int LateRequestsWithoutEndpoint => Volatile.Read(ref _lateRequestsWithoutEndpoint);
     public int LateRequestsWithEndpoint => Volatile.Read(ref _lateRequestsWithEndpoint);
     public int StartedResponsesBeforeObserver => Volatile.Read(ref _startedResponsesBeforeObserver);
+    public int ExceptionHandlerCalls => Volatile.Read(ref _exceptionHandlerCalls);
+    public string? HandledExceptionPath => _handledExceptionPath;
     public int Status { set => Volatile.Write(ref _status, value); }
 
     public static async Task<PrivateRequestObservationHttpFixture> CreateAsync(
@@ -53,7 +58,8 @@ internal sealed class PrivateRequestObservationHttpFixture : IAsyncDisposable
         bool rewriteHeaders = false, bool repeatRegistration = false,
         bool mapBusinessReadiness = false, bool rewriteSyntheticHeaders = false,
         bool lateRouting = false, bool shortCircuitBeforeLateRouting = false,
-        bool startedResponseBeforeObserver = false)
+        bool startedResponseBeforeObserver = false, bool downstreamExceptionHandler = false,
+        bool incidentHeaderOnReturnedFailure = false)
     {
         var builder = WebApplication.CreateBuilder(new WebApplicationOptions
         {
@@ -177,6 +183,28 @@ internal sealed class PrivateRequestObservationHttpFixture : IAsyncDisposable
                     await next(context);
                 });
             }
+            if (downstreamExceptionHandler)
+            {
+                app.UseExceptionHandler("/fixture/handled-error");
+                app.Use(async (context, next) =>
+                {
+                    if (context.Request.Path == "/fixture/handled-error")
+                    {
+                        Interlocked.Increment(ref startedFixture._exceptionHandlerCalls);
+                        startedFixture._handledExceptionPath = context.Features
+                            .Get<IExceptionHandlerPathFeature>()?.Path;
+                        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                        await context.Response.WriteAsync("Benign exception response");
+                        return;
+                    }
+                    try { await next(context); }
+                    catch (Exception)
+                    {
+                        app.Logger.LogCritical("{EventName}", "FixtureOwnedUnhandledFailure");
+                        throw;
+                    }
+                });
+            }
             if (mapHealth)
             {
                 app.MapDefaultEndpoints("review");
@@ -190,9 +218,13 @@ internal sealed class PrivateRequestObservationHttpFixture : IAsyncDisposable
                 Interlocked.Increment(ref startedFixture._downstreamCalls);
                 if (!startedResponseBeforeObserver)
                     context.Response.StatusCode = Volatile.Read(ref startedFixture._status);
+                if (incidentHeaderOnReturnedFailure)
+                    context.Response.Headers["X-Incident-Id"] = "fixture-header-only";
                 return Task.CompletedTask;
             });
             app.MapGet("/ordinary-failure", (RequestDelegate)(_ =>
+                throw new Exception("private-ordinary-exception-sentinel")));
+            app.MapGet("/throw/readiness", (RequestDelegate)(_ =>
                 throw new Exception("private-ordinary-exception-sentinel")));
             app.MapFallback(context =>
             {

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
@@ -59,6 +60,10 @@ internal sealed class PrivateRequestObservationState(
 
     public void RecordCompletedResponse(HttpContext context, ILogger logger)
     {
+        // A downstream framework exception handler can return a response after owning a throw.
+        // Its feature survives re-execution; do not classify that response as a second failure.
+        if (context.Features.Get<IExceptionHandlerFeature>()?.Error is not null) return;
+
         var path = context.Request.Path.Value ?? string.Empty;
         bool readiness = path.EndsWith("/readiness", StringComparison.OrdinalIgnoreCase);
         bool liveness = path.EndsWith("/liveness", StringComparison.OrdinalIgnoreCase);
