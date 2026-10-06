@@ -29,6 +29,13 @@ jobs:
         with:
           solution: Legacy.Maliev.ServiceDefaults.slnx
           use-local-maliev-dependencies: 'true'
+      - name: Verify completed response failure ownership
+        shell: bash
+        run: |
+          dotnet test tests/Legacy.Maliev.ServiceDefaults.Tests/Legacy.Maliev.ServiceDefaults.Tests.csproj \
+            --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true \
+            --filter "FullyQualifiedName~PrivateRequestObservationContractTests" \
+            --logger "trx;LogFileName=response-ownership.trx" --results-directory artifacts/response-ownership
       - name: Verify IAM cache ownership and permission compatibility
         shell: bash
         run: |
@@ -105,6 +112,7 @@ jobs:
         shell: pwsh
         run: |
           & ./eng/Export-CoverageEvidence.ps1 -ResultsDirectory artifacts/owned-raw -OutputDirectory artifacts/coverage-evidence
+          & ./eng/Export-CoverageEvidence.ps1 -ResultsDirectory artifacts/response-ownership -OutputDirectory artifacts/coverage-evidence/response-ownership
       - name: Retain private validation evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
