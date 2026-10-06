@@ -14,7 +14,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Legacy.Maliev.ServiceDefaults.Tests;
 
-// Existing-behavior characterization, not a new-feature RED claim. Only external transport is replaced.
+// Compatibility and producer privacy controls. Only external transport is replaced.
 public sealed class IamPrivateDiagnosticBoundaryTests
 {
     private const string Permission = "private-permission-sentinel";
@@ -25,12 +25,14 @@ public sealed class IamPrivateDiagnosticBoundaryTests
     private const string Header = "X-Maliev-IAM-Live-Check-Key";
 
     [Theory]
-    [InlineData("503", "WARNING", null)]
-    [InlineData("malformed", "ERROR", "System.Text.Json.JsonException")]
-    [InlineData("throw", "ERROR", "System.Net.Http.HttpRequestException")]
-    [InlineData("transport-cancel", "ERROR", "System.Threading.Tasks.TaskCanceledException")]
+    [InlineData("503", "WARNING", "HttpStatus")]
+    [InlineData("malformed", "ERROR", "InvalidJson")]
+    [InlineData("throw", "ERROR", "Transport")]
+    [InlineData("timeout", "ERROR", "Timeout")]
+    [InlineData("unexpected", "ERROR", "Unexpected")]
+    [InlineData("transport-cancel", "ERROR", "Cancelled")]
     public async Task ResolvePermissions_FailureFailsClosedAndPrivateOutputRejectsPrincipalAndExceptionText(
-        string failure, string severity, string? exceptionType)
+        string failure, string severity, string failureKind)
     {
         using var rig = new Rig((_, _) => FaultResponse(failure));
         var principal = UniquePrincipal();
@@ -41,20 +43,20 @@ public sealed class IamPrivateDiagnosticBoundaryTests
         Assert.Equal(new[] { "principalId" }, body.RootElement.EnumerateObject().Select(field => field.Name).ToArray());
         Assert.Equal(principal, body.RootElement.GetProperty("principalId").GetString());
         Assert.False(request.Headers.ContainsKey(Header));
-        AssertPrivate(Assert.Single(rig.Records.Entries), severity, exceptionType, principal);
+        AssertSafeIam(Assert.Single(rig.Records.Entries), severity, failureKind, principal);
     }
 
     [Theory]
-    [InlineData(false, "503", "WARNING", null)]
-    [InlineData(true, "503", "WARNING", null)]
-    [InlineData(false, "malformed", "ERROR", "System.Text.Json.JsonException")]
-    [InlineData(true, "malformed", "ERROR", "System.Text.Json.JsonException")]
-    [InlineData(false, "throw", "ERROR", "System.Net.Http.HttpRequestException")]
-    [InlineData(true, "throw", "ERROR", "System.Net.Http.HttpRequestException")]
-    [InlineData(false, "transport-cancel", "ERROR", "System.Threading.Tasks.TaskCanceledException")]
-    [InlineData(true, "transport-cancel", "ERROR", "System.Threading.Tasks.TaskCanceledException")]
+    [InlineData(false, "503", "WARNING", "HttpStatus")]
+    [InlineData(true, "503", "WARNING", "HttpStatus")]
+    [InlineData(false, "malformed", "ERROR", "InvalidJson")]
+    [InlineData(true, "malformed", "ERROR", "InvalidJson")]
+    [InlineData(false, "throw", "ERROR", "Transport")]
+    [InlineData(true, "throw", "ERROR", "Transport")]
+    [InlineData(false, "transport-cancel", "ERROR", "Cancelled")]
+    [InlineData(true, "transport-cancel", "ERROR", "Cancelled")]
     public async Task CheckPermission_FailureDeniesAndPreservesStandardVersusLiveWireContract(
-        bool live, string failure, string severity, string? exceptionType)
+        bool live, string failure, string severity, string failureKind)
     {
         using var rig = new Rig((_, _) => FaultResponse(failure));
         var principal = UniquePrincipal();
@@ -63,16 +65,16 @@ public sealed class IamPrivateDiagnosticBoundaryTests
             : await rig.Client.CheckPermissionAsync(principal, Permission, Resource);
         Assert.False(result);
         AssertPermissionRequest(AssertRequest(rig, "POST", "/iam/v1/auth/check-permission"), principal, Permission, live);
-        AssertPrivate(Assert.Single(rig.Records.Entries), severity, exceptionType, principal);
+        AssertSafeIam(Assert.Single(rig.Records.Entries), severity, failureKind, principal);
     }
 
     [Theory]
-    [InlineData("503", "WARNING", null)]
-    [InlineData("malformed", "ERROR", "System.Text.Json.JsonException")]
-    [InlineData("throw", "ERROR", "System.Net.Http.HttpRequestException")]
-    [InlineData("transport-cancel", "ERROR", "System.Threading.Tasks.TaskCanceledException")]
+    [InlineData("503", "WARNING", "HttpStatus")]
+    [InlineData("malformed", "ERROR", "InvalidJson")]
+    [InlineData("throw", "ERROR", "Transport")]
+    [InlineData("transport-cancel", "ERROR", "Cancelled")]
     public async Task AuthorizedResources_FailureReturnsNoResourcesAndPrivateOutputRejectsQueryAndExceptionText(
-        string failure, string severity, string? exceptionType)
+        string failure, string severity, string failureKind)
     {
         using var rig = new Rig((_, _) => FaultResponse(failure));
         var principal = UniquePrincipal();
@@ -82,7 +84,7 @@ public sealed class IamPrivateDiagnosticBoundaryTests
             $"/iam/v1/auth/authorized-resources?principalId={principal}&permissionId=private-permission-sentinel&resourceType=private-type-sentinel");
         Assert.Null(request.Body);
         Assert.False(request.Headers.ContainsKey(Header));
-        AssertPrivate(Assert.Single(rig.Records.Entries), severity, exceptionType, principal);
+        AssertSafeIam(Assert.Single(rig.Records.Entries), severity, failureKind, principal);
     }
 
     [Theory]
@@ -170,8 +172,8 @@ public sealed class IamPrivateDiagnosticBoundaryTests
             Assert.Equal(new[] { "orders.records.read", "orders.records.write" }, result.Keys.Order().ToArray());
             Assert.All(result.Values, Assert.False);
             var diagnostic = Assert.Single(rig.Records.Entries);
-            Assert.Equal("ErrorBulkCheckingPermissions", diagnostic.EventId.Name);
-            AssertPrivate(diagnostic, "ERROR", "System.Threading.Tasks.TaskCanceledException", principal);
+            Assert.Equal("IamOperationFailure", diagnostic.EventId.Name);
+            AssertSafeIam(diagnostic, "ERROR", "Cancelled", principal);
             Assert.Equal(new[] { "IAMService", "IAMService" }, rig.Factory.Names.ToArray());
             Assert.Equal(2, rig.Transport.Requests.Count);
             foreach (var permission in new[] { "orders.records.read", "orders.records.write" })
@@ -245,6 +247,8 @@ public sealed class IamPrivateDiagnosticBoundaryTests
     {
         "503" => Task.FromResult(new HttpResponseMessage(HttpStatusCode.ServiceUnavailable)),
         "malformed" => Task.FromResult(JsonResponse("{private-malformed-response-sentinel")),
+        "timeout" => Task.FromException<HttpResponseMessage>(new TimeoutException("private-timeout-sentinel")),
+        "unexpected" => Task.FromException<HttpResponseMessage>(new InvalidOperationException("private-unexpected-sentinel")),
         "throw" => Task.FromException<HttpResponseMessage>(new HttpRequestException("private-exception-sentinel")),
         "transport-cancel" => Task.FromException<HttpResponseMessage>(new TaskCanceledException("private-cancellation-sentinel")),
         _ => throw new ArgumentException("Unknown test arrangement.", nameof(failure))
@@ -275,6 +279,18 @@ public sealed class IamPrivateDiagnosticBoundaryTests
         Assert.Equal(live, body.RootElement.GetProperty("bypassCache").GetBoolean());
         Assert.Equal(live, request.Headers.ContainsKey(Header));
         if (live) Assert.Equal(Credential, Assert.Single(request.Headers[Header]));
+    }
+
+    private static void AssertSafeIam(PrivateEntry entry, string severity, string failureKind, string principal)
+    {
+        AssertPrivate(entry, severity, null, principal);
+        Assert.Null(entry.Exception);
+        Assert.Equal(failureKind, entry.State["FailureKind"]);
+        Assert.Equal(5102, entry.EventId.Id);
+        Assert.DoesNotContain("private-", entry.Rendered, StringComparison.Ordinal);
+        Assert.DoesNotContain(principal, entry.Rendered, StringComparison.Ordinal);
+        Assert.DoesNotContain(Credential, entry.Rendered, StringComparison.Ordinal);
+        Assert.All(entry.State.Keys, key => Assert.Contains(key, new[] { "Operation", "FailureKind", "StatusCode", "{OriginalFormat}" }));
     }
 
     private static void AssertPrivate(PrivateEntry entry, string severity, string? exceptionType, string principal)
@@ -350,7 +366,7 @@ public sealed class IamPrivateDiagnosticBoundaryTests
         public HttpClient CreateClient(string name) { Names.Enqueue(name); return client; }
     }
 
-    private sealed record PrivateEntry(EventId EventId, string Json);
+    private sealed record PrivateEntry(EventId EventId, string Json, Exception? Exception, string Rendered, IReadOnlyDictionary<string, object?> State);
 
     private sealed class PrivateProvider : ILoggerProvider, ISupportExternalScope
     {
@@ -369,7 +385,8 @@ public sealed class IamPrivateDiagnosticBoundaryTests
                 using var writer = new StringWriter();
                 var entry = new LogEntry<TState>(level, category, eventId, state, exception, formatter);
                 new PrivateFailureConsoleFormatter().Write(in entry, owner._scopes, writer);
-                owner.Entries.Enqueue(new PrivateEntry(eventId, writer.ToString()));
+                owner.Entries.Enqueue(new PrivateEntry(eventId, writer.ToString(), exception, formatter(state, exception),
+                    state is IEnumerable<KeyValuePair<string, object?>> values ? values.ToDictionary(value => value.Key, value => value.Value) : new Dictionary<string, object?>()));
             }
         }
     }

@@ -1,3 +1,4 @@
+using Maliev.Aspire.ServiceDefaults.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Hosting;
@@ -85,16 +86,21 @@ public partial class IamServiceClient : IIamServiceClient
             return ["*"];
         }
 
+        var observation = new PrivateDependencyFailureObservation();
         try
         {
-            var response = await GetHttpClient().PostAsJsonAsync(
-                "/iam/v1/auth/resolve-permissions",
-                new { PrincipalId = userId },
-                cancellationToken);
+            var client = GetHttpClient();
+            using var request = new HttpRequestMessage(HttpMethod.Post, "/iam/v1/auth/resolve-permissions")
+            {
+                Content = JsonContent.Create(new { PrincipalId = userId }),
+                Version = client.DefaultRequestVersion,
+                VersionPolicy = client.DefaultVersionPolicy,
+            };
+            using var response = await client.SendWithPrivateFailureObservationAsync(request, cancellationToken, observation, HttpCompletionOption.ResponseContentRead);
 
             if (!response.IsSuccessStatusCode)
             {
-                Log.FailedToFetchPermissions(_logger, userId, response.StatusCode);
+                RecordFailure(observation, "ResolvePermissions", "HttpStatus", response.StatusCode);
                 return Enumerable.Empty<string>();
             }
 
@@ -103,7 +109,7 @@ public partial class IamServiceClient : IIamServiceClient
         }
         catch (Exception ex)
         {
-            Log.ErrorFetchingPermissions(_logger, userId, ex);
+            RecordFailure(observation, "ResolvePermissions", FailureKind(ex));
             return Enumerable.Empty<string>();
         }
     }
@@ -195,6 +201,7 @@ public partial class IamServiceClient : IIamServiceClient
         string? liveCheckCredential,
         CancellationToken cancellationToken)
     {
+        var observation = new PrivateDependencyFailureObservation();
         try
         {
             var request = new CheckPermissionRequest(principalId, permissionId, resourcePath, bypassCache);
@@ -207,11 +214,11 @@ public partial class IamServiceClient : IIamServiceClient
                 requestMessage.Headers.Add(LiveCheckCredentialHeaderName, liveCheckCredential);
             }
 
-            using var response = await GetHttpClient().SendAsync(requestMessage, cancellationToken);
+            using var response = await GetHttpClient().SendWithPrivateFailureObservationAsync(requestMessage, cancellationToken, observation, HttpCompletionOption.ResponseContentRead);
 
             if (!response.IsSuccessStatusCode)
             {
-                Log.FailedToCheckPermission(_logger, principalId, permissionId, resourcePath ?? "global", response.StatusCode);
+                RecordFailure(observation, "CheckPermission", "HttpStatus", response.StatusCode);
                 // Transport/availability failures are NOT cached — the next call retries.
                 return false;
             }
@@ -227,7 +234,7 @@ public partial class IamServiceClient : IIamServiceClient
         }
         catch (Exception ex)
         {
-            Log.ErrorCheckingPermission(_logger, principalId, permissionId, resourcePath ?? "global", ex);
+            RecordFailure(observation, "CheckPermission", FailureKind(ex));
             return false;
         }
     }
@@ -294,7 +301,7 @@ public partial class IamServiceClient : IIamServiceClient
         }
         catch (Exception ex)
         {
-            Log.ErrorBulkCheckingPermissions(_logger, principalId, requests.Count(), ex);
+            RecordFailure(null, "BulkCheckPermissions", FailureKind(ex));
 
             // Return false for all permissions on error
             foreach (var req in requests)
@@ -318,15 +325,21 @@ public partial class IamServiceClient : IIamServiceClient
             return ["*"];
         }
 
+        var observation = new PrivateDependencyFailureObservation();
         try
         {
-            var response = await GetHttpClient().GetAsync(
-                $"/iam/v1/auth/authorized-resources?principalId={principalId}&permissionId={permissionId}&resourceType={resourceType}",
-                cancellationToken);
+            var client = GetHttpClient();
+            using var request = new HttpRequestMessage(HttpMethod.Get,
+                $"/iam/v1/auth/authorized-resources?principalId={principalId}&permissionId={permissionId}&resourceType={resourceType}")
+            {
+                Version = client.DefaultRequestVersion,
+                VersionPolicy = client.DefaultVersionPolicy,
+            };
+            using var response = await client.SendWithPrivateFailureObservationAsync(request, cancellationToken, observation, HttpCompletionOption.ResponseContentRead);
 
             if (!response.IsSuccessStatusCode)
             {
-                _logger.LogWarning("Failed to fetch authorized resources for principal {PrincipalId}. Status: {StatusCode}", principalId, response.StatusCode);
+                RecordFailure(observation, "AuthorizedResources", "HttpStatus", response.StatusCode);
                 return Enumerable.Empty<string>();
             }
 
@@ -335,7 +348,7 @@ public partial class IamServiceClient : IIamServiceClient
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error occurred while fetching authorized resources for principal {PrincipalId}", principalId);
+            RecordFailure(observation, "AuthorizedResources", FailureKind(ex));
             return Enumerable.Empty<string>();
         }
     }
@@ -374,24 +387,40 @@ public partial class IamServiceClient : IIamServiceClient
             string.Equals(principalId, AspireTestAdminPrincipalId, StringComparison.OrdinalIgnoreCase);
     }
 
-    // Logging with source generation
+    private static string FailureKind(Exception exception) => exception switch
+    {
+        System.Text.Json.JsonException => "InvalidJson",
+        HttpRequestException => "Transport",
+        OperationCanceledException => "Cancelled",
+        TimeoutException => "Timeout",
+        _ => "Unexpected",
+    };
+
+    private void RecordFailure(PrivateDependencyFailureObservation? observation, string operation, string kind,
+        System.Net.HttpStatusCode? status = null)
+    {
+        // Selected transport observation owns its event even if its provider threw.
+        // Body parsing and unselected clients still receive one safe local event.
+        if (observation?.WasObserved == true) return;
+        try
+        {
+            if (status is { } code)
+                _logger.LogWarning(new EventId(5102, "IamOperationFailure"),
+                    "IAM operation failed Operation={Operation} FailureKind={FailureKind} StatusCode={StatusCode}",
+                    operation, kind, (int)code);
+            else
+                _logger.LogError(new EventId(5102, "IamOperationFailure"),
+                    "IAM operation failed Operation={Operation} FailureKind={FailureKind}", operation, kind);
+        }
+        catch (Exception)
+        {
+            // Logging providers must not replace the existing fail-closed result or cancellation contract.
+        }
+    }
+
+    // Missing credentials are a code-owned configuration signal without identity details.
     private static partial class Log
     {
-        [LoggerMessage(Level = LogLevel.Warning, Message = "Failed to fetch permissions for user {UserId}. Status: {StatusCode}")]
-        public static partial void FailedToFetchPermissions(ILogger logger, string userId, System.Net.HttpStatusCode statusCode);
-
-        [LoggerMessage(Level = LogLevel.Error, Message = "Error occurred while fetching permissions for user {UserId}")]
-        public static partial void ErrorFetchingPermissions(ILogger logger, string userId, Exception ex);
-
-        [LoggerMessage(Level = LogLevel.Warning, Message = "Failed to check permission {Permission} for principal {PrincipalId} on resource {ResourcePath}. Status: {StatusCode}")]
-        public static partial void FailedToCheckPermission(ILogger logger, string principalId, string permission, string resourcePath, System.Net.HttpStatusCode statusCode);
-
-        [LoggerMessage(Level = LogLevel.Error, Message = "Error occurred while checking permission {Permission} for principal {PrincipalId} on resource {ResourcePath}")]
-        public static partial void ErrorCheckingPermission(ILogger logger, string principalId, string permission, string resourcePath, Exception ex);
-
-        [LoggerMessage(Level = LogLevel.Error, Message = "Error occurred while bulk checking {Count} permissions for principal {PrincipalId}")]
-        public static partial void ErrorBulkCheckingPermissions(ILogger logger, string principalId, int count, Exception ex);
-
         [LoggerMessage(Level = LogLevel.Warning, Message = "IAM live permission check denied because its dedicated credential is not configured")]
         public static partial void MissingLiveCheckCredential(ILogger logger);
     }
