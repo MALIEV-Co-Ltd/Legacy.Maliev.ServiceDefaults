@@ -1,0 +1,184 @@
+[
+  {
+    "id": "provider-correlation",
+    "adaptation": "Preserve caller providers, filters and OpenTelemetry; add scoped UTC JSON and actual activity correlation instead of clearing providers.",
+    "cases": [
+      {
+        "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeJsonLoggingTests.Defaults_ConfigureScopedUtcJsonAndActivityCorrelation",
+        "outcome": "Passed",
+        "testId": "c6968165-21ef-3044-25ed-64c162cb3bcd"
+      },
+      {
+        "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeJsonLoggingTests.Defaults_PreserveExistingProvidersFiltersAndOpenTelemetry",
+        "outcome": "Passed",
+        "testId": "38708aa4-6635-9139-2d24-c0829241d5e0"
+      },
+      {
+        "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.Defaults_EmitActualScopedUtcJson_AndDeliverToExistingProvider",
+        "outcome": "Passed",
+        "testId": "f636087d-07f8-4329-6adc-7962c39d49fb"
+      },
+      {
+        "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.Defaults_MapAllCloudSeveritiesWithoutSerializingExceptionText",
+        "outcome": "Passed",
+        "testId": "75dbd30e-ea9d-5bcb-ff51-19476cdaf6b5"
+      }
+    ],
+    "status": "Retained accepted-main behavior support; source-specific closure pending"
+  },
+  {
+    "id": "private-failure",
+    "adaptation": "Emit private structured severity and failure provenance; route templates replace raw paths, exception text is excluded, existing mapped JSON responses remain.",
+    "cases": [
+      {
+        "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProvenanceTests.Write_ThrownNestedException_EmitsTypesAndCodeOwnedOuterMethodWithoutPrivateText",
+        "outcome": "Passed",
+        "testId": "89646abb-e4e3-e714-6ea1-1b8f919fcb18"
+      },
+      {
+        "testName": "Legacy.Maliev.ServiceDefaults.Tests.Middleware.ExceptionEventLoggingTests.Failure_EmitsCorrelatedNativeEventWithoutSecrets_AndPreservesJson",
+        "outcome": "Passed",
+        "testId": "645c8b68-69ba-296e-be87-98a5892e2a0c"
+      },
+      {
+        "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProducerContractTests.Private_formatter_emits_native_severity_without_rendering_protected_text",
+        "outcome": "Passed",
+        "testId": "72c9386c-1608-12d0-b72a-7a8ea21a3b1b"
+      },
+      {
+        "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.StandardPipeline_ControlledHttpFailure_EmitsOneCorrelatedRedactedEvent",
+        "outcome": "Passed",
+        "testId": "1c91f3c2-b8b8-ff7e-51c0-e2e709223ce8"
+      },
+      {
+        "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.StandardPipeline_ControlledHttpFailure_EmitsOneCorrelatedRedactedEvent",
+        "outcome": "Passed",
+        "testId": "6ca3151d-4402-9cb6-44df-8b384f7dc2e5"
+      },
+      {
+        "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProducerContractTests.Private_formatter_emits_native_severity_without_rendering_protected_text",
+        "outcome": "Passed",
+        "testId": "10e8cacf-9c16-dc00-170d-7d5dbf37c30c"
+      },
+      {
+        "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.StandardPipeline_ControlledHttpFailure_EmitsOneCorrelatedRedactedEvent",
+        "outcome": "Passed",
+        "testId": "4adf6553-0d5e-4df6-dd0d-e0b6f27939d4"
+      },
+      {
+        "testName": "Legacy.Maliev.ServiceDefaults.Tests.Middleware.ExceptionEventLoggingTests.Failure_EmitsCorrelatedNativeEventWithoutSecrets_AndPreservesJson",
+        "outcome": "Passed",
+        "testId": "c6dabd7a-cb76-a399-3809-6e78eab7e23a"
+      },
+      {
+        "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProducerContractTests.Private_formatter_emits_native_severity_without_rendering_protected_text",
+        "outcome": "Passed",
+        "testId": "d773b6b1-6577-a0e8-5336-639f2c8b54ba"
+      },
+      {
+        "testName": "Legacy.Maliev.ServiceDefaults.Tests.Middleware.ExceptionEventLoggingTests.MatchedFailure_LogsRouteTemplateWithoutLiteralIdentifier",
+        "outcome": "Passed",
+        "testId": "b45872c9-d0d0-b1d8-ce27-185c2ea62352"
+      }
+    ],
+    "status": "Retained accepted-main behavior support; source-specific closure pending"
+  },
+  {
+    "id": "dependency-terminal",
+    "adaptation": "Replace URI-derived host and raw path with configured dependency and bounded operation; retain terminal status when known, suppress caller cancellation, emit once, and preserve original outcomes when a provider throws.",
+    "cases": [
+      {
+        "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyOperationNameTests.InFlightCallerCancellation_RemainsQuiet",
+        "outcome": "Passed",
+        "testId": "6a0aa3aa-4d16-1cce-b79e-b2b281cb1c91"
+      },
+      {
+        "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyNativeDeadlineTests.Native_deadline_records_once_after_real_HttpClient_rewrites_terminal_cancellation",
+        "outcome": "Passed",
+        "testId": "4c75d695-bd67-e299-a7e0-1a0ab4b5f04d"
+      },
+      {
+        "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyNativeDeadlineTests.Outer_send_preserves_existing_transport_or_503_event_without_duplication",
+        "outcome": "Passed",
+        "testId": "beb17b80-8934-8eaf-30d8-736d58f3d941"
+      },
+      {
+        "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyOperationNameTests.InFlightCallerCancellation_RemainsQuiet",
+        "outcome": "Passed",
+        "testId": "488caeaf-b1d1-823b-dca8-2a3de5c84f1c"
+      },
+      {
+        "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyOperationNameTests.Transport_failure_PreservesOriginalExceptionAndSafeCustomersPost",
+        "outcome": "Passed",
+        "testId": "0111b455-7379-06e5-6eb5-b46b00c999b1"
+      },
+      {
+        "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyNativeDeadlineTests.Native_deadline_records_once_after_real_HttpClient_rewrites_terminal_cancellation",
+        "outcome": "Passed",
+        "testId": "afec92e7-6dd4-1e47-80cc-fb66630bff4f"
+      },
+      {
+        "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyNativeDeadlineTests.Native_deadline_records_once_after_real_HttpClient_rewrites_terminal_cancellation",
+        "outcome": "Passed",
+        "testId": "1be64cc3-dcca-1bfc-8ad0-85a26a64a072"
+      },
+      {
+        "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyNativeDeadlineTests.Outer_send_preserves_existing_transport_or_503_event_without_duplication",
+        "outcome": "Passed",
+        "testId": "e79e387d-4b2f-8c5f-2bf5-559057948065"
+      },
+      {
+        "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyNativeDeadlineTests.Native_deadline_throwing_provider_does_not_replace_the_real_native_exception",
+        "outcome": "Passed",
+        "testId": "b3be79e3-be51-e969-4524-cadf04c4235a"
+      },
+      {
+        "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyNativeDeadlineTests.Native_deadline_throwing_provider_does_not_replace_the_real_native_exception",
+        "outcome": "Passed",
+        "testId": "ccb98a5d-cf97-8bb5-c05e-1dde94ef4d4a"
+      },
+      {
+        "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyOperationNameTests.Transport_failure_PreservesOriginalExceptionAndSafeCustomersPost",
+        "outcome": "Passed",
+        "testId": "478edb9b-49be-97a3-f680-c47e866f167f"
+      },
+      {
+        "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyNativeDeadlineTests.Outer_send_preserves_existing_transport_or_503_event_without_duplication",
+        "outcome": "Passed",
+        "testId": "24aca790-0a34-a397-eb36-b0a5c6780fa9"
+      },
+      {
+        "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyNativeDeadlineTests.Outer_send_preserves_existing_transport_or_503_event_without_duplication",
+        "outcome": "Passed",
+        "testId": "0fab0401-a62e-e19b-ba7c-192375bb032c"
+      },
+      {
+        "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyNativeDeadlineTests.Native_deadline_records_once_after_real_HttpClient_rewrites_terminal_cancellation",
+        "outcome": "Passed",
+        "testId": "f6e216da-5065-eb5b-635a-e0bdccaf04e4"
+      }
+    ],
+    "status": "Retained accepted-main producer/consumer support; belongs to the NativeLogging successor chain, not automatic closure of Logger path assignments",
+    "source": {
+      "revision": "9e51e6c5da29de8e617b65b59d46882cde6d3b64",
+      "path": "Maliev.Service.WebApi/DependencyFailureDetails.cs",
+      "blob": "1748b77b313e516a7300bddbe928cd24b466a9d2"
+    }
+  },
+  {
+    "id": "obsolete-adapter-artifact",
+    "adaptation": "Source9e51 removed Logger projects; source5ac removed the intermediate NativeLogging assembly. Shared Defaults carries operational logging in the retained assembly, without restoring obsolete adapter projects or generated XML.",
+    "cases": [
+      {
+        "testName": "Legacy.Maliev.ServiceDefaults.Tests.Source5acLoggingRemovalContractTests.SharedDefaults_DoNotDependOnRetiredNativeLoggingAssemblyOrSourceApi",
+        "outcome": "Passed",
+        "testId": "26652739-9513-2d27-19f0-75569fbd133a"
+      }
+    ],
+    "status": "Bounded source-chain supersession of project/generated documentation artifacts; operational diagnostics retained",
+    "sourceChain": [
+      "9e51e6c5da29de8e617b65b59d46882cde6d3b64",
+      "5ac7d045c51194edd9e64d8564f1b726b001be34"
+    ]
+  }
+]
