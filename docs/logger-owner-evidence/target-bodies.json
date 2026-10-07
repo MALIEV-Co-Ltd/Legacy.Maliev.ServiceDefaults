@@ -1,0 +1,82 @@
+[
+  {
+    "path": "src/Legacy.Maliev.ServiceDefaults/Extensions.cs",
+    "sha256": "73643c87d572e292a8bb5a9c29fe8476fd8ee817d74f80e1639cf3b5b707446e",
+    "blob": "e9831912d7ba851e4b20eba999af8c9b37fd4e88"
+  },
+  {
+    "path": "src/Legacy.Maliev.ServiceDefaults/Logging/MalievCloudJsonConsoleFormatter.cs",
+    "sha256": "3000ff8e529b6a2b1f58b1ec12b816531db2f566e4657fb7a567493836c758ff",
+    "blob": "cde80d482eeca7dd604702d66e7310ff4b3b5ed9"
+  },
+  {
+    "path": "src/Legacy.Maliev.ServiceDefaults/Logging/PrivateFailureConsoleFormatter.cs",
+    "sha256": "4c851ca92380fa8365a1bcc32ab01f9d6a68c4f747802b922b28de01f06ac20e",
+    "blob": "6a56c6fd079e52ea8f36a76778a22ee37a6aec76"
+  },
+  {
+    "path": "src/Legacy.Maliev.ServiceDefaults/Middleware/ExceptionHandlingMiddleware.cs",
+    "sha256": "874a496bd238028c25c6e449d35d1b52ea241a44b5c7bda722cc2112cb851df7",
+    "blob": "7af8790b4ea490670465758e0898ae309289ffcb"
+  },
+  {
+    "path": "src/Legacy.Maliev.ServiceDefaults/Diagnostics/PrivateDependencyFailureHandler.cs",
+    "sha256": "c9e1f1d7accf1d001ef8e014ddb85657092719fe311f74bf418c6725995c956b",
+    "blob": "2d390cb849c5ba8810d872ad72dcd91c9a254d22"
+  },
+  {
+    "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/NativeJsonLoggingTests.cs",
+    "sha256": "834730c7151bb8ee5f1cc04a6d4302325d92de2defdce975ca209dca1bac3426",
+    "blob": "92f953ef0e9ba9cba8216d744b693265091d3ed0"
+  },
+  {
+    "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/NativeLoggingWireTests.cs",
+    "sha256": "5e0a5146d6912f8318af3d7ec8986f117a0856b5e9ac270517ed30675098a6fe",
+    "blob": "89c0e7906faaacd2e36e9ef092e4aa1c6673805e"
+  },
+  {
+    "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/Middleware/ExceptionEventLoggingTests.cs",
+    "sha256": "7198331c91d4aac220248ca9b5e2e1dcaa168b4a233fcc1243ad503e7c590e99",
+    "blob": "7420cc3253069b92bf6941377ed6ac5fc0b70b18"
+  },
+  {
+    "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/PrivateFailureProducerContractTests.cs",
+    "sha256": "b3f738e3cbee48d6855c5d2e600cf63595421a307a9e21f8915138f0722edf48",
+    "blob": "29b55e6c104f9a30851949f1306765ab1b0bd0e4"
+  },
+  {
+    "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/PrivateFailureProvenanceTests.cs",
+    "sha256": "18725af42b4f30af664730b86fd7952ed8ea299d428004c246e9c81e1bab67f6",
+    "blob": "20d06621afeae02bd263d161125f7ce5a3ad30ec"
+  },
+  {
+    "path": "src/Legacy.Maliev.ServiceDefaults/Diagnostics/PrivateDependencyObservationContext.cs",
+    "sha256": "bbcb1f8c290cd903fe000d2ca65a07ab0240e8b6822fa5ab43ba6e482034b370",
+    "blob": "88f105e93dc1634e6fd3c9c03c0979794a8682d8"
+  },
+  {
+    "path": "src/Legacy.Maliev.ServiceDefaults/Diagnostics/PrivateDependencyOperationMapper.cs",
+    "sha256": "2ccdc55d1e8bd94beccd9365e52dc28fed94c4a29fde8849393a31113c388fcf",
+    "blob": "257f7a60c594cbc0bd540ff2f92b6b81e4f90b9f"
+  },
+  {
+    "path": "src/Legacy.Maliev.ServiceDefaults/Diagnostics/PrivateDependencyHttpClientExtensions.cs",
+    "sha256": "03e52d0eff38a1ff55b5924d2d0a41a762acca47d136c7a884347965c1750578",
+    "blob": "b13d81fea970441ccd6a3b72346ead60a1ccbe52"
+  },
+  {
+    "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/PrivateDependencyNativeDeadlineTests.cs",
+    "sha256": "9cae6f4c5ff012eb6bf3cd175ed65c4d47b2dc1a352093a8b141ee676a130d97",
+    "blob": "65f813e7976513e140af6a934d9fb3aa7f0a9f3c"
+  },
+  {
+    "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/PrivateDependencyOperationNameTests.cs",
+    "sha256": "aabb08ebf6fa840bfa3387ad07eec3a3db7d31266f81382fe83f637e82704ce0",
+    "blob": "692388614b639d5c7d79463ed7e3408a385f12bc"
+  },
+  {
+    "path": "tests/Legacy.Maliev.ServiceDefaults.Tests/Source5acLoggingRemovalContractTests.cs",
+    "sha256": "7d6a7d528ebb1eb13cda2871d0248f481fd6a48925b72be8b9fe41da0084d501",
+    "blob": "33ac0129d35f734fe80e600d53c4e095bb6fbf21"
+  }
+]

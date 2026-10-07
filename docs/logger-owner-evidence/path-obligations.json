@@ -1,0 +1,2631 @@
+{
+  "sourceCheckpoint": "135e526d0dab85c415b3afdcefd7b70fe2c82e2f",
+  "acceptedDefaults": "7b3099bf67d0f17e56cfdb3dcf36541304abaac2",
+  "acceptedRun": "37569609354",
+  "sourceCount": 19,
+  "assignmentCount": 119,
+  "assignments": [
+    {
+      "source": "3a393215d883fa35e1461f69c876bf2ead7ce36e",
+      "identity": "3a393215d883fa35e1461f69c876bf2ead7ce36e|e2ae2bd3c4edac22b04ef96fc1041da34380e9ea|separate deployment and sevice ingress",
+      "path": "Maliev.LoggerService.Api/deployment.yaml",
+      "group": "Defaults-only Logger portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "eb0211ff646714e5fd5c89aa41e2d43bede298dc",
+      "sourceBodyRevision": "3a393215d883fa35e1461f69c876bf2ead7ce36e"
+    },
+    {
+      "source": "3a393215d883fa35e1461f69c876bf2ead7ce36e",
+      "identity": "3a393215d883fa35e1461f69c876bf2ead7ce36e|e2ae2bd3c4edac22b04ef96fc1041da34380e9ea|separate deployment and sevice ingress",
+      "path": "Maliev.LoggerService.Api/deploy-service.ps1",
+      "group": "Defaults-only Logger portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "a2bc519eb914c2789f668264f03cb3c58a3f0361",
+      "sourceBodyRevision": "3a393215d883fa35e1461f69c876bf2ead7ce36e"
+    },
+    {
+      "source": "3a393215d883fa35e1461f69c876bf2ead7ce36e",
+      "identity": "3a393215d883fa35e1461f69c876bf2ead7ce36e|e2ae2bd3c4edac22b04ef96fc1041da34380e9ea|separate deployment and sevice ingress",
+      "path": "Maliev.LoggerService.Api/service.yaml",
+      "group": "Defaults-only Logger portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "a00807162d32e71a500ae44ad2686e2dd601f108",
+      "sourceBodyRevision": "3a393215d883fa35e1461f69c876bf2ead7ce36e"
+    },
+    {
+      "source": "5458b7ddc81a15d72087fa69fb4cfcc27ae75747",
+      "identity": "5458b7ddc81a15d72087fa69fb4cfcc27ae75747|ea64e0e8a6699c2b2224f94d2e1a7e34daf246a4|Remove Maliev.Web.BlazorServer project and update deployment configurations",
+      "path": "Maliev.LoggerService.Api/deployment.yaml",
+      "group": "Defaults-only Logger portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "1d1404b21587bd70b35b842230cddfcbdebd2b08",
+      "sourceBodyRevision": "5458b7ddc81a15d72087fa69fb4cfcc27ae75747"
+    },
+    {
+      "source": "53f4baf373ef04a3ed5ab5c1ef39bd61404c5258",
+      "identity": "53f4baf373ef04a3ed5ab5c1ef39bd61404c5258|548f5605611f785b70546064afca117c9f7f25ea|Add resource limits and requests to all deployment manifests",
+      "path": "Maliev.LoggerService.Api/deployment.yaml",
+      "group": "Defaults-only Logger portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "adf8f52b105ca94ceb85b78e13bafe171d2ef0f5",
+      "sourceBodyRevision": "53f4baf373ef04a3ed5ab5c1ef39bd61404c5258"
+    },
+    {
+      "source": "93f9f99522fbe6c128acb5d049f2b448e07dba95",
+      "identity": "93f9f99522fbe6c128acb5d049f2b448e07dba95|072b7eb6ed2e44262d54f8aba92bad882650be91|perf: optimize resource limits in deployment.yaml files",
+      "path": "Maliev.LoggerService.Api/deployment.yaml",
+      "group": "Defaults-only Logger portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "b465b5449848218db9d7a2a4e760ad575ad4e9a0",
+      "sourceBodyRevision": "93f9f99522fbe6c128acb5d049f2b448e07dba95"
+    },
+    {
+      "source": "00ec830615c15b5e4e227046712247b11df0100f",
+      "identity": "00ec830615c15b5e4e227046712247b11df0100f|ef1aa997a2d3f54e8535de45e8f35943d84e9cad|fix(deploy): harden deploy.ps1 for all remaining services",
+      "path": "Maliev.LoggerService.Api/deploy.ps1",
+      "group": "Defaults-only Logger portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "c9a3a28a23470af590b49ccb7ece0bdb7bcc29e9",
+      "sourceBodyRevision": "00ec830615c15b5e4e227046712247b11df0100f"
+    },
+    {
+      "source": "2aab25eb07894fc0267b03b85bad96490219d2fa",
+      "identity": "2aab25eb07894fc0267b03b85bad96490219d2fa|56014f2efc7c7f24b777c51d17a454e023d12bdd|security: externalize design-time database connections",
+      "path": "Maliev.LoggerService.Data/Database/LoggerContext/LogContext.cs",
+      "group": "Defaults-only Logger portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "a09e559259ac30228b7fcface99d18bd40ff3d4d",
+      "sourceBodyRevision": "2aab25eb07894fc0267b03b85bad96490219d2fa"
+    },
+    {
+      "source": "2aab25eb07894fc0267b03b85bad96490219d2fa",
+      "identity": "2aab25eb07894fc0267b03b85bad96490219d2fa|56014f2efc7c7f24b777c51d17a454e023d12bdd|security: externalize design-time database connections",
+      "path": "Maliev.LoggerService.Data/Maliev.LoggerService.Data.xml",
+      "group": "Defaults-only Logger portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "6214053a0c926526b9cd0abac13e3068224969a4",
+      "sourceBodyRevision": "2aab25eb07894fc0267b03b85bad96490219d2fa"
+    },
+    {
+      "source": "2aab25eb07894fc0267b03b85bad96490219d2fa",
+      "identity": "2aab25eb07894fc0267b03b85bad96490219d2fa|56014f2efc7c7f24b777c51d17a454e023d12bdd|security: externalize design-time database connections",
+      "path": "Maliev.LoggerService.Data/Properties/Resources.Designer.cs",
+      "group": "Defaults-only Logger portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "4f55d9a10dbceeb09d4b90aa76379a8adf215b70",
+      "sourceBodyRevision": "2aab25eb07894fc0267b03b85bad96490219d2fa"
+    },
+    {
+      "source": "2aab25eb07894fc0267b03b85bad96490219d2fa",
+      "identity": "2aab25eb07894fc0267b03b85bad96490219d2fa|56014f2efc7c7f24b777c51d17a454e023d12bdd|security: externalize design-time database connections",
+      "path": "Maliev.LoggerService.Data/Properties/Resources.resx",
+      "group": "Defaults-only Logger portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "48489871d2957b3cb6203bd15c9688653a688243",
+      "sourceBodyRevision": "2aab25eb07894fc0267b03b85bad96490219d2fa"
+    },
+    {
+      "source": "7d6f46f53cbab853ca9c25e385af067cfff6238a",
+      "identity": "7d6f46f53cbab853ca9c25e385af067cfff6238a|7a660e9630e2ff10dbdf6f03766f89f125fdba4f|security: externalize remaining database credentials",
+      "path": "Maliev.LoggerService.Api/appsettings.json",
+      "group": "Defaults-only Logger portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "0653165a6beef0822e4bf6d7efa84a7be999eeb1",
+      "sourceBodyRevision": "7d6f46f53cbab853ca9c25e385af067cfff6238a"
+    },
+    {
+      "source": "7d6f46f53cbab853ca9c25e385af067cfff6238a",
+      "identity": "7d6f46f53cbab853ca9c25e385af067cfff6238a|7a660e9630e2ff10dbdf6f03766f89f125fdba4f|security: externalize remaining database credentials",
+      "path": "Maliev.LoggerService.Data/ScaffoldContext.ps1",
+      "group": "Defaults-only Logger portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "b804b5ff36c753c92da0e95db3639778610bcf57",
+      "sourceBodyRevision": "7d6f46f53cbab853ca9c25e385af067cfff6238a"
+    },
+    {
+      "source": "eb8ed86672bd9afccc6560b547b734d0fcd7363b",
+      "identity": "eb8ed86672bd9afccc6560b547b734d0fcd7363b|6da103d234ea312ce3b404fefaed343c172517b1 868b5909406cc3759254ee10520e04d4ad5beab0|Merge pull request #18 from MALIEV-Co-Ltd/codex/wave0-secret-remediation",
+      "path": "Maliev.LoggerService.Api/appsettings.json",
+      "group": "Defaults-only Logger portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "0653165a6beef0822e4bf6d7efa84a7be999eeb1",
+      "sourceBodyRevision": "eb8ed86672bd9afccc6560b547b734d0fcd7363b"
+    },
+    {
+      "source": "eb8ed86672bd9afccc6560b547b734d0fcd7363b",
+      "identity": "eb8ed86672bd9afccc6560b547b734d0fcd7363b|6da103d234ea312ce3b404fefaed343c172517b1 868b5909406cc3759254ee10520e04d4ad5beab0|Merge pull request #18 from MALIEV-Co-Ltd/codex/wave0-secret-remediation",
+      "path": "Maliev.LoggerService.Api/Maliev.LoggerService.Api.xml",
+      "group": "Defaults-only Logger portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "1e4976d246925fa80aa9b83e24bf1cf0f60f2a0d",
+      "sourceBodyRevision": "eb8ed86672bd9afccc6560b547b734d0fcd7363b"
+    },
+    {
+      "source": "eb8ed86672bd9afccc6560b547b734d0fcd7363b",
+      "identity": "eb8ed86672bd9afccc6560b547b734d0fcd7363b|6da103d234ea312ce3b404fefaed343c172517b1 868b5909406cc3759254ee10520e04d4ad5beab0|Merge pull request #18 from MALIEV-Co-Ltd/codex/wave0-secret-remediation",
+      "path": "Maliev.LoggerService.Api/ServiceExtensions.cs",
+      "group": "Defaults-only Logger portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "a6f753d1d7c67e25da7301d2fbb0122226f32157",
+      "sourceBodyRevision": "eb8ed86672bd9afccc6560b547b734d0fcd7363b"
+    },
+    {
+      "source": "eb8ed86672bd9afccc6560b547b734d0fcd7363b",
+      "identity": "eb8ed86672bd9afccc6560b547b734d0fcd7363b|6da103d234ea312ce3b404fefaed343c172517b1 868b5909406cc3759254ee10520e04d4ad5beab0|Merge pull request #18 from MALIEV-Co-Ltd/codex/wave0-secret-remediation",
+      "path": "Maliev.LoggerService.Api/Startup.cs",
+      "group": "Defaults-only Logger portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "13242552b2ac1c71bc02ec896ce196414a6c0023",
+      "sourceBodyRevision": "eb8ed86672bd9afccc6560b547b734d0fcd7363b"
+    },
+    {
+      "source": "eb8ed86672bd9afccc6560b547b734d0fcd7363b",
+      "identity": "eb8ed86672bd9afccc6560b547b734d0fcd7363b|6da103d234ea312ce3b404fefaed343c172517b1 868b5909406cc3759254ee10520e04d4ad5beab0|Merge pull request #18 from MALIEV-Co-Ltd/codex/wave0-secret-remediation",
+      "path": "Maliev.LoggerService.Data/Database/LoggerContext/LogContext.cs",
+      "group": "Defaults-only Logger portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "a09e559259ac30228b7fcface99d18bd40ff3d4d",
+      "sourceBodyRevision": "eb8ed86672bd9afccc6560b547b734d0fcd7363b"
+    },
+    {
+      "source": "eb8ed86672bd9afccc6560b547b734d0fcd7363b",
+      "identity": "eb8ed86672bd9afccc6560b547b734d0fcd7363b|6da103d234ea312ce3b404fefaed343c172517b1 868b5909406cc3759254ee10520e04d4ad5beab0|Merge pull request #18 from MALIEV-Co-Ltd/codex/wave0-secret-remediation",
+      "path": "Maliev.LoggerService.Data/Maliev.LoggerService.Data.xml",
+      "group": "Defaults-only Logger portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "6214053a0c926526b9cd0abac13e3068224969a4",
+      "sourceBodyRevision": "eb8ed86672bd9afccc6560b547b734d0fcd7363b"
+    },
+    {
+      "source": "eb8ed86672bd9afccc6560b547b734d0fcd7363b",
+      "identity": "eb8ed86672bd9afccc6560b547b734d0fcd7363b|6da103d234ea312ce3b404fefaed343c172517b1 868b5909406cc3759254ee10520e04d4ad5beab0|Merge pull request #18 from MALIEV-Co-Ltd/codex/wave0-secret-remediation",
+      "path": "Maliev.LoggerService.Data/Properties/Resources.Designer.cs",
+      "group": "Defaults-only Logger portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "4f55d9a10dbceeb09d4b90aa76379a8adf215b70",
+      "sourceBodyRevision": "eb8ed86672bd9afccc6560b547b734d0fcd7363b"
+    },
+    {
+      "source": "eb8ed86672bd9afccc6560b547b734d0fcd7363b",
+      "identity": "eb8ed86672bd9afccc6560b547b734d0fcd7363b|6da103d234ea312ce3b404fefaed343c172517b1 868b5909406cc3759254ee10520e04d4ad5beab0|Merge pull request #18 from MALIEV-Co-Ltd/codex/wave0-secret-remediation",
+      "path": "Maliev.LoggerService.Data/Properties/Resources.resx",
+      "group": "Defaults-only Logger portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "48489871d2957b3cb6203bd15c9688653a688243",
+      "sourceBodyRevision": "eb8ed86672bd9afccc6560b547b734d0fcd7363b"
+    },
+    {
+      "source": "eb8ed86672bd9afccc6560b547b734d0fcd7363b",
+      "identity": "eb8ed86672bd9afccc6560b547b734d0fcd7363b|6da103d234ea312ce3b404fefaed343c172517b1 868b5909406cc3759254ee10520e04d4ad5beab0|Merge pull request #18 from MALIEV-Co-Ltd/codex/wave0-secret-remediation",
+      "path": "Maliev.LoggerService.Data/ScaffoldContext.ps1",
+      "group": "Defaults-only Logger portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "b804b5ff36c753c92da0e95db3639778610bcf57",
+      "sourceBodyRevision": "eb8ed86672bd9afccc6560b547b734d0fcd7363b"
+    },
+    {
+      "source": "a649db99a27bda65274fe1b18866ae226d3c69cf",
+      "identity": "a649db99a27bda65274fe1b18866ae226d3c69cf|d5d67b65a69ae4b53bfe94e2a669a5d4680696ab eb8ed86672bd9afccc6560b547b734d0fcd7363b|Merge remote-tracking branch 'origin/main'",
+      "path": "Maliev.LoggerService.Api/appsettings.json",
+      "group": "Defaults-only Logger portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "0653165a6beef0822e4bf6d7efa84a7be999eeb1",
+      "sourceBodyRevision": "a649db99a27bda65274fe1b18866ae226d3c69cf"
+    },
+    {
+      "source": "a649db99a27bda65274fe1b18866ae226d3c69cf",
+      "identity": "a649db99a27bda65274fe1b18866ae226d3c69cf|d5d67b65a69ae4b53bfe94e2a669a5d4680696ab eb8ed86672bd9afccc6560b547b734d0fcd7363b|Merge remote-tracking branch 'origin/main'",
+      "path": "Maliev.LoggerService.Api/Maliev.LoggerService.Api.xml",
+      "group": "Defaults-only Logger portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "1e4976d246925fa80aa9b83e24bf1cf0f60f2a0d",
+      "sourceBodyRevision": "a649db99a27bda65274fe1b18866ae226d3c69cf"
+    },
+    {
+      "source": "a649db99a27bda65274fe1b18866ae226d3c69cf",
+      "identity": "a649db99a27bda65274fe1b18866ae226d3c69cf|d5d67b65a69ae4b53bfe94e2a669a5d4680696ab eb8ed86672bd9afccc6560b547b734d0fcd7363b|Merge remote-tracking branch 'origin/main'",
+      "path": "Maliev.LoggerService.Api/ServiceExtensions.cs",
+      "group": "Defaults-only Logger portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "a6f753d1d7c67e25da7301d2fbb0122226f32157",
+      "sourceBodyRevision": "a649db99a27bda65274fe1b18866ae226d3c69cf"
+    },
+    {
+      "source": "a649db99a27bda65274fe1b18866ae226d3c69cf",
+      "identity": "a649db99a27bda65274fe1b18866ae226d3c69cf|d5d67b65a69ae4b53bfe94e2a669a5d4680696ab eb8ed86672bd9afccc6560b547b734d0fcd7363b|Merge remote-tracking branch 'origin/main'",
+      "path": "Maliev.LoggerService.Api/Startup.cs",
+      "group": "Defaults-only Logger portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "13242552b2ac1c71bc02ec896ce196414a6c0023",
+      "sourceBodyRevision": "a649db99a27bda65274fe1b18866ae226d3c69cf"
+    },
+    {
+      "source": "a649db99a27bda65274fe1b18866ae226d3c69cf",
+      "identity": "a649db99a27bda65274fe1b18866ae226d3c69cf|d5d67b65a69ae4b53bfe94e2a669a5d4680696ab eb8ed86672bd9afccc6560b547b734d0fcd7363b|Merge remote-tracking branch 'origin/main'",
+      "path": "Maliev.LoggerService.Data/Database/LoggerContext/LogContext.cs",
+      "group": "Defaults-only Logger portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "a09e559259ac30228b7fcface99d18bd40ff3d4d",
+      "sourceBodyRevision": "a649db99a27bda65274fe1b18866ae226d3c69cf"
+    },
+    {
+      "source": "a649db99a27bda65274fe1b18866ae226d3c69cf",
+      "identity": "a649db99a27bda65274fe1b18866ae226d3c69cf|d5d67b65a69ae4b53bfe94e2a669a5d4680696ab eb8ed86672bd9afccc6560b547b734d0fcd7363b|Merge remote-tracking branch 'origin/main'",
+      "path": "Maliev.LoggerService.Data/Maliev.LoggerService.Data.xml",
+      "group": "Defaults-only Logger portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "6214053a0c926526b9cd0abac13e3068224969a4",
+      "sourceBodyRevision": "a649db99a27bda65274fe1b18866ae226d3c69cf"
+    },
+    {
+      "source": "a649db99a27bda65274fe1b18866ae226d3c69cf",
+      "identity": "a649db99a27bda65274fe1b18866ae226d3c69cf|d5d67b65a69ae4b53bfe94e2a669a5d4680696ab eb8ed86672bd9afccc6560b547b734d0fcd7363b|Merge remote-tracking branch 'origin/main'",
+      "path": "Maliev.LoggerService.Data/Properties/Resources.Designer.cs",
+      "group": "Defaults-only Logger portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "4f55d9a10dbceeb09d4b90aa76379a8adf215b70",
+      "sourceBodyRevision": "a649db99a27bda65274fe1b18866ae226d3c69cf"
+    },
+    {
+      "source": "a649db99a27bda65274fe1b18866ae226d3c69cf",
+      "identity": "a649db99a27bda65274fe1b18866ae226d3c69cf|d5d67b65a69ae4b53bfe94e2a669a5d4680696ab eb8ed86672bd9afccc6560b547b734d0fcd7363b|Merge remote-tracking branch 'origin/main'",
+      "path": "Maliev.LoggerService.Data/Properties/Resources.resx",
+      "group": "Defaults-only Logger portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "48489871d2957b3cb6203bd15c9688653a688243",
+      "sourceBodyRevision": "a649db99a27bda65274fe1b18866ae226d3c69cf"
+    },
+    {
+      "source": "a649db99a27bda65274fe1b18866ae226d3c69cf",
+      "identity": "a649db99a27bda65274fe1b18866ae226d3c69cf|d5d67b65a69ae4b53bfe94e2a669a5d4680696ab eb8ed86672bd9afccc6560b547b734d0fcd7363b|Merge remote-tracking branch 'origin/main'",
+      "path": "Maliev.LoggerService.Data/ScaffoldContext.ps1",
+      "group": "Defaults-only Logger portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "b804b5ff36c753c92da0e95db3639778610bcf57",
+      "sourceBodyRevision": "a649db99a27bda65274fe1b18866ae226d3c69cf"
+    },
+    {
+      "source": "03eaff1194c3ae2a54ceefeae31deffaff90436f",
+      "identity": "03eaff1194c3ae2a54ceefeae31deffaff90436f|5b6d94a02a7578783e0980af10ecd36856aba024|chore: add .dockerignore files for service Docker builds",
+      "path": "Maliev.LoggerService.Api/.dockerignore",
+      "group": "Defaults-only Logger portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "154abec4bdfb034fc76ea90bb6196b98b0ca4923",
+      "sourceBodyRevision": "03eaff1194c3ae2a54ceefeae31deffaff90436f"
+    },
+    {
+      "source": "72163e9ae11f39f6579423841a2e20529b986fab",
+      "identity": "72163e9ae11f39f6579423841a2e20529b986fab|91a8f128ae155e2fe046015e8d66f9ba4b306b30|fix: propagate deployment script status reliably",
+      "path": "Maliev.LoggerService.Api/deploy.ps1",
+      "group": "Defaults-only Logger portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "fab2a6be2b8e50ba17f65ce1fb95589ee6900266",
+      "sourceBodyRevision": "72163e9ae11f39f6579423841a2e20529b986fab"
+    },
+    {
+      "source": "72163e9ae11f39f6579423841a2e20529b986fab",
+      "identity": "72163e9ae11f39f6579423841a2e20529b986fab|91a8f128ae155e2fe046015e8d66f9ba4b306b30|fix: propagate deployment script status reliably",
+      "path": "Maliev.LoggerService.Api/deploy-service.ps1",
+      "group": "Defaults-only Logger portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "9e70e5638a739354d1f54a079fac2bc798373896",
+      "sourceBodyRevision": "72163e9ae11f39f6579423841a2e20529b986fab"
+    },
+    {
+      "source": "f8921b1b1d5846eeaff999af10b640011655d1d4",
+      "identity": "f8921b1b1d5846eeaff999af10b640011655d1d4|601a0251204bfa0635dbf50f84c32d82863236a5|Render deployment manifests to a throwaway copy in every service",
+      "path": "Maliev.LoggerService.Api/deploy.ps1",
+      "group": "Defaults-only Logger portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "8021df62dab842797cf194b9a88a753960adffa9",
+      "sourceBodyRevision": "f8921b1b1d5846eeaff999af10b640011655d1d4"
+    },
+    {
+      "source": "ee2bb593830c0b8aa30874d162ba2edee1596fea",
+      "identity": "ee2bb593830c0b8aa30874d162ba2edee1596fea|da854dfb86a3eb7093a81a63c7542bf30e099729|fix(web): correlate error pages with GKE logs",
+      "path": "Maliev.LoggerService.NLog/nlog.config",
+      "group": "Defaults-only Logger portion",
+      "classification": "Operational adapter behavior requires approved native replacement",
+      "disposition": "Defaults owner adaptation or artifact supersession supported by exact source chain and retained native evidence; owner acceptance pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeJsonLoggingTests.Defaults_ConfigureScopedUtcJsonAndActivityCorrelation",
+          "outcome": "Passed",
+          "testId": "c6968165-21ef-3044-25ed-64c162cb3bcd"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeJsonLoggingTests.Defaults_PreserveExistingProvidersFiltersAndOpenTelemetry",
+          "outcome": "Passed",
+          "testId": "38708aa4-6635-9139-2d24-c0829241d5e0"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.Defaults_EmitActualScopedUtcJson_AndDeliverToExistingProvider",
+          "outcome": "Passed",
+          "testId": "f636087d-07f8-4329-6adc-7962c39d49fb"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.Defaults_MapAllCloudSeveritiesWithoutSerializingExceptionText",
+          "outcome": "Passed",
+          "testId": "75dbd30e-ea9d-5bcb-ff51-19476cdaf6b5"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProvenanceTests.Write_ThrownNestedException_EmitsTypesAndCodeOwnedOuterMethodWithoutPrivateText",
+          "outcome": "Passed",
+          "testId": "89646abb-e4e3-e714-6ea1-1b8f919fcb18"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.Middleware.ExceptionEventLoggingTests.Failure_EmitsCorrelatedNativeEventWithoutSecrets_AndPreservesJson",
+          "outcome": "Passed",
+          "testId": "645c8b68-69ba-296e-be87-98a5892e2a0c"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProducerContractTests.Private_formatter_emits_native_severity_without_rendering_protected_text",
+          "outcome": "Passed",
+          "testId": "72c9386c-1608-12d0-b72a-7a8ea21a3b1b"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.StandardPipeline_ControlledHttpFailure_EmitsOneCorrelatedRedactedEvent",
+          "outcome": "Passed",
+          "testId": "1c91f3c2-b8b8-ff7e-51c0-e2e709223ce8"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.StandardPipeline_ControlledHttpFailure_EmitsOneCorrelatedRedactedEvent",
+          "outcome": "Passed",
+          "testId": "6ca3151d-4402-9cb6-44df-8b384f7dc2e5"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProducerContractTests.Private_formatter_emits_native_severity_without_rendering_protected_text",
+          "outcome": "Passed",
+          "testId": "10e8cacf-9c16-dc00-170d-7d5dbf37c30c"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.StandardPipeline_ControlledHttpFailure_EmitsOneCorrelatedRedactedEvent",
+          "outcome": "Passed",
+          "testId": "4adf6553-0d5e-4df6-dd0d-e0b6f27939d4"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.Middleware.ExceptionEventLoggingTests.Failure_EmitsCorrelatedNativeEventWithoutSecrets_AndPreservesJson",
+          "outcome": "Passed",
+          "testId": "c6dabd7a-cb76-a399-3809-6e78eab7e23a"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProducerContractTests.Private_formatter_emits_native_severity_without_rendering_protected_text",
+          "outcome": "Passed",
+          "testId": "d773b6b1-6577-a0e8-5336-639f2c8b54ba"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.Middleware.ExceptionEventLoggingTests.MatchedFailure_LogsRouteTemplateWithoutLiteralIdentifier",
+          "outcome": "Passed",
+          "testId": "b45872c9-d0d0-b1d8-ce27-185c2ea62352"
+        }
+      ],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [
+        "provider-correlation",
+        "private-failure"
+      ],
+      "sourceBlob": "7c1d811e37985b306272e21f64da6b526bcaafa7",
+      "sourceBodyRevision": "ee2bb593830c0b8aa30874d162ba2edee1596fea"
+    },
+    {
+      "source": "143f53ba0a1c81c78d252864ca131d42ed79dc1b",
+      "identity": "143f53ba0a1c81c78d252864ca131d42ed79dc1b|618e3598c3da50c60845320479d36ecb4fcec264|fix: require runtime secrets across production services",
+      "path": "Maliev.LoggerService.Api/deployment.yaml",
+      "group": "Defaults-only Logger portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "cf89f7c700f25686026f4eb61e9f4f680f4a604a",
+      "sourceBodyRevision": "143f53ba0a1c81c78d252864ca131d42ed79dc1b"
+    },
+    {
+      "source": "abc057c985053c983ff3a23a78dcfe3ba1d0b2be",
+      "identity": "abc057c985053c983ff3a23a78dcfe3ba1d0b2be|baca341824ea727042095cf0a286d33c180a7892|feat: add distributed trace fields to production logs",
+      "path": "Maliev.LoggerService.NLog/ILoggerManager.cs",
+      "group": "Defaults-only Logger portion",
+      "classification": "Operational adapter behavior requires approved native replacement",
+      "disposition": "Defaults owner adaptation or artifact supersession supported by exact source chain and retained native evidence; owner acceptance pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeJsonLoggingTests.Defaults_ConfigureScopedUtcJsonAndActivityCorrelation",
+          "outcome": "Passed",
+          "testId": "c6968165-21ef-3044-25ed-64c162cb3bcd"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeJsonLoggingTests.Defaults_PreserveExistingProvidersFiltersAndOpenTelemetry",
+          "outcome": "Passed",
+          "testId": "38708aa4-6635-9139-2d24-c0829241d5e0"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.Defaults_EmitActualScopedUtcJson_AndDeliverToExistingProvider",
+          "outcome": "Passed",
+          "testId": "f636087d-07f8-4329-6adc-7962c39d49fb"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.Defaults_MapAllCloudSeveritiesWithoutSerializingExceptionText",
+          "outcome": "Passed",
+          "testId": "75dbd30e-ea9d-5bcb-ff51-19476cdaf6b5"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProvenanceTests.Write_ThrownNestedException_EmitsTypesAndCodeOwnedOuterMethodWithoutPrivateText",
+          "outcome": "Passed",
+          "testId": "89646abb-e4e3-e714-6ea1-1b8f919fcb18"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.Middleware.ExceptionEventLoggingTests.Failure_EmitsCorrelatedNativeEventWithoutSecrets_AndPreservesJson",
+          "outcome": "Passed",
+          "testId": "645c8b68-69ba-296e-be87-98a5892e2a0c"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProducerContractTests.Private_formatter_emits_native_severity_without_rendering_protected_text",
+          "outcome": "Passed",
+          "testId": "72c9386c-1608-12d0-b72a-7a8ea21a3b1b"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.StandardPipeline_ControlledHttpFailure_EmitsOneCorrelatedRedactedEvent",
+          "outcome": "Passed",
+          "testId": "1c91f3c2-b8b8-ff7e-51c0-e2e709223ce8"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.StandardPipeline_ControlledHttpFailure_EmitsOneCorrelatedRedactedEvent",
+          "outcome": "Passed",
+          "testId": "6ca3151d-4402-9cb6-44df-8b384f7dc2e5"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProducerContractTests.Private_formatter_emits_native_severity_without_rendering_protected_text",
+          "outcome": "Passed",
+          "testId": "10e8cacf-9c16-dc00-170d-7d5dbf37c30c"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.StandardPipeline_ControlledHttpFailure_EmitsOneCorrelatedRedactedEvent",
+          "outcome": "Passed",
+          "testId": "4adf6553-0d5e-4df6-dd0d-e0b6f27939d4"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.Middleware.ExceptionEventLoggingTests.Failure_EmitsCorrelatedNativeEventWithoutSecrets_AndPreservesJson",
+          "outcome": "Passed",
+          "testId": "c6dabd7a-cb76-a399-3809-6e78eab7e23a"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProducerContractTests.Private_formatter_emits_native_severity_without_rendering_protected_text",
+          "outcome": "Passed",
+          "testId": "d773b6b1-6577-a0e8-5336-639f2c8b54ba"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.Middleware.ExceptionEventLoggingTests.MatchedFailure_LogsRouteTemplateWithoutLiteralIdentifier",
+          "outcome": "Passed",
+          "testId": "b45872c9-d0d0-b1d8-ce27-185c2ea62352"
+        }
+      ],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [
+        "provider-correlation",
+        "private-failure"
+      ],
+      "sourceBlob": "d3f1b8b26bc4b50a1c3eb9ff2861da79ab62bdf5",
+      "sourceBodyRevision": "abc057c985053c983ff3a23a78dcfe3ba1d0b2be"
+    },
+    {
+      "source": "abc057c985053c983ff3a23a78dcfe3ba1d0b2be",
+      "identity": "abc057c985053c983ff3a23a78dcfe3ba1d0b2be|baca341824ea727042095cf0a286d33c180a7892|feat: add distributed trace fields to production logs",
+      "path": "Maliev.LoggerService.NLog/LoggerManager.cs",
+      "group": "Defaults-only Logger portion",
+      "classification": "Operational adapter behavior requires approved native replacement",
+      "disposition": "Defaults owner adaptation or artifact supersession supported by exact source chain and retained native evidence; owner acceptance pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeJsonLoggingTests.Defaults_ConfigureScopedUtcJsonAndActivityCorrelation",
+          "outcome": "Passed",
+          "testId": "c6968165-21ef-3044-25ed-64c162cb3bcd"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeJsonLoggingTests.Defaults_PreserveExistingProvidersFiltersAndOpenTelemetry",
+          "outcome": "Passed",
+          "testId": "38708aa4-6635-9139-2d24-c0829241d5e0"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.Defaults_EmitActualScopedUtcJson_AndDeliverToExistingProvider",
+          "outcome": "Passed",
+          "testId": "f636087d-07f8-4329-6adc-7962c39d49fb"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.Defaults_MapAllCloudSeveritiesWithoutSerializingExceptionText",
+          "outcome": "Passed",
+          "testId": "75dbd30e-ea9d-5bcb-ff51-19476cdaf6b5"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProvenanceTests.Write_ThrownNestedException_EmitsTypesAndCodeOwnedOuterMethodWithoutPrivateText",
+          "outcome": "Passed",
+          "testId": "89646abb-e4e3-e714-6ea1-1b8f919fcb18"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.Middleware.ExceptionEventLoggingTests.Failure_EmitsCorrelatedNativeEventWithoutSecrets_AndPreservesJson",
+          "outcome": "Passed",
+          "testId": "645c8b68-69ba-296e-be87-98a5892e2a0c"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProducerContractTests.Private_formatter_emits_native_severity_without_rendering_protected_text",
+          "outcome": "Passed",
+          "testId": "72c9386c-1608-12d0-b72a-7a8ea21a3b1b"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.StandardPipeline_ControlledHttpFailure_EmitsOneCorrelatedRedactedEvent",
+          "outcome": "Passed",
+          "testId": "1c91f3c2-b8b8-ff7e-51c0-e2e709223ce8"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.StandardPipeline_ControlledHttpFailure_EmitsOneCorrelatedRedactedEvent",
+          "outcome": "Passed",
+          "testId": "6ca3151d-4402-9cb6-44df-8b384f7dc2e5"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProducerContractTests.Private_formatter_emits_native_severity_without_rendering_protected_text",
+          "outcome": "Passed",
+          "testId": "10e8cacf-9c16-dc00-170d-7d5dbf37c30c"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.StandardPipeline_ControlledHttpFailure_EmitsOneCorrelatedRedactedEvent",
+          "outcome": "Passed",
+          "testId": "4adf6553-0d5e-4df6-dd0d-e0b6f27939d4"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.Middleware.ExceptionEventLoggingTests.Failure_EmitsCorrelatedNativeEventWithoutSecrets_AndPreservesJson",
+          "outcome": "Passed",
+          "testId": "c6dabd7a-cb76-a399-3809-6e78eab7e23a"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProducerContractTests.Private_formatter_emits_native_severity_without_rendering_protected_text",
+          "outcome": "Passed",
+          "testId": "d773b6b1-6577-a0e8-5336-639f2c8b54ba"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.Middleware.ExceptionEventLoggingTests.MatchedFailure_LogsRouteTemplateWithoutLiteralIdentifier",
+          "outcome": "Passed",
+          "testId": "b45872c9-d0d0-b1d8-ce27-185c2ea62352"
+        }
+      ],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [
+        "provider-correlation",
+        "private-failure"
+      ],
+      "sourceBlob": "085d5dfef84dda5e27a82ec8a2f2773de16143a4",
+      "sourceBodyRevision": "abc057c985053c983ff3a23a78dcfe3ba1d0b2be"
+    },
+    {
+      "source": "abc057c985053c983ff3a23a78dcfe3ba1d0b2be",
+      "identity": "abc057c985053c983ff3a23a78dcfe3ba1d0b2be|baca341824ea727042095cf0a286d33c180a7892|feat: add distributed trace fields to production logs",
+      "path": "Maliev.LoggerService.NLog/Maliev.LoggerService.NLog.csproj",
+      "group": "Defaults-only Logger portion",
+      "classification": "Operational adapter behavior requires approved native replacement",
+      "disposition": "Defaults owner adaptation or artifact supersession supported by exact source chain and retained native evidence; owner acceptance pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.Source5acLoggingRemovalContractTests.SharedDefaults_DoNotDependOnRetiredNativeLoggingAssemblyOrSourceApi",
+          "outcome": "Passed",
+          "testId": "26652739-9513-2d27-19f0-75569fbd133a"
+        }
+      ],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [
+        "obsolete-adapter-artifact"
+      ],
+      "sourceBlob": "09404715aeb20f863ba08de8f73ec7a7bb4cf4a5",
+      "sourceBodyRevision": "abc057c985053c983ff3a23a78dcfe3ba1d0b2be"
+    },
+    {
+      "source": "abc057c985053c983ff3a23a78dcfe3ba1d0b2be",
+      "identity": "abc057c985053c983ff3a23a78dcfe3ba1d0b2be|baca341824ea727042095cf0a286d33c180a7892|feat: add distributed trace fields to production logs",
+      "path": "Maliev.LoggerService.NLog/Maliev.LoggerService.xml",
+      "group": "Defaults-only Logger portion",
+      "classification": "Operational adapter behavior requires approved native replacement",
+      "disposition": "Defaults owner adaptation or artifact supersession supported by exact source chain and retained native evidence; owner acceptance pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.Source5acLoggingRemovalContractTests.SharedDefaults_DoNotDependOnRetiredNativeLoggingAssemblyOrSourceApi",
+          "outcome": "Passed",
+          "testId": "26652739-9513-2d27-19f0-75569fbd133a"
+        }
+      ],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [
+        "obsolete-adapter-artifact"
+      ],
+      "sourceBlob": "cee5c55e43f8eac72fab06a6cdf1d5da183a4292",
+      "sourceBodyRevision": "abc057c985053c983ff3a23a78dcfe3ba1d0b2be"
+    },
+    {
+      "source": "abc057c985053c983ff3a23a78dcfe3ba1d0b2be",
+      "identity": "abc057c985053c983ff3a23a78dcfe3ba1d0b2be|baca341824ea727042095cf0a286d33c180a7892|feat: add distributed trace fields to production logs",
+      "path": "Maliev.LoggerService.NLog/nlog.config",
+      "group": "Defaults-only Logger portion",
+      "classification": "Operational adapter behavior requires approved native replacement",
+      "disposition": "Defaults owner adaptation or artifact supersession supported by exact source chain and retained native evidence; owner acceptance pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeJsonLoggingTests.Defaults_ConfigureScopedUtcJsonAndActivityCorrelation",
+          "outcome": "Passed",
+          "testId": "c6968165-21ef-3044-25ed-64c162cb3bcd"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeJsonLoggingTests.Defaults_PreserveExistingProvidersFiltersAndOpenTelemetry",
+          "outcome": "Passed",
+          "testId": "38708aa4-6635-9139-2d24-c0829241d5e0"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.Defaults_EmitActualScopedUtcJson_AndDeliverToExistingProvider",
+          "outcome": "Passed",
+          "testId": "f636087d-07f8-4329-6adc-7962c39d49fb"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.Defaults_MapAllCloudSeveritiesWithoutSerializingExceptionText",
+          "outcome": "Passed",
+          "testId": "75dbd30e-ea9d-5bcb-ff51-19476cdaf6b5"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProvenanceTests.Write_ThrownNestedException_EmitsTypesAndCodeOwnedOuterMethodWithoutPrivateText",
+          "outcome": "Passed",
+          "testId": "89646abb-e4e3-e714-6ea1-1b8f919fcb18"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.Middleware.ExceptionEventLoggingTests.Failure_EmitsCorrelatedNativeEventWithoutSecrets_AndPreservesJson",
+          "outcome": "Passed",
+          "testId": "645c8b68-69ba-296e-be87-98a5892e2a0c"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProducerContractTests.Private_formatter_emits_native_severity_without_rendering_protected_text",
+          "outcome": "Passed",
+          "testId": "72c9386c-1608-12d0-b72a-7a8ea21a3b1b"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.StandardPipeline_ControlledHttpFailure_EmitsOneCorrelatedRedactedEvent",
+          "outcome": "Passed",
+          "testId": "1c91f3c2-b8b8-ff7e-51c0-e2e709223ce8"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.StandardPipeline_ControlledHttpFailure_EmitsOneCorrelatedRedactedEvent",
+          "outcome": "Passed",
+          "testId": "6ca3151d-4402-9cb6-44df-8b384f7dc2e5"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProducerContractTests.Private_formatter_emits_native_severity_without_rendering_protected_text",
+          "outcome": "Passed",
+          "testId": "10e8cacf-9c16-dc00-170d-7d5dbf37c30c"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.StandardPipeline_ControlledHttpFailure_EmitsOneCorrelatedRedactedEvent",
+          "outcome": "Passed",
+          "testId": "4adf6553-0d5e-4df6-dd0d-e0b6f27939d4"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.Middleware.ExceptionEventLoggingTests.Failure_EmitsCorrelatedNativeEventWithoutSecrets_AndPreservesJson",
+          "outcome": "Passed",
+          "testId": "c6dabd7a-cb76-a399-3809-6e78eab7e23a"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProducerContractTests.Private_formatter_emits_native_severity_without_rendering_protected_text",
+          "outcome": "Passed",
+          "testId": "d773b6b1-6577-a0e8-5336-639f2c8b54ba"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.Middleware.ExceptionEventLoggingTests.MatchedFailure_LogsRouteTemplateWithoutLiteralIdentifier",
+          "outcome": "Passed",
+          "testId": "b45872c9-d0d0-b1d8-ce27-185c2ea62352"
+        }
+      ],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [
+        "provider-correlation",
+        "private-failure"
+      ],
+      "sourceBlob": "c83f6941e85e6feec948b8efab56a07af901b838",
+      "sourceBodyRevision": "abc057c985053c983ff3a23a78dcfe3ba1d0b2be"
+    },
+    {
+      "source": "abc057c985053c983ff3a23a78dcfe3ba1d0b2be",
+      "identity": "abc057c985053c983ff3a23a78dcfe3ba1d0b2be|baca341824ea727042095cf0a286d33c180a7892|feat: add distributed trace fields to production logs",
+      "path": "Maliev.LoggerService.NLog/RequestFailureLogEvent.cs",
+      "group": "Defaults-only Logger portion",
+      "classification": "Operational adapter behavior requires approved native replacement",
+      "disposition": "Defaults owner adaptation or artifact supersession supported by exact source chain and retained native evidence; owner acceptance pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProvenanceTests.Write_ThrownNestedException_EmitsTypesAndCodeOwnedOuterMethodWithoutPrivateText",
+          "outcome": "Passed",
+          "testId": "89646abb-e4e3-e714-6ea1-1b8f919fcb18"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.Middleware.ExceptionEventLoggingTests.Failure_EmitsCorrelatedNativeEventWithoutSecrets_AndPreservesJson",
+          "outcome": "Passed",
+          "testId": "645c8b68-69ba-296e-be87-98a5892e2a0c"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProducerContractTests.Private_formatter_emits_native_severity_without_rendering_protected_text",
+          "outcome": "Passed",
+          "testId": "72c9386c-1608-12d0-b72a-7a8ea21a3b1b"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.StandardPipeline_ControlledHttpFailure_EmitsOneCorrelatedRedactedEvent",
+          "outcome": "Passed",
+          "testId": "1c91f3c2-b8b8-ff7e-51c0-e2e709223ce8"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.StandardPipeline_ControlledHttpFailure_EmitsOneCorrelatedRedactedEvent",
+          "outcome": "Passed",
+          "testId": "6ca3151d-4402-9cb6-44df-8b384f7dc2e5"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProducerContractTests.Private_formatter_emits_native_severity_without_rendering_protected_text",
+          "outcome": "Passed",
+          "testId": "10e8cacf-9c16-dc00-170d-7d5dbf37c30c"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.StandardPipeline_ControlledHttpFailure_EmitsOneCorrelatedRedactedEvent",
+          "outcome": "Passed",
+          "testId": "4adf6553-0d5e-4df6-dd0d-e0b6f27939d4"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.Middleware.ExceptionEventLoggingTests.Failure_EmitsCorrelatedNativeEventWithoutSecrets_AndPreservesJson",
+          "outcome": "Passed",
+          "testId": "c6dabd7a-cb76-a399-3809-6e78eab7e23a"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProducerContractTests.Private_formatter_emits_native_severity_without_rendering_protected_text",
+          "outcome": "Passed",
+          "testId": "d773b6b1-6577-a0e8-5336-639f2c8b54ba"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.Middleware.ExceptionEventLoggingTests.MatchedFailure_LogsRouteTemplateWithoutLiteralIdentifier",
+          "outcome": "Passed",
+          "testId": "b45872c9-d0d0-b1d8-ce27-185c2ea62352"
+        }
+      ],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [
+        "private-failure"
+      ],
+      "sourceBlob": "576c5697b9d39d161cea91f0b221c83d88796e04",
+      "sourceBodyRevision": "abc057c985053c983ff3a23a78dcfe3ba1d0b2be"
+    },
+    {
+      "source": "5fac706a7983a6d359b39acbd670e6800afe020e",
+      "identity": "5fac706a7983a6d359b39acbd670e6800afe020e||Initial commit",
+      "path": "Maliev.LoggerService.Api/appsettings.Development.json",
+      "group": "Mixed Defaults portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "e203e9407e74a6b9662aab8fde5d73ae64665f18",
+      "sourceBodyRevision": "5fac706a7983a6d359b39acbd670e6800afe020e"
+    },
+    {
+      "source": "5fac706a7983a6d359b39acbd670e6800afe020e",
+      "identity": "5fac706a7983a6d359b39acbd670e6800afe020e||Initial commit",
+      "path": "Maliev.LoggerService.Api/appsettings.json",
+      "group": "Mixed Defaults portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "692a19f922619691446b526a0ba620de9b181e01",
+      "sourceBodyRevision": "5fac706a7983a6d359b39acbd670e6800afe020e"
+    },
+    {
+      "source": "5fac706a7983a6d359b39acbd670e6800afe020e",
+      "identity": "5fac706a7983a6d359b39acbd670e6800afe020e||Initial commit",
+      "path": "Maliev.LoggerService.Api/Controllers/LogsController.cs",
+      "group": "Mixed Defaults portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "51065f4cad0876b759bf072517ec8da817caf392",
+      "sourceBodyRevision": "5fac706a7983a6d359b39acbd670e6800afe020e"
+    },
+    {
+      "source": "5fac706a7983a6d359b39acbd670e6800afe020e",
+      "identity": "5fac706a7983a6d359b39acbd670e6800afe020e||Initial commit",
+      "path": "Maliev.LoggerService.Api/deployment.yaml",
+      "group": "Mixed Defaults portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "5cd667a06c37f5169420770c9e18531318b809eb",
+      "sourceBodyRevision": "5fac706a7983a6d359b39acbd670e6800afe020e"
+    },
+    {
+      "source": "5fac706a7983a6d359b39acbd670e6800afe020e",
+      "identity": "5fac706a7983a6d359b39acbd670e6800afe020e||Initial commit",
+      "path": "Maliev.LoggerService.Api/deploy.ps1",
+      "group": "Mixed Defaults portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "b005ef7d4cb693a50762ca5554b8386ccceccf02",
+      "sourceBodyRevision": "5fac706a7983a6d359b39acbd670e6800afe020e"
+    },
+    {
+      "source": "5fac706a7983a6d359b39acbd670e6800afe020e",
+      "identity": "5fac706a7983a6d359b39acbd670e6800afe020e||Initial commit",
+      "path": "Maliev.LoggerService.Api/Dockerfile",
+      "group": "Mixed Defaults portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "f8b667c728bb9eb8a6864f0cd84016e50e2ed3ee",
+      "sourceBodyRevision": "5fac706a7983a6d359b39acbd670e6800afe020e"
+    },
+    {
+      "source": "5fac706a7983a6d359b39acbd670e6800afe020e",
+      "identity": "5fac706a7983a6d359b39acbd670e6800afe020e||Initial commit",
+      "path": "Maliev.LoggerService.Api/Dockerfile.self-contained",
+      "group": "Mixed Defaults portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "054d7dee7fded2b315c8d7dc76cb15d9c1f41d58",
+      "sourceBodyRevision": "5fac706a7983a6d359b39acbd670e6800afe020e"
+    },
+    {
+      "source": "5fac706a7983a6d359b39acbd670e6800afe020e",
+      "identity": "5fac706a7983a6d359b39acbd670e6800afe020e||Initial commit",
+      "path": "Maliev.LoggerService.Api/Maliev.LoggerService.Api.csproj",
+      "group": "Mixed Defaults portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "27f1f15a63b2718b3fe3f9686566434bd937a01a",
+      "sourceBodyRevision": "5fac706a7983a6d359b39acbd670e6800afe020e"
+    },
+    {
+      "source": "5fac706a7983a6d359b39acbd670e6800afe020e",
+      "identity": "5fac706a7983a6d359b39acbd670e6800afe020e||Initial commit",
+      "path": "Maliev.LoggerService.Api/Maliev.LoggerService.Api.xml",
+      "group": "Mixed Defaults portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "2c3c3649ac6b3c7f6d95b5a78e8f034008ad8900",
+      "sourceBodyRevision": "5fac706a7983a6d359b39acbd670e6800afe020e"
+    },
+    {
+      "source": "5fac706a7983a6d359b39acbd670e6800afe020e",
+      "identity": "5fac706a7983a6d359b39acbd670e6800afe020e||Initial commit",
+      "path": "Maliev.LoggerService.Api/Program.cs",
+      "group": "Mixed Defaults portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "00ca7203e1e6e039eb1c61c764de3fc637cc28cc",
+      "sourceBodyRevision": "5fac706a7983a6d359b39acbd670e6800afe020e"
+    },
+    {
+      "source": "5fac706a7983a6d359b39acbd670e6800afe020e",
+      "identity": "5fac706a7983a6d359b39acbd670e6800afe020e||Initial commit",
+      "path": "Maliev.LoggerService.Api/Properties/launchSettings.json",
+      "group": "Mixed Defaults portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "b7bf7d088ac5761fc4b6163d17c154ebae5b4a3e",
+      "sourceBodyRevision": "5fac706a7983a6d359b39acbd670e6800afe020e"
+    },
+    {
+      "source": "5fac706a7983a6d359b39acbd670e6800afe020e",
+      "identity": "5fac706a7983a6d359b39acbd670e6800afe020e||Initial commit",
+      "path": "Maliev.LoggerService.Api/ServiceExtensions.cs",
+      "group": "Mixed Defaults portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "441949005a33a08a71872f3b7477a81512714e93",
+      "sourceBodyRevision": "5fac706a7983a6d359b39acbd670e6800afe020e"
+    },
+    {
+      "source": "5fac706a7983a6d359b39acbd670e6800afe020e",
+      "identity": "5fac706a7983a6d359b39acbd670e6800afe020e||Initial commit",
+      "path": "Maliev.LoggerService.Api/Startup.cs",
+      "group": "Mixed Defaults portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "e352626cc66fd46b3c3b0dbe14ded88c6605f856",
+      "sourceBodyRevision": "5fac706a7983a6d359b39acbd670e6800afe020e"
+    },
+    {
+      "source": "5fac706a7983a6d359b39acbd670e6800afe020e",
+      "identity": "5fac706a7983a6d359b39acbd670e6800afe020e||Initial commit",
+      "path": "Maliev.LoggerService.Common/Enumerations/LogSortType.cs",
+      "group": "Mixed Defaults portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "258c44debbf13a4b8b5570fde6016d0da1747834",
+      "sourceBodyRevision": "5fac706a7983a6d359b39acbd670e6800afe020e"
+    },
+    {
+      "source": "5fac706a7983a6d359b39acbd670e6800afe020e",
+      "identity": "5fac706a7983a6d359b39acbd670e6800afe020e||Initial commit",
+      "path": "Maliev.LoggerService.Common/Maliev.LoggerService.Common.csproj",
+      "group": "Mixed Defaults portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "0c30d6b88414f8bf8ee47a0374f5cf251ea6b4b2",
+      "sourceBodyRevision": "5fac706a7983a6d359b39acbd670e6800afe020e"
+    },
+    {
+      "source": "5fac706a7983a6d359b39acbd670e6800afe020e",
+      "identity": "5fac706a7983a6d359b39acbd670e6800afe020e||Initial commit",
+      "path": "Maliev.LoggerService.Common/Maliev.LoggerService.Common.xml",
+      "group": "Mixed Defaults portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "91267b7f60464f9612199bcdd5bd2c1fb69406d9",
+      "sourceBodyRevision": "5fac706a7983a6d359b39acbd670e6800afe020e"
+    },
+    {
+      "source": "5fac706a7983a6d359b39acbd670e6800afe020e",
+      "identity": "5fac706a7983a6d359b39acbd670e6800afe020e||Initial commit",
+      "path": "Maliev.LoggerService.Data/Database/LoggerContext/LogContext.cs",
+      "group": "Mixed Defaults portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "24d5fe8d5251a56155124ab35eb99e942c2d4e87",
+      "sourceBodyRevision": "5fac706a7983a6d359b39acbd670e6800afe020e"
+    },
+    {
+      "source": "5fac706a7983a6d359b39acbd670e6800afe020e",
+      "identity": "5fac706a7983a6d359b39acbd670e6800afe020e||Initial commit",
+      "path": "Maliev.LoggerService.Data/Database/LoggerContext/Nlog.cs",
+      "group": "Mixed Defaults portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "4a39c5613fba51cb2ac6540b39ec291543da006c",
+      "sourceBodyRevision": "5fac706a7983a6d359b39acbd670e6800afe020e"
+    },
+    {
+      "source": "5fac706a7983a6d359b39acbd670e6800afe020e",
+      "identity": "5fac706a7983a6d359b39acbd670e6800afe020e||Initial commit",
+      "path": "Maliev.LoggerService.Data/Maliev.LoggerService.Data.csproj",
+      "group": "Mixed Defaults portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "0917fdcb5055b33f7fec0ff8699f38d7f1434ec2",
+      "sourceBodyRevision": "5fac706a7983a6d359b39acbd670e6800afe020e"
+    },
+    {
+      "source": "5fac706a7983a6d359b39acbd670e6800afe020e",
+      "identity": "5fac706a7983a6d359b39acbd670e6800afe020e||Initial commit",
+      "path": "Maliev.LoggerService.Data/Maliev.LoggerService.Data.xml",
+      "group": "Mixed Defaults portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "3700b26abb405c9e15994a1d9318924b1395a7ca",
+      "sourceBodyRevision": "5fac706a7983a6d359b39acbd670e6800afe020e"
+    },
+    {
+      "source": "5fac706a7983a6d359b39acbd670e6800afe020e",
+      "identity": "5fac706a7983a6d359b39acbd670e6800afe020e||Initial commit",
+      "path": "Maliev.LoggerService.Data/Properties/Resources.Designer.cs",
+      "group": "Mixed Defaults portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "eb8092db714b971ae1ad4ac3831e3a08087da7b0",
+      "sourceBodyRevision": "5fac706a7983a6d359b39acbd670e6800afe020e"
+    },
+    {
+      "source": "5fac706a7983a6d359b39acbd670e6800afe020e",
+      "identity": "5fac706a7983a6d359b39acbd670e6800afe020e||Initial commit",
+      "path": "Maliev.LoggerService.Data/Properties/Resources.resx",
+      "group": "Mixed Defaults portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "e017de65263c3f56f29fa52cbf2683a7b1693e3e",
+      "sourceBodyRevision": "5fac706a7983a6d359b39acbd670e6800afe020e"
+    },
+    {
+      "source": "5fac706a7983a6d359b39acbd670e6800afe020e",
+      "identity": "5fac706a7983a6d359b39acbd670e6800afe020e||Initial commit",
+      "path": "Maliev.LoggerService.Data/ScaffoldContext.ps1",
+      "group": "Mixed Defaults portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "a8816b2e1d6d87ac413a5bd377eab3a90a8de1b4",
+      "sourceBodyRevision": "5fac706a7983a6d359b39acbd670e6800afe020e"
+    },
+    {
+      "source": "5fac706a7983a6d359b39acbd670e6800afe020e",
+      "identity": "5fac706a7983a6d359b39acbd670e6800afe020e||Initial commit",
+      "path": "Maliev.LoggerService.NLog/ILoggerManager.cs",
+      "group": "Mixed Defaults portion",
+      "classification": "Operational adapter behavior requires approved native replacement",
+      "disposition": "Defaults owner adaptation or artifact supersession supported by exact source chain and retained native evidence; owner acceptance pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeJsonLoggingTests.Defaults_ConfigureScopedUtcJsonAndActivityCorrelation",
+          "outcome": "Passed",
+          "testId": "c6968165-21ef-3044-25ed-64c162cb3bcd"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeJsonLoggingTests.Defaults_PreserveExistingProvidersFiltersAndOpenTelemetry",
+          "outcome": "Passed",
+          "testId": "38708aa4-6635-9139-2d24-c0829241d5e0"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.Defaults_EmitActualScopedUtcJson_AndDeliverToExistingProvider",
+          "outcome": "Passed",
+          "testId": "f636087d-07f8-4329-6adc-7962c39d49fb"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.Defaults_MapAllCloudSeveritiesWithoutSerializingExceptionText",
+          "outcome": "Passed",
+          "testId": "75dbd30e-ea9d-5bcb-ff51-19476cdaf6b5"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProvenanceTests.Write_ThrownNestedException_EmitsTypesAndCodeOwnedOuterMethodWithoutPrivateText",
+          "outcome": "Passed",
+          "testId": "89646abb-e4e3-e714-6ea1-1b8f919fcb18"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.Middleware.ExceptionEventLoggingTests.Failure_EmitsCorrelatedNativeEventWithoutSecrets_AndPreservesJson",
+          "outcome": "Passed",
+          "testId": "645c8b68-69ba-296e-be87-98a5892e2a0c"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProducerContractTests.Private_formatter_emits_native_severity_without_rendering_protected_text",
+          "outcome": "Passed",
+          "testId": "72c9386c-1608-12d0-b72a-7a8ea21a3b1b"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.StandardPipeline_ControlledHttpFailure_EmitsOneCorrelatedRedactedEvent",
+          "outcome": "Passed",
+          "testId": "1c91f3c2-b8b8-ff7e-51c0-e2e709223ce8"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.StandardPipeline_ControlledHttpFailure_EmitsOneCorrelatedRedactedEvent",
+          "outcome": "Passed",
+          "testId": "6ca3151d-4402-9cb6-44df-8b384f7dc2e5"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProducerContractTests.Private_formatter_emits_native_severity_without_rendering_protected_text",
+          "outcome": "Passed",
+          "testId": "10e8cacf-9c16-dc00-170d-7d5dbf37c30c"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.StandardPipeline_ControlledHttpFailure_EmitsOneCorrelatedRedactedEvent",
+          "outcome": "Passed",
+          "testId": "4adf6553-0d5e-4df6-dd0d-e0b6f27939d4"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.Middleware.ExceptionEventLoggingTests.Failure_EmitsCorrelatedNativeEventWithoutSecrets_AndPreservesJson",
+          "outcome": "Passed",
+          "testId": "c6dabd7a-cb76-a399-3809-6e78eab7e23a"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProducerContractTests.Private_formatter_emits_native_severity_without_rendering_protected_text",
+          "outcome": "Passed",
+          "testId": "d773b6b1-6577-a0e8-5336-639f2c8b54ba"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.Middleware.ExceptionEventLoggingTests.MatchedFailure_LogsRouteTemplateWithoutLiteralIdentifier",
+          "outcome": "Passed",
+          "testId": "b45872c9-d0d0-b1d8-ce27-185c2ea62352"
+        }
+      ],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [
+        "provider-correlation",
+        "private-failure"
+      ],
+      "sourceBlob": "8c7c54ff44769249906be9d3d4699c13d837c699",
+      "sourceBodyRevision": "5fac706a7983a6d359b39acbd670e6800afe020e"
+    },
+    {
+      "source": "5fac706a7983a6d359b39acbd670e6800afe020e",
+      "identity": "5fac706a7983a6d359b39acbd670e6800afe020e||Initial commit",
+      "path": "Maliev.LoggerService.NLog/LoggerManager.cs",
+      "group": "Mixed Defaults portion",
+      "classification": "Operational adapter behavior requires approved native replacement",
+      "disposition": "Defaults owner adaptation or artifact supersession supported by exact source chain and retained native evidence; owner acceptance pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeJsonLoggingTests.Defaults_ConfigureScopedUtcJsonAndActivityCorrelation",
+          "outcome": "Passed",
+          "testId": "c6968165-21ef-3044-25ed-64c162cb3bcd"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeJsonLoggingTests.Defaults_PreserveExistingProvidersFiltersAndOpenTelemetry",
+          "outcome": "Passed",
+          "testId": "38708aa4-6635-9139-2d24-c0829241d5e0"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.Defaults_EmitActualScopedUtcJson_AndDeliverToExistingProvider",
+          "outcome": "Passed",
+          "testId": "f636087d-07f8-4329-6adc-7962c39d49fb"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.Defaults_MapAllCloudSeveritiesWithoutSerializingExceptionText",
+          "outcome": "Passed",
+          "testId": "75dbd30e-ea9d-5bcb-ff51-19476cdaf6b5"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProvenanceTests.Write_ThrownNestedException_EmitsTypesAndCodeOwnedOuterMethodWithoutPrivateText",
+          "outcome": "Passed",
+          "testId": "89646abb-e4e3-e714-6ea1-1b8f919fcb18"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.Middleware.ExceptionEventLoggingTests.Failure_EmitsCorrelatedNativeEventWithoutSecrets_AndPreservesJson",
+          "outcome": "Passed",
+          "testId": "645c8b68-69ba-296e-be87-98a5892e2a0c"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProducerContractTests.Private_formatter_emits_native_severity_without_rendering_protected_text",
+          "outcome": "Passed",
+          "testId": "72c9386c-1608-12d0-b72a-7a8ea21a3b1b"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.StandardPipeline_ControlledHttpFailure_EmitsOneCorrelatedRedactedEvent",
+          "outcome": "Passed",
+          "testId": "1c91f3c2-b8b8-ff7e-51c0-e2e709223ce8"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.StandardPipeline_ControlledHttpFailure_EmitsOneCorrelatedRedactedEvent",
+          "outcome": "Passed",
+          "testId": "6ca3151d-4402-9cb6-44df-8b384f7dc2e5"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProducerContractTests.Private_formatter_emits_native_severity_without_rendering_protected_text",
+          "outcome": "Passed",
+          "testId": "10e8cacf-9c16-dc00-170d-7d5dbf37c30c"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.StandardPipeline_ControlledHttpFailure_EmitsOneCorrelatedRedactedEvent",
+          "outcome": "Passed",
+          "testId": "4adf6553-0d5e-4df6-dd0d-e0b6f27939d4"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.Middleware.ExceptionEventLoggingTests.Failure_EmitsCorrelatedNativeEventWithoutSecrets_AndPreservesJson",
+          "outcome": "Passed",
+          "testId": "c6dabd7a-cb76-a399-3809-6e78eab7e23a"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProducerContractTests.Private_formatter_emits_native_severity_without_rendering_protected_text",
+          "outcome": "Passed",
+          "testId": "d773b6b1-6577-a0e8-5336-639f2c8b54ba"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.Middleware.ExceptionEventLoggingTests.MatchedFailure_LogsRouteTemplateWithoutLiteralIdentifier",
+          "outcome": "Passed",
+          "testId": "b45872c9-d0d0-b1d8-ce27-185c2ea62352"
+        }
+      ],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [
+        "provider-correlation",
+        "private-failure"
+      ],
+      "sourceBlob": "d33791c473ee172594f7d7326e47602e08b30dce",
+      "sourceBodyRevision": "5fac706a7983a6d359b39acbd670e6800afe020e"
+    },
+    {
+      "source": "5fac706a7983a6d359b39acbd670e6800afe020e",
+      "identity": "5fac706a7983a6d359b39acbd670e6800afe020e||Initial commit",
+      "path": "Maliev.LoggerService.NLog/Maliev.LoggerService.NLog.csproj",
+      "group": "Mixed Defaults portion",
+      "classification": "Operational adapter behavior requires approved native replacement",
+      "disposition": "Defaults owner adaptation or artifact supersession supported by exact source chain and retained native evidence; owner acceptance pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.Source5acLoggingRemovalContractTests.SharedDefaults_DoNotDependOnRetiredNativeLoggingAssemblyOrSourceApi",
+          "outcome": "Passed",
+          "testId": "26652739-9513-2d27-19f0-75569fbd133a"
+        }
+      ],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [
+        "obsolete-adapter-artifact"
+      ],
+      "sourceBlob": "378ebdcd1e2ea23f40f2a974c7b7fcf630afc610",
+      "sourceBodyRevision": "5fac706a7983a6d359b39acbd670e6800afe020e"
+    },
+    {
+      "source": "5fac706a7983a6d359b39acbd670e6800afe020e",
+      "identity": "5fac706a7983a6d359b39acbd670e6800afe020e||Initial commit",
+      "path": "Maliev.LoggerService.NLog/Maliev.LoggerService.xml",
+      "group": "Mixed Defaults portion",
+      "classification": "Operational adapter behavior requires approved native replacement",
+      "disposition": "Defaults owner adaptation or artifact supersession supported by exact source chain and retained native evidence; owner acceptance pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.Source5acLoggingRemovalContractTests.SharedDefaults_DoNotDependOnRetiredNativeLoggingAssemblyOrSourceApi",
+          "outcome": "Passed",
+          "testId": "26652739-9513-2d27-19f0-75569fbd133a"
+        }
+      ],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [
+        "obsolete-adapter-artifact"
+      ],
+      "sourceBlob": "4969c9d7ab3a971c0887bf99e7464f8f07dd6fe1",
+      "sourceBodyRevision": "5fac706a7983a6d359b39acbd670e6800afe020e"
+    },
+    {
+      "source": "5fac706a7983a6d359b39acbd670e6800afe020e",
+      "identity": "5fac706a7983a6d359b39acbd670e6800afe020e||Initial commit",
+      "path": "Maliev.LoggerService.NLog/nlog.config",
+      "group": "Mixed Defaults portion",
+      "classification": "Operational adapter behavior requires approved native replacement",
+      "disposition": "Defaults owner adaptation or artifact supersession supported by exact source chain and retained native evidence; owner acceptance pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeJsonLoggingTests.Defaults_ConfigureScopedUtcJsonAndActivityCorrelation",
+          "outcome": "Passed",
+          "testId": "c6968165-21ef-3044-25ed-64c162cb3bcd"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeJsonLoggingTests.Defaults_PreserveExistingProvidersFiltersAndOpenTelemetry",
+          "outcome": "Passed",
+          "testId": "38708aa4-6635-9139-2d24-c0829241d5e0"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.Defaults_EmitActualScopedUtcJson_AndDeliverToExistingProvider",
+          "outcome": "Passed",
+          "testId": "f636087d-07f8-4329-6adc-7962c39d49fb"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.Defaults_MapAllCloudSeveritiesWithoutSerializingExceptionText",
+          "outcome": "Passed",
+          "testId": "75dbd30e-ea9d-5bcb-ff51-19476cdaf6b5"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProvenanceTests.Write_ThrownNestedException_EmitsTypesAndCodeOwnedOuterMethodWithoutPrivateText",
+          "outcome": "Passed",
+          "testId": "89646abb-e4e3-e714-6ea1-1b8f919fcb18"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.Middleware.ExceptionEventLoggingTests.Failure_EmitsCorrelatedNativeEventWithoutSecrets_AndPreservesJson",
+          "outcome": "Passed",
+          "testId": "645c8b68-69ba-296e-be87-98a5892e2a0c"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProducerContractTests.Private_formatter_emits_native_severity_without_rendering_protected_text",
+          "outcome": "Passed",
+          "testId": "72c9386c-1608-12d0-b72a-7a8ea21a3b1b"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.StandardPipeline_ControlledHttpFailure_EmitsOneCorrelatedRedactedEvent",
+          "outcome": "Passed",
+          "testId": "1c91f3c2-b8b8-ff7e-51c0-e2e709223ce8"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.StandardPipeline_ControlledHttpFailure_EmitsOneCorrelatedRedactedEvent",
+          "outcome": "Passed",
+          "testId": "6ca3151d-4402-9cb6-44df-8b384f7dc2e5"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProducerContractTests.Private_formatter_emits_native_severity_without_rendering_protected_text",
+          "outcome": "Passed",
+          "testId": "10e8cacf-9c16-dc00-170d-7d5dbf37c30c"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.StandardPipeline_ControlledHttpFailure_EmitsOneCorrelatedRedactedEvent",
+          "outcome": "Passed",
+          "testId": "4adf6553-0d5e-4df6-dd0d-e0b6f27939d4"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.Middleware.ExceptionEventLoggingTests.Failure_EmitsCorrelatedNativeEventWithoutSecrets_AndPreservesJson",
+          "outcome": "Passed",
+          "testId": "c6dabd7a-cb76-a399-3809-6e78eab7e23a"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProducerContractTests.Private_formatter_emits_native_severity_without_rendering_protected_text",
+          "outcome": "Passed",
+          "testId": "d773b6b1-6577-a0e8-5336-639f2c8b54ba"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.Middleware.ExceptionEventLoggingTests.MatchedFailure_LogsRouteTemplateWithoutLiteralIdentifier",
+          "outcome": "Passed",
+          "testId": "b45872c9-d0d0-b1d8-ce27-185c2ea62352"
+        }
+      ],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [
+        "provider-correlation",
+        "private-failure"
+      ],
+      "sourceBlob": "a37906216b8ae6b5219f8261896959db452c3488",
+      "sourceBodyRevision": "5fac706a7983a6d359b39acbd670e6800afe020e"
+    },
+    {
+      "source": "5fac706a7983a6d359b39acbd670e6800afe020e",
+      "identity": "5fac706a7983a6d359b39acbd670e6800afe020e||Initial commit",
+      "path": "Maliev.LoggerService.Tests/Logs/GetLogDetailAsync_UnitTest.cs",
+      "group": "Mixed Defaults portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "967a7952751a6494bc623fb66ad9d4c96fc165f6",
+      "sourceBodyRevision": "5fac706a7983a6d359b39acbd670e6800afe020e"
+    },
+    {
+      "source": "5fac706a7983a6d359b39acbd670e6800afe020e",
+      "identity": "5fac706a7983a6d359b39acbd670e6800afe020e||Initial commit",
+      "path": "Maliev.LoggerService.Tests/Logs/GetPaginatedLogsAsync_UnitTest.cs",
+      "group": "Mixed Defaults portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "99f7da451a0aa07ec5e4c8462bc977b4230e7438",
+      "sourceBodyRevision": "5fac706a7983a6d359b39acbd670e6800afe020e"
+    },
+    {
+      "source": "5fac706a7983a6d359b39acbd670e6800afe020e",
+      "identity": "5fac706a7983a6d359b39acbd670e6800afe020e||Initial commit",
+      "path": "Maliev.LoggerService.Tests/Maliev.LoggerService.Tests.csproj",
+      "group": "Mixed Defaults portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "1e532f6cb2737b9cd6096da23bee1bb8aa9b2257",
+      "sourceBodyRevision": "5fac706a7983a6d359b39acbd670e6800afe020e"
+    },
+    {
+      "source": "5fac706a7983a6d359b39acbd670e6800afe020e",
+      "identity": "5fac706a7983a6d359b39acbd670e6800afe020e||Initial commit",
+      "path": "Maliev.LoggerService.Tests/Maliev.LoggerService.Tests.xml",
+      "group": "Mixed Defaults portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "2d1494ab5550ea8b6af57661def8a022b5402241",
+      "sourceBodyRevision": "5fac706a7983a6d359b39acbd670e6800afe020e"
+    },
+    {
+      "source": "72eb9f1949176392141951d35e6e06f7c30af4c2",
+      "identity": "72eb9f1949176392141951d35e6e06f7c30af4c2|023aa2f143fa5a8f557d72c1302b9add64792d6a|update",
+      "path": "Maliev.LoggerService.Api/Maliev.LoggerService.Api.csproj",
+      "group": "Mixed Defaults portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "1aeeb1dc148d42d6ded976de8e3eb69396090504",
+      "sourceBodyRevision": "72eb9f1949176392141951d35e6e06f7c30af4c2"
+    },
+    {
+      "source": "72eb9f1949176392141951d35e6e06f7c30af4c2",
+      "identity": "72eb9f1949176392141951d35e6e06f7c30af4c2|023aa2f143fa5a8f557d72c1302b9add64792d6a|update",
+      "path": "Maliev.LoggerService.Data/Database/LoggerContext/LogContext.cs",
+      "group": "Mixed Defaults portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "92409591c092e6b540a44c5bdb7a438897dd9484",
+      "sourceBodyRevision": "72eb9f1949176392141951d35e6e06f7c30af4c2"
+    },
+    {
+      "source": "72eb9f1949176392141951d35e6e06f7c30af4c2",
+      "identity": "72eb9f1949176392141951d35e6e06f7c30af4c2|023aa2f143fa5a8f557d72c1302b9add64792d6a|update",
+      "path": "Maliev.LoggerService.Data/Database/LoggerContext/Nlog.cs",
+      "group": "Mixed Defaults portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "774991b8186d25baf9496423778e676f902207af",
+      "sourceBodyRevision": "72eb9f1949176392141951d35e6e06f7c30af4c2"
+    },
+    {
+      "source": "72eb9f1949176392141951d35e6e06f7c30af4c2",
+      "identity": "72eb9f1949176392141951d35e6e06f7c30af4c2|023aa2f143fa5a8f557d72c1302b9add64792d6a|update",
+      "path": "Maliev.LoggerService.Data/Maliev.LoggerService.Data.xml",
+      "group": "Mixed Defaults portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "544e59ed4647457d281c85316f61a37d80cad3db",
+      "sourceBodyRevision": "72eb9f1949176392141951d35e6e06f7c30af4c2"
+    },
+    {
+      "source": "90f34b389c298d1ce85abe2ae7ac92877dbbf7af",
+      "identity": "90f34b389c298d1ce85abe2ae7ac92877dbbf7af|550eaeaac33f5e4fb016a48fc79459bc536a8f79|split the frontend deployment scripts",
+      "path": "Maliev.LoggerService.Api/Maliev.LoggerService.Api.csproj",
+      "group": "Mixed Defaults portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "6da4423be0a3a065aab5d17c830bc1fcc511f2c7",
+      "sourceBodyRevision": "90f34b389c298d1ce85abe2ae7ac92877dbbf7af"
+    },
+    {
+      "source": "90f34b389c298d1ce85abe2ae7ac92877dbbf7af",
+      "identity": "90f34b389c298d1ce85abe2ae7ac92877dbbf7af|550eaeaac33f5e4fb016a48fc79459bc536a8f79|split the frontend deployment scripts",
+      "path": "Maliev.LoggerService.Data/Maliev.LoggerService.Data.csproj",
+      "group": "Mixed Defaults portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "07becb6d9b486c5e69af4c122ab54b7c7e1a328d",
+      "sourceBodyRevision": "90f34b389c298d1ce85abe2ae7ac92877dbbf7af"
+    },
+    {
+      "source": "90f34b389c298d1ce85abe2ae7ac92877dbbf7af",
+      "identity": "90f34b389c298d1ce85abe2ae7ac92877dbbf7af|550eaeaac33f5e4fb016a48fc79459bc536a8f79|split the frontend deployment scripts",
+      "path": "Maliev.LoggerService.Tests/Maliev.LoggerService.Tests.csproj",
+      "group": "Mixed Defaults portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "c6dfb61e333b4372ca7d5177c5da3bb1cb868d05",
+      "sourceBodyRevision": "90f34b389c298d1ce85abe2ae7ac92877dbbf7af"
+    },
+    {
+      "source": "9e51e6c5da29de8e617b65b59d46882cde6d3b64",
+      "identity": "9e51e6c5da29de8e617b65b59d46882cde6d3b64|600e79ac9b2836f540cf1547d3efd20362912aae|Remove deprecated LoggerService and use native logging",
+      "path": "Maliev.LoggerService.Api/appsettings.Development.json",
+      "group": "Mixed Defaults portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "e203e9407e74a6b9662aab8fde5d73ae64665f18",
+      "sourceBodyRevision": "600e79ac9b2836f540cf1547d3efd20362912aae"
+    },
+    {
+      "source": "9e51e6c5da29de8e617b65b59d46882cde6d3b64",
+      "identity": "9e51e6c5da29de8e617b65b59d46882cde6d3b64|600e79ac9b2836f540cf1547d3efd20362912aae|Remove deprecated LoggerService and use native logging",
+      "path": "Maliev.LoggerService.Api/appsettings.json",
+      "group": "Mixed Defaults portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "0653165a6beef0822e4bf6d7efa84a7be999eeb1",
+      "sourceBodyRevision": "600e79ac9b2836f540cf1547d3efd20362912aae"
+    },
+    {
+      "source": "9e51e6c5da29de8e617b65b59d46882cde6d3b64",
+      "identity": "9e51e6c5da29de8e617b65b59d46882cde6d3b64|600e79ac9b2836f540cf1547d3efd20362912aae|Remove deprecated LoggerService and use native logging",
+      "path": "Maliev.LoggerService.Api/Controllers/LogsController.cs",
+      "group": "Mixed Defaults portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "51065f4cad0876b759bf072517ec8da817caf392",
+      "sourceBodyRevision": "600e79ac9b2836f540cf1547d3efd20362912aae"
+    },
+    {
+      "source": "9e51e6c5da29de8e617b65b59d46882cde6d3b64",
+      "identity": "9e51e6c5da29de8e617b65b59d46882cde6d3b64|600e79ac9b2836f540cf1547d3efd20362912aae|Remove deprecated LoggerService and use native logging",
+      "path": "Maliev.LoggerService.Api/deployment.yaml",
+      "group": "Mixed Defaults portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "cf89f7c700f25686026f4eb61e9f4f680f4a604a",
+      "sourceBodyRevision": "600e79ac9b2836f540cf1547d3efd20362912aae"
+    },
+    {
+      "source": "9e51e6c5da29de8e617b65b59d46882cde6d3b64",
+      "identity": "9e51e6c5da29de8e617b65b59d46882cde6d3b64|600e79ac9b2836f540cf1547d3efd20362912aae|Remove deprecated LoggerService and use native logging",
+      "path": "Maliev.LoggerService.Api/deploy.ps1",
+      "group": "Mixed Defaults portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "8021df62dab842797cf194b9a88a753960adffa9",
+      "sourceBodyRevision": "600e79ac9b2836f540cf1547d3efd20362912aae"
+    },
+    {
+      "source": "9e51e6c5da29de8e617b65b59d46882cde6d3b64",
+      "identity": "9e51e6c5da29de8e617b65b59d46882cde6d3b64|600e79ac9b2836f540cf1547d3efd20362912aae|Remove deprecated LoggerService and use native logging",
+      "path": "Maliev.LoggerService.Api/deploy-service.ps1",
+      "group": "Mixed Defaults portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "9e70e5638a739354d1f54a079fac2bc798373896",
+      "sourceBodyRevision": "600e79ac9b2836f540cf1547d3efd20362912aae"
+    },
+    {
+      "source": "9e51e6c5da29de8e617b65b59d46882cde6d3b64",
+      "identity": "9e51e6c5da29de8e617b65b59d46882cde6d3b64|600e79ac9b2836f540cf1547d3efd20362912aae|Remove deprecated LoggerService and use native logging",
+      "path": "Maliev.LoggerService.Api/Dockerfile",
+      "group": "Mixed Defaults portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "f8b667c728bb9eb8a6864f0cd84016e50e2ed3ee",
+      "sourceBodyRevision": "600e79ac9b2836f540cf1547d3efd20362912aae"
+    },
+    {
+      "source": "9e51e6c5da29de8e617b65b59d46882cde6d3b64",
+      "identity": "9e51e6c5da29de8e617b65b59d46882cde6d3b64|600e79ac9b2836f540cf1547d3efd20362912aae|Remove deprecated LoggerService and use native logging",
+      "path": "Maliev.LoggerService.Api/Dockerfile.self-contained",
+      "group": "Mixed Defaults portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "054d7dee7fded2b315c8d7dc76cb15d9c1f41d58",
+      "sourceBodyRevision": "600e79ac9b2836f540cf1547d3efd20362912aae"
+    },
+    {
+      "source": "9e51e6c5da29de8e617b65b59d46882cde6d3b64",
+      "identity": "9e51e6c5da29de8e617b65b59d46882cde6d3b64|600e79ac9b2836f540cf1547d3efd20362912aae|Remove deprecated LoggerService and use native logging",
+      "path": "Maliev.LoggerService.Api/.dockerignore",
+      "group": "Mixed Defaults portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "154abec4bdfb034fc76ea90bb6196b98b0ca4923",
+      "sourceBodyRevision": "600e79ac9b2836f540cf1547d3efd20362912aae"
+    },
+    {
+      "source": "9e51e6c5da29de8e617b65b59d46882cde6d3b64",
+      "identity": "9e51e6c5da29de8e617b65b59d46882cde6d3b64|600e79ac9b2836f540cf1547d3efd20362912aae|Remove deprecated LoggerService and use native logging",
+      "path": "Maliev.LoggerService.Api/Maliev.LoggerService.Api.csproj",
+      "group": "Mixed Defaults portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "6da4423be0a3a065aab5d17c830bc1fcc511f2c7",
+      "sourceBodyRevision": "600e79ac9b2836f540cf1547d3efd20362912aae"
+    },
+    {
+      "source": "9e51e6c5da29de8e617b65b59d46882cde6d3b64",
+      "identity": "9e51e6c5da29de8e617b65b59d46882cde6d3b64|600e79ac9b2836f540cf1547d3efd20362912aae|Remove deprecated LoggerService and use native logging",
+      "path": "Maliev.LoggerService.Api/Maliev.LoggerService.Api.xml",
+      "group": "Mixed Defaults portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "1e4976d246925fa80aa9b83e24bf1cf0f60f2a0d",
+      "sourceBodyRevision": "600e79ac9b2836f540cf1547d3efd20362912aae"
+    },
+    {
+      "source": "9e51e6c5da29de8e617b65b59d46882cde6d3b64",
+      "identity": "9e51e6c5da29de8e617b65b59d46882cde6d3b64|600e79ac9b2836f540cf1547d3efd20362912aae|Remove deprecated LoggerService and use native logging",
+      "path": "Maliev.LoggerService.Api/Program.cs",
+      "group": "Mixed Defaults portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "00ca7203e1e6e039eb1c61c764de3fc637cc28cc",
+      "sourceBodyRevision": "600e79ac9b2836f540cf1547d3efd20362912aae"
+    },
+    {
+      "source": "9e51e6c5da29de8e617b65b59d46882cde6d3b64",
+      "identity": "9e51e6c5da29de8e617b65b59d46882cde6d3b64|600e79ac9b2836f540cf1547d3efd20362912aae|Remove deprecated LoggerService and use native logging",
+      "path": "Maliev.LoggerService.Api/Properties/launchSettings.json",
+      "group": "Mixed Defaults portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "b7bf7d088ac5761fc4b6163d17c154ebae5b4a3e",
+      "sourceBodyRevision": "600e79ac9b2836f540cf1547d3efd20362912aae"
+    },
+    {
+      "source": "9e51e6c5da29de8e617b65b59d46882cde6d3b64",
+      "identity": "9e51e6c5da29de8e617b65b59d46882cde6d3b64|600e79ac9b2836f540cf1547d3efd20362912aae|Remove deprecated LoggerService and use native logging",
+      "path": "Maliev.LoggerService.Api/ServiceExtensions.cs",
+      "group": "Mixed Defaults portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "a6f753d1d7c67e25da7301d2fbb0122226f32157",
+      "sourceBodyRevision": "600e79ac9b2836f540cf1547d3efd20362912aae"
+    },
+    {
+      "source": "9e51e6c5da29de8e617b65b59d46882cde6d3b64",
+      "identity": "9e51e6c5da29de8e617b65b59d46882cde6d3b64|600e79ac9b2836f540cf1547d3efd20362912aae|Remove deprecated LoggerService and use native logging",
+      "path": "Maliev.LoggerService.Api/service.yaml",
+      "group": "Mixed Defaults portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "a00807162d32e71a500ae44ad2686e2dd601f108",
+      "sourceBodyRevision": "600e79ac9b2836f540cf1547d3efd20362912aae"
+    },
+    {
+      "source": "9e51e6c5da29de8e617b65b59d46882cde6d3b64",
+      "identity": "9e51e6c5da29de8e617b65b59d46882cde6d3b64|600e79ac9b2836f540cf1547d3efd20362912aae|Remove deprecated LoggerService and use native logging",
+      "path": "Maliev.LoggerService.Api/Startup.cs",
+      "group": "Mixed Defaults portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "0b365ea6f9e71665a31445cc9e2346462de143a6",
+      "sourceBodyRevision": "600e79ac9b2836f540cf1547d3efd20362912aae"
+    },
+    {
+      "source": "9e51e6c5da29de8e617b65b59d46882cde6d3b64",
+      "identity": "9e51e6c5da29de8e617b65b59d46882cde6d3b64|600e79ac9b2836f540cf1547d3efd20362912aae|Remove deprecated LoggerService and use native logging",
+      "path": "Maliev.LoggerService.Common/Enumerations/LogSortType.cs",
+      "group": "Mixed Defaults portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "258c44debbf13a4b8b5570fde6016d0da1747834",
+      "sourceBodyRevision": "600e79ac9b2836f540cf1547d3efd20362912aae"
+    },
+    {
+      "source": "9e51e6c5da29de8e617b65b59d46882cde6d3b64",
+      "identity": "9e51e6c5da29de8e617b65b59d46882cde6d3b64|600e79ac9b2836f540cf1547d3efd20362912aae|Remove deprecated LoggerService and use native logging",
+      "path": "Maliev.LoggerService.Common/Maliev.LoggerService.Common.csproj",
+      "group": "Mixed Defaults portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "0c30d6b88414f8bf8ee47a0374f5cf251ea6b4b2",
+      "sourceBodyRevision": "600e79ac9b2836f540cf1547d3efd20362912aae"
+    },
+    {
+      "source": "9e51e6c5da29de8e617b65b59d46882cde6d3b64",
+      "identity": "9e51e6c5da29de8e617b65b59d46882cde6d3b64|600e79ac9b2836f540cf1547d3efd20362912aae|Remove deprecated LoggerService and use native logging",
+      "path": "Maliev.LoggerService.Common/Maliev.LoggerService.Common.xml",
+      "group": "Mixed Defaults portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "91267b7f60464f9612199bcdd5bd2c1fb69406d9",
+      "sourceBodyRevision": "600e79ac9b2836f540cf1547d3efd20362912aae"
+    },
+    {
+      "source": "9e51e6c5da29de8e617b65b59d46882cde6d3b64",
+      "identity": "9e51e6c5da29de8e617b65b59d46882cde6d3b64|600e79ac9b2836f540cf1547d3efd20362912aae|Remove deprecated LoggerService and use native logging",
+      "path": "Maliev.LoggerService.Data/Database/LoggerContext/LogContext.cs",
+      "group": "Mixed Defaults portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "a09e559259ac30228b7fcface99d18bd40ff3d4d",
+      "sourceBodyRevision": "600e79ac9b2836f540cf1547d3efd20362912aae"
+    },
+    {
+      "source": "9e51e6c5da29de8e617b65b59d46882cde6d3b64",
+      "identity": "9e51e6c5da29de8e617b65b59d46882cde6d3b64|600e79ac9b2836f540cf1547d3efd20362912aae|Remove deprecated LoggerService and use native logging",
+      "path": "Maliev.LoggerService.Data/Database/LoggerContext/Nlog.cs",
+      "group": "Mixed Defaults portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "774991b8186d25baf9496423778e676f902207af",
+      "sourceBodyRevision": "600e79ac9b2836f540cf1547d3efd20362912aae"
+    },
+    {
+      "source": "9e51e6c5da29de8e617b65b59d46882cde6d3b64",
+      "identity": "9e51e6c5da29de8e617b65b59d46882cde6d3b64|600e79ac9b2836f540cf1547d3efd20362912aae|Remove deprecated LoggerService and use native logging",
+      "path": "Maliev.LoggerService.Data/Maliev.LoggerService.Data.csproj",
+      "group": "Mixed Defaults portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "07becb6d9b486c5e69af4c122ab54b7c7e1a328d",
+      "sourceBodyRevision": "600e79ac9b2836f540cf1547d3efd20362912aae"
+    },
+    {
+      "source": "9e51e6c5da29de8e617b65b59d46882cde6d3b64",
+      "identity": "9e51e6c5da29de8e617b65b59d46882cde6d3b64|600e79ac9b2836f540cf1547d3efd20362912aae|Remove deprecated LoggerService and use native logging",
+      "path": "Maliev.LoggerService.Data/Maliev.LoggerService.Data.xml",
+      "group": "Mixed Defaults portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "6214053a0c926526b9cd0abac13e3068224969a4",
+      "sourceBodyRevision": "600e79ac9b2836f540cf1547d3efd20362912aae"
+    },
+    {
+      "source": "9e51e6c5da29de8e617b65b59d46882cde6d3b64",
+      "identity": "9e51e6c5da29de8e617b65b59d46882cde6d3b64|600e79ac9b2836f540cf1547d3efd20362912aae|Remove deprecated LoggerService and use native logging",
+      "path": "Maliev.LoggerService.Data/Properties/Resources.Designer.cs",
+      "group": "Mixed Defaults portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "4f55d9a10dbceeb09d4b90aa76379a8adf215b70",
+      "sourceBodyRevision": "600e79ac9b2836f540cf1547d3efd20362912aae"
+    },
+    {
+      "source": "9e51e6c5da29de8e617b65b59d46882cde6d3b64",
+      "identity": "9e51e6c5da29de8e617b65b59d46882cde6d3b64|600e79ac9b2836f540cf1547d3efd20362912aae|Remove deprecated LoggerService and use native logging",
+      "path": "Maliev.LoggerService.Data/Properties/Resources.resx",
+      "group": "Mixed Defaults portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "48489871d2957b3cb6203bd15c9688653a688243",
+      "sourceBodyRevision": "600e79ac9b2836f540cf1547d3efd20362912aae"
+    },
+    {
+      "source": "9e51e6c5da29de8e617b65b59d46882cde6d3b64",
+      "identity": "9e51e6c5da29de8e617b65b59d46882cde6d3b64|600e79ac9b2836f540cf1547d3efd20362912aae|Remove deprecated LoggerService and use native logging",
+      "path": "Maliev.LoggerService.Data/ScaffoldContext.ps1",
+      "group": "Mixed Defaults portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "b804b5ff36c753c92da0e95db3639778610bcf57",
+      "sourceBodyRevision": "600e79ac9b2836f540cf1547d3efd20362912aae"
+    },
+    {
+      "source": "9e51e6c5da29de8e617b65b59d46882cde6d3b64",
+      "identity": "9e51e6c5da29de8e617b65b59d46882cde6d3b64|600e79ac9b2836f540cf1547d3efd20362912aae|Remove deprecated LoggerService and use native logging",
+      "path": "Maliev.LoggerService.NLog/ExceptionHandlerApplicationBuilderExtensions.cs",
+      "group": "Mixed Defaults portion",
+      "classification": "Operational adapter behavior requires approved native replacement",
+      "disposition": "Defaults owner adaptation or artifact supersession supported by exact source chain and retained native evidence; owner acceptance pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProvenanceTests.Write_ThrownNestedException_EmitsTypesAndCodeOwnedOuterMethodWithoutPrivateText",
+          "outcome": "Passed",
+          "testId": "89646abb-e4e3-e714-6ea1-1b8f919fcb18"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.Middleware.ExceptionEventLoggingTests.Failure_EmitsCorrelatedNativeEventWithoutSecrets_AndPreservesJson",
+          "outcome": "Passed",
+          "testId": "645c8b68-69ba-296e-be87-98a5892e2a0c"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProducerContractTests.Private_formatter_emits_native_severity_without_rendering_protected_text",
+          "outcome": "Passed",
+          "testId": "72c9386c-1608-12d0-b72a-7a8ea21a3b1b"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.StandardPipeline_ControlledHttpFailure_EmitsOneCorrelatedRedactedEvent",
+          "outcome": "Passed",
+          "testId": "1c91f3c2-b8b8-ff7e-51c0-e2e709223ce8"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.StandardPipeline_ControlledHttpFailure_EmitsOneCorrelatedRedactedEvent",
+          "outcome": "Passed",
+          "testId": "6ca3151d-4402-9cb6-44df-8b384f7dc2e5"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProducerContractTests.Private_formatter_emits_native_severity_without_rendering_protected_text",
+          "outcome": "Passed",
+          "testId": "10e8cacf-9c16-dc00-170d-7d5dbf37c30c"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.StandardPipeline_ControlledHttpFailure_EmitsOneCorrelatedRedactedEvent",
+          "outcome": "Passed",
+          "testId": "4adf6553-0d5e-4df6-dd0d-e0b6f27939d4"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.Middleware.ExceptionEventLoggingTests.Failure_EmitsCorrelatedNativeEventWithoutSecrets_AndPreservesJson",
+          "outcome": "Passed",
+          "testId": "c6dabd7a-cb76-a399-3809-6e78eab7e23a"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProducerContractTests.Private_formatter_emits_native_severity_without_rendering_protected_text",
+          "outcome": "Passed",
+          "testId": "d773b6b1-6577-a0e8-5336-639f2c8b54ba"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.Middleware.ExceptionEventLoggingTests.MatchedFailure_LogsRouteTemplateWithoutLiteralIdentifier",
+          "outcome": "Passed",
+          "testId": "b45872c9-d0d0-b1d8-ce27-185c2ea62352"
+        }
+      ],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [
+        "private-failure"
+      ],
+      "sourceBlob": "2ce6753e734577f2e16a3cd6032ff12e97ce3598",
+      "sourceBodyRevision": "600e79ac9b2836f540cf1547d3efd20362912aae"
+    },
+    {
+      "source": "9e51e6c5da29de8e617b65b59d46882cde6d3b64",
+      "identity": "9e51e6c5da29de8e617b65b59d46882cde6d3b64|600e79ac9b2836f540cf1547d3efd20362912aae|Remove deprecated LoggerService and use native logging",
+      "path": "Maliev.LoggerService.NLog/ILoggerManager.cs",
+      "group": "Mixed Defaults portion",
+      "classification": "Operational adapter behavior requires approved native replacement",
+      "disposition": "Defaults owner adaptation or artifact supersession supported by exact source chain and retained native evidence; owner acceptance pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeJsonLoggingTests.Defaults_ConfigureScopedUtcJsonAndActivityCorrelation",
+          "outcome": "Passed",
+          "testId": "c6968165-21ef-3044-25ed-64c162cb3bcd"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeJsonLoggingTests.Defaults_PreserveExistingProvidersFiltersAndOpenTelemetry",
+          "outcome": "Passed",
+          "testId": "38708aa4-6635-9139-2d24-c0829241d5e0"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.Defaults_EmitActualScopedUtcJson_AndDeliverToExistingProvider",
+          "outcome": "Passed",
+          "testId": "f636087d-07f8-4329-6adc-7962c39d49fb"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.Defaults_MapAllCloudSeveritiesWithoutSerializingExceptionText",
+          "outcome": "Passed",
+          "testId": "75dbd30e-ea9d-5bcb-ff51-19476cdaf6b5"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProvenanceTests.Write_ThrownNestedException_EmitsTypesAndCodeOwnedOuterMethodWithoutPrivateText",
+          "outcome": "Passed",
+          "testId": "89646abb-e4e3-e714-6ea1-1b8f919fcb18"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.Middleware.ExceptionEventLoggingTests.Failure_EmitsCorrelatedNativeEventWithoutSecrets_AndPreservesJson",
+          "outcome": "Passed",
+          "testId": "645c8b68-69ba-296e-be87-98a5892e2a0c"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProducerContractTests.Private_formatter_emits_native_severity_without_rendering_protected_text",
+          "outcome": "Passed",
+          "testId": "72c9386c-1608-12d0-b72a-7a8ea21a3b1b"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.StandardPipeline_ControlledHttpFailure_EmitsOneCorrelatedRedactedEvent",
+          "outcome": "Passed",
+          "testId": "1c91f3c2-b8b8-ff7e-51c0-e2e709223ce8"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.StandardPipeline_ControlledHttpFailure_EmitsOneCorrelatedRedactedEvent",
+          "outcome": "Passed",
+          "testId": "6ca3151d-4402-9cb6-44df-8b384f7dc2e5"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProducerContractTests.Private_formatter_emits_native_severity_without_rendering_protected_text",
+          "outcome": "Passed",
+          "testId": "10e8cacf-9c16-dc00-170d-7d5dbf37c30c"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.StandardPipeline_ControlledHttpFailure_EmitsOneCorrelatedRedactedEvent",
+          "outcome": "Passed",
+          "testId": "4adf6553-0d5e-4df6-dd0d-e0b6f27939d4"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.Middleware.ExceptionEventLoggingTests.Failure_EmitsCorrelatedNativeEventWithoutSecrets_AndPreservesJson",
+          "outcome": "Passed",
+          "testId": "c6dabd7a-cb76-a399-3809-6e78eab7e23a"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProducerContractTests.Private_formatter_emits_native_severity_without_rendering_protected_text",
+          "outcome": "Passed",
+          "testId": "d773b6b1-6577-a0e8-5336-639f2c8b54ba"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.Middleware.ExceptionEventLoggingTests.MatchedFailure_LogsRouteTemplateWithoutLiteralIdentifier",
+          "outcome": "Passed",
+          "testId": "b45872c9-d0d0-b1d8-ce27-185c2ea62352"
+        }
+      ],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [
+        "provider-correlation",
+        "private-failure"
+      ],
+      "sourceBlob": "d3f1b8b26bc4b50a1c3eb9ff2861da79ab62bdf5",
+      "sourceBodyRevision": "600e79ac9b2836f540cf1547d3efd20362912aae"
+    },
+    {
+      "source": "9e51e6c5da29de8e617b65b59d46882cde6d3b64",
+      "identity": "9e51e6c5da29de8e617b65b59d46882cde6d3b64|600e79ac9b2836f540cf1547d3efd20362912aae|Remove deprecated LoggerService and use native logging",
+      "path": "Maliev.LoggerService.NLog/LoggerManager.cs",
+      "group": "Mixed Defaults portion",
+      "classification": "Operational adapter behavior requires approved native replacement",
+      "disposition": "Defaults owner adaptation or artifact supersession supported by exact source chain and retained native evidence; owner acceptance pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeJsonLoggingTests.Defaults_ConfigureScopedUtcJsonAndActivityCorrelation",
+          "outcome": "Passed",
+          "testId": "c6968165-21ef-3044-25ed-64c162cb3bcd"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeJsonLoggingTests.Defaults_PreserveExistingProvidersFiltersAndOpenTelemetry",
+          "outcome": "Passed",
+          "testId": "38708aa4-6635-9139-2d24-c0829241d5e0"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.Defaults_EmitActualScopedUtcJson_AndDeliverToExistingProvider",
+          "outcome": "Passed",
+          "testId": "f636087d-07f8-4329-6adc-7962c39d49fb"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.Defaults_MapAllCloudSeveritiesWithoutSerializingExceptionText",
+          "outcome": "Passed",
+          "testId": "75dbd30e-ea9d-5bcb-ff51-19476cdaf6b5"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProvenanceTests.Write_ThrownNestedException_EmitsTypesAndCodeOwnedOuterMethodWithoutPrivateText",
+          "outcome": "Passed",
+          "testId": "89646abb-e4e3-e714-6ea1-1b8f919fcb18"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.Middleware.ExceptionEventLoggingTests.Failure_EmitsCorrelatedNativeEventWithoutSecrets_AndPreservesJson",
+          "outcome": "Passed",
+          "testId": "645c8b68-69ba-296e-be87-98a5892e2a0c"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProducerContractTests.Private_formatter_emits_native_severity_without_rendering_protected_text",
+          "outcome": "Passed",
+          "testId": "72c9386c-1608-12d0-b72a-7a8ea21a3b1b"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.StandardPipeline_ControlledHttpFailure_EmitsOneCorrelatedRedactedEvent",
+          "outcome": "Passed",
+          "testId": "1c91f3c2-b8b8-ff7e-51c0-e2e709223ce8"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.StandardPipeline_ControlledHttpFailure_EmitsOneCorrelatedRedactedEvent",
+          "outcome": "Passed",
+          "testId": "6ca3151d-4402-9cb6-44df-8b384f7dc2e5"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProducerContractTests.Private_formatter_emits_native_severity_without_rendering_protected_text",
+          "outcome": "Passed",
+          "testId": "10e8cacf-9c16-dc00-170d-7d5dbf37c30c"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.StandardPipeline_ControlledHttpFailure_EmitsOneCorrelatedRedactedEvent",
+          "outcome": "Passed",
+          "testId": "4adf6553-0d5e-4df6-dd0d-e0b6f27939d4"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.Middleware.ExceptionEventLoggingTests.Failure_EmitsCorrelatedNativeEventWithoutSecrets_AndPreservesJson",
+          "outcome": "Passed",
+          "testId": "c6dabd7a-cb76-a399-3809-6e78eab7e23a"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProducerContractTests.Private_formatter_emits_native_severity_without_rendering_protected_text",
+          "outcome": "Passed",
+          "testId": "d773b6b1-6577-a0e8-5336-639f2c8b54ba"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.Middleware.ExceptionEventLoggingTests.MatchedFailure_LogsRouteTemplateWithoutLiteralIdentifier",
+          "outcome": "Passed",
+          "testId": "b45872c9-d0d0-b1d8-ce27-185c2ea62352"
+        }
+      ],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [
+        "provider-correlation",
+        "private-failure"
+      ],
+      "sourceBlob": "085d5dfef84dda5e27a82ec8a2f2773de16143a4",
+      "sourceBodyRevision": "600e79ac9b2836f540cf1547d3efd20362912aae"
+    },
+    {
+      "source": "9e51e6c5da29de8e617b65b59d46882cde6d3b64",
+      "identity": "9e51e6c5da29de8e617b65b59d46882cde6d3b64|600e79ac9b2836f540cf1547d3efd20362912aae|Remove deprecated LoggerService and use native logging",
+      "path": "Maliev.LoggerService.NLog/Maliev.LoggerService.NLog.csproj",
+      "group": "Mixed Defaults portion",
+      "classification": "Operational adapter behavior requires approved native replacement",
+      "disposition": "Defaults owner adaptation or artifact supersession supported by exact source chain and retained native evidence; owner acceptance pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.Source5acLoggingRemovalContractTests.SharedDefaults_DoNotDependOnRetiredNativeLoggingAssemblyOrSourceApi",
+          "outcome": "Passed",
+          "testId": "26652739-9513-2d27-19f0-75569fbd133a"
+        }
+      ],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [
+        "obsolete-adapter-artifact"
+      ],
+      "sourceBlob": "09404715aeb20f863ba08de8f73ec7a7bb4cf4a5",
+      "sourceBodyRevision": "600e79ac9b2836f540cf1547d3efd20362912aae"
+    },
+    {
+      "source": "9e51e6c5da29de8e617b65b59d46882cde6d3b64",
+      "identity": "9e51e6c5da29de8e617b65b59d46882cde6d3b64|600e79ac9b2836f540cf1547d3efd20362912aae|Remove deprecated LoggerService and use native logging",
+      "path": "Maliev.LoggerService.NLog/Maliev.LoggerService.xml",
+      "group": "Mixed Defaults portion",
+      "classification": "Operational adapter behavior requires approved native replacement",
+      "disposition": "Defaults owner adaptation or artifact supersession supported by exact source chain and retained native evidence; owner acceptance pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.Source5acLoggingRemovalContractTests.SharedDefaults_DoNotDependOnRetiredNativeLoggingAssemblyOrSourceApi",
+          "outcome": "Passed",
+          "testId": "26652739-9513-2d27-19f0-75569fbd133a"
+        }
+      ],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [
+        "obsolete-adapter-artifact"
+      ],
+      "sourceBlob": "f858ac9ec1e517daabd3674a1c6668fa0a8d3083",
+      "sourceBodyRevision": "600e79ac9b2836f540cf1547d3efd20362912aae"
+    },
+    {
+      "source": "9e51e6c5da29de8e617b65b59d46882cde6d3b64",
+      "identity": "9e51e6c5da29de8e617b65b59d46882cde6d3b64|600e79ac9b2836f540cf1547d3efd20362912aae|Remove deprecated LoggerService and use native logging",
+      "path": "Maliev.LoggerService.NLog/nlog.config",
+      "group": "Mixed Defaults portion",
+      "classification": "Operational adapter behavior requires approved native replacement",
+      "disposition": "Defaults owner adaptation or artifact supersession supported by exact source chain and retained native evidence; owner acceptance pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeJsonLoggingTests.Defaults_ConfigureScopedUtcJsonAndActivityCorrelation",
+          "outcome": "Passed",
+          "testId": "c6968165-21ef-3044-25ed-64c162cb3bcd"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeJsonLoggingTests.Defaults_PreserveExistingProvidersFiltersAndOpenTelemetry",
+          "outcome": "Passed",
+          "testId": "38708aa4-6635-9139-2d24-c0829241d5e0"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.Defaults_EmitActualScopedUtcJson_AndDeliverToExistingProvider",
+          "outcome": "Passed",
+          "testId": "f636087d-07f8-4329-6adc-7962c39d49fb"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.Defaults_MapAllCloudSeveritiesWithoutSerializingExceptionText",
+          "outcome": "Passed",
+          "testId": "75dbd30e-ea9d-5bcb-ff51-19476cdaf6b5"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProvenanceTests.Write_ThrownNestedException_EmitsTypesAndCodeOwnedOuterMethodWithoutPrivateText",
+          "outcome": "Passed",
+          "testId": "89646abb-e4e3-e714-6ea1-1b8f919fcb18"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.Middleware.ExceptionEventLoggingTests.Failure_EmitsCorrelatedNativeEventWithoutSecrets_AndPreservesJson",
+          "outcome": "Passed",
+          "testId": "645c8b68-69ba-296e-be87-98a5892e2a0c"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProducerContractTests.Private_formatter_emits_native_severity_without_rendering_protected_text",
+          "outcome": "Passed",
+          "testId": "72c9386c-1608-12d0-b72a-7a8ea21a3b1b"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.StandardPipeline_ControlledHttpFailure_EmitsOneCorrelatedRedactedEvent",
+          "outcome": "Passed",
+          "testId": "1c91f3c2-b8b8-ff7e-51c0-e2e709223ce8"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.StandardPipeline_ControlledHttpFailure_EmitsOneCorrelatedRedactedEvent",
+          "outcome": "Passed",
+          "testId": "6ca3151d-4402-9cb6-44df-8b384f7dc2e5"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProducerContractTests.Private_formatter_emits_native_severity_without_rendering_protected_text",
+          "outcome": "Passed",
+          "testId": "10e8cacf-9c16-dc00-170d-7d5dbf37c30c"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.StandardPipeline_ControlledHttpFailure_EmitsOneCorrelatedRedactedEvent",
+          "outcome": "Passed",
+          "testId": "4adf6553-0d5e-4df6-dd0d-e0b6f27939d4"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.Middleware.ExceptionEventLoggingTests.Failure_EmitsCorrelatedNativeEventWithoutSecrets_AndPreservesJson",
+          "outcome": "Passed",
+          "testId": "c6dabd7a-cb76-a399-3809-6e78eab7e23a"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProducerContractTests.Private_formatter_emits_native_severity_without_rendering_protected_text",
+          "outcome": "Passed",
+          "testId": "d773b6b1-6577-a0e8-5336-639f2c8b54ba"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.Middleware.ExceptionEventLoggingTests.MatchedFailure_LogsRouteTemplateWithoutLiteralIdentifier",
+          "outcome": "Passed",
+          "testId": "b45872c9-d0d0-b1d8-ce27-185c2ea62352"
+        }
+      ],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [
+        "provider-correlation",
+        "private-failure"
+      ],
+      "sourceBlob": "c83f6941e85e6feec948b8efab56a07af901b838",
+      "sourceBodyRevision": "600e79ac9b2836f540cf1547d3efd20362912aae"
+    },
+    {
+      "source": "9e51e6c5da29de8e617b65b59d46882cde6d3b64",
+      "identity": "9e51e6c5da29de8e617b65b59d46882cde6d3b64|600e79ac9b2836f540cf1547d3efd20362912aae|Remove deprecated LoggerService and use native logging",
+      "path": "Maliev.LoggerService.NLog/RequestFailureLogEvent.cs",
+      "group": "Mixed Defaults portion",
+      "classification": "Operational adapter behavior requires approved native replacement",
+      "disposition": "Defaults owner adaptation or artifact supersession supported by exact source chain and retained native evidence; owner acceptance pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProvenanceTests.Write_ThrownNestedException_EmitsTypesAndCodeOwnedOuterMethodWithoutPrivateText",
+          "outcome": "Passed",
+          "testId": "89646abb-e4e3-e714-6ea1-1b8f919fcb18"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.Middleware.ExceptionEventLoggingTests.Failure_EmitsCorrelatedNativeEventWithoutSecrets_AndPreservesJson",
+          "outcome": "Passed",
+          "testId": "645c8b68-69ba-296e-be87-98a5892e2a0c"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProducerContractTests.Private_formatter_emits_native_severity_without_rendering_protected_text",
+          "outcome": "Passed",
+          "testId": "72c9386c-1608-12d0-b72a-7a8ea21a3b1b"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.StandardPipeline_ControlledHttpFailure_EmitsOneCorrelatedRedactedEvent",
+          "outcome": "Passed",
+          "testId": "1c91f3c2-b8b8-ff7e-51c0-e2e709223ce8"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.StandardPipeline_ControlledHttpFailure_EmitsOneCorrelatedRedactedEvent",
+          "outcome": "Passed",
+          "testId": "6ca3151d-4402-9cb6-44df-8b384f7dc2e5"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProducerContractTests.Private_formatter_emits_native_severity_without_rendering_protected_text",
+          "outcome": "Passed",
+          "testId": "10e8cacf-9c16-dc00-170d-7d5dbf37c30c"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.StandardPipeline_ControlledHttpFailure_EmitsOneCorrelatedRedactedEvent",
+          "outcome": "Passed",
+          "testId": "4adf6553-0d5e-4df6-dd0d-e0b6f27939d4"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.Middleware.ExceptionEventLoggingTests.Failure_EmitsCorrelatedNativeEventWithoutSecrets_AndPreservesJson",
+          "outcome": "Passed",
+          "testId": "c6dabd7a-cb76-a399-3809-6e78eab7e23a"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProducerContractTests.Private_formatter_emits_native_severity_without_rendering_protected_text",
+          "outcome": "Passed",
+          "testId": "d773b6b1-6577-a0e8-5336-639f2c8b54ba"
+        },
+        {
+          "testName": "Legacy.Maliev.ServiceDefaults.Tests.Middleware.ExceptionEventLoggingTests.MatchedFailure_LogsRouteTemplateWithoutLiteralIdentifier",
+          "outcome": "Passed",
+          "testId": "b45872c9-d0d0-b1d8-ce27-185c2ea62352"
+        }
+      ],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [
+        "private-failure"
+      ],
+      "sourceBlob": "576c5697b9d39d161cea91f0b221c83d88796e04",
+      "sourceBodyRevision": "600e79ac9b2836f540cf1547d3efd20362912aae"
+    },
+    {
+      "source": "9e51e6c5da29de8e617b65b59d46882cde6d3b64",
+      "identity": "9e51e6c5da29de8e617b65b59d46882cde6d3b64|600e79ac9b2836f540cf1547d3efd20362912aae|Remove deprecated LoggerService and use native logging",
+      "path": "Maliev.LoggerService.Tests/Logs/GetLogDetailAsync_UnitTest.cs",
+      "group": "Mixed Defaults portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "967a7952751a6494bc623fb66ad9d4c96fc165f6",
+      "sourceBodyRevision": "600e79ac9b2836f540cf1547d3efd20362912aae"
+    },
+    {
+      "source": "9e51e6c5da29de8e617b65b59d46882cde6d3b64",
+      "identity": "9e51e6c5da29de8e617b65b59d46882cde6d3b64|600e79ac9b2836f540cf1547d3efd20362912aae|Remove deprecated LoggerService and use native logging",
+      "path": "Maliev.LoggerService.Tests/Logs/GetPaginatedLogsAsync_UnitTest.cs",
+      "group": "Mixed Defaults portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "99f7da451a0aa07ec5e4c8462bc977b4230e7438",
+      "sourceBodyRevision": "600e79ac9b2836f540cf1547d3efd20362912aae"
+    },
+    {
+      "source": "9e51e6c5da29de8e617b65b59d46882cde6d3b64",
+      "identity": "9e51e6c5da29de8e617b65b59d46882cde6d3b64|600e79ac9b2836f540cf1547d3efd20362912aae|Remove deprecated LoggerService and use native logging",
+      "path": "Maliev.LoggerService.Tests/Maliev.LoggerService.Tests.csproj",
+      "group": "Mixed Defaults portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "c6dfb61e333b4372ca7d5177c5da3bb1cb868d05",
+      "sourceBodyRevision": "600e79ac9b2836f540cf1547d3efd20362912aae"
+    },
+    {
+      "source": "9e51e6c5da29de8e617b65b59d46882cde6d3b64",
+      "identity": "9e51e6c5da29de8e617b65b59d46882cde6d3b64|600e79ac9b2836f540cf1547d3efd20362912aae|Remove deprecated LoggerService and use native logging",
+      "path": "Maliev.LoggerService.Tests/Maliev.LoggerService.Tests.xml",
+      "group": "Mixed Defaults portion",
+      "classification": "SQL sink service delivery or query surface; retirement eligibility only",
+      "disposition": "Obsolete SQL sink delivery/query portion identified; operational replacement obligations remain separate; bounded owner review pending",
+      "wholeSourceClosed": false,
+      "retainedEvidence": [],
+      "evidenceLimit": "Retained accepted-main tests support the replacement behavior; they do not prove this historical source portion is closed",
+      "behaviorIds": [],
+      "sourceBlob": "2d1494ab5550ea8b6af57661def8a022b5402241",
+      "sourceBodyRevision": "600e79ac9b2836f540cf1547d3efd20362912aae"
+    }
+  ],
+  "wholeSourceClosure": false,
+  "ledgerChanged": false,
+  "exclusions": [
+    "Mixed non-Defaults owners",
+    "Fleet delivery",
+    "Plaintext logging compatibility",
+    "Cloud ingestion",
+    "Read-body failures outside the selected observer"
+  ]
+}

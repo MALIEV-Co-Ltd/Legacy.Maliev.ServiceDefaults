@@ -1,0 +1,273 @@
+[
+  {
+    "source": "3a393215d883fa35e1461f69c876bf2ead7ce36e",
+    "identity": "3a393215d883fa35e1461f69c876bf2ead7ce36e|e2ae2bd3c4edac22b04ef96fc1041da34380e9ea|separate deployment and sevice ingress",
+    "loggerPaths": [
+      "Maliev.LoggerService.Api/deployment.yaml",
+      "Maliev.LoggerService.Api/deploy-service.ps1",
+      "Maliev.LoggerService.Api/service.yaml"
+    ],
+    "group": "Defaults-only Logger portion",
+    "disposition": "Pending exact owner assignment and behavior evidence; no whole-SHA closure"
+  },
+  {
+    "source": "5458b7ddc81a15d72087fa69fb4cfcc27ae75747",
+    "identity": "5458b7ddc81a15d72087fa69fb4cfcc27ae75747|ea64e0e8a6699c2b2224f94d2e1a7e34daf246a4|Remove Maliev.Web.BlazorServer project and update deployment configurations",
+    "loggerPaths": [
+      "Maliev.LoggerService.Api/deployment.yaml"
+    ],
+    "group": "Defaults-only Logger portion",
+    "disposition": "Pending exact owner assignment and behavior evidence; no whole-SHA closure"
+  },
+  {
+    "source": "53f4baf373ef04a3ed5ab5c1ef39bd61404c5258",
+    "identity": "53f4baf373ef04a3ed5ab5c1ef39bd61404c5258|548f5605611f785b70546064afca117c9f7f25ea|Add resource limits and requests to all deployment manifests",
+    "loggerPaths": [
+      "Maliev.LoggerService.Api/deployment.yaml"
+    ],
+    "group": "Defaults-only Logger portion",
+    "disposition": "Pending exact owner assignment and behavior evidence; no whole-SHA closure"
+  },
+  {
+    "source": "93f9f99522fbe6c128acb5d049f2b448e07dba95",
+    "identity": "93f9f99522fbe6c128acb5d049f2b448e07dba95|072b7eb6ed2e44262d54f8aba92bad882650be91|perf: optimize resource limits in deployment.yaml files",
+    "loggerPaths": [
+      "Maliev.LoggerService.Api/deployment.yaml"
+    ],
+    "group": "Defaults-only Logger portion",
+    "disposition": "Pending exact owner assignment and behavior evidence; no whole-SHA closure"
+  },
+  {
+    "source": "00ec830615c15b5e4e227046712247b11df0100f",
+    "identity": "00ec830615c15b5e4e227046712247b11df0100f|ef1aa997a2d3f54e8535de45e8f35943d84e9cad|fix(deploy): harden deploy.ps1 for all remaining services",
+    "loggerPaths": [
+      "Maliev.LoggerService.Api/deploy.ps1"
+    ],
+    "group": "Defaults-only Logger portion",
+    "disposition": "Pending exact owner assignment and behavior evidence; no whole-SHA closure"
+  },
+  {
+    "source": "2aab25eb07894fc0267b03b85bad96490219d2fa",
+    "identity": "2aab25eb07894fc0267b03b85bad96490219d2fa|56014f2efc7c7f24b777c51d17a454e023d12bdd|security: externalize design-time database connections",
+    "loggerPaths": [
+      "Maliev.LoggerService.Data/Database/LoggerContext/LogContext.cs",
+      "Maliev.LoggerService.Data/Maliev.LoggerService.Data.xml",
+      "Maliev.LoggerService.Data/Properties/Resources.Designer.cs",
+      "Maliev.LoggerService.Data/Properties/Resources.resx"
+    ],
+    "group": "Defaults-only Logger portion",
+    "disposition": "Pending exact owner assignment and behavior evidence; no whole-SHA closure"
+  },
+  {
+    "source": "7d6f46f53cbab853ca9c25e385af067cfff6238a",
+    "identity": "7d6f46f53cbab853ca9c25e385af067cfff6238a|7a660e9630e2ff10dbdf6f03766f89f125fdba4f|security: externalize remaining database credentials",
+    "loggerPaths": [
+      "Maliev.LoggerService.Api/appsettings.json",
+      "Maliev.LoggerService.Data/ScaffoldContext.ps1"
+    ],
+    "group": "Defaults-only Logger portion",
+    "disposition": "Pending exact owner assignment and behavior evidence; no whole-SHA closure"
+  },
+  {
+    "source": "eb8ed86672bd9afccc6560b547b734d0fcd7363b",
+    "identity": "eb8ed86672bd9afccc6560b547b734d0fcd7363b|6da103d234ea312ce3b404fefaed343c172517b1 868b5909406cc3759254ee10520e04d4ad5beab0|Merge pull request #18 from MALIEV-Co-Ltd/codex/wave0-secret-remediation",
+    "loggerPaths": [
+      "Maliev.LoggerService.Api/appsettings.json",
+      "Maliev.LoggerService.Api/Maliev.LoggerService.Api.xml",
+      "Maliev.LoggerService.Api/ServiceExtensions.cs",
+      "Maliev.LoggerService.Api/Startup.cs",
+      "Maliev.LoggerService.Data/Database/LoggerContext/LogContext.cs",
+      "Maliev.LoggerService.Data/Maliev.LoggerService.Data.xml",
+      "Maliev.LoggerService.Data/Properties/Resources.Designer.cs",
+      "Maliev.LoggerService.Data/Properties/Resources.resx",
+      "Maliev.LoggerService.Data/ScaffoldContext.ps1"
+    ],
+    "group": "Defaults-only Logger portion",
+    "disposition": "Pending exact owner assignment and behavior evidence; no whole-SHA closure"
+  },
+  {
+    "source": "a649db99a27bda65274fe1b18866ae226d3c69cf",
+    "identity": "a649db99a27bda65274fe1b18866ae226d3c69cf|d5d67b65a69ae4b53bfe94e2a669a5d4680696ab eb8ed86672bd9afccc6560b547b734d0fcd7363b|Merge remote-tracking branch 'origin/main'",
+    "loggerPaths": [
+      "Maliev.LoggerService.Api/appsettings.json",
+      "Maliev.LoggerService.Api/Maliev.LoggerService.Api.xml",
+      "Maliev.LoggerService.Api/ServiceExtensions.cs",
+      "Maliev.LoggerService.Api/Startup.cs",
+      "Maliev.LoggerService.Data/Database/LoggerContext/LogContext.cs",
+      "Maliev.LoggerService.Data/Maliev.LoggerService.Data.xml",
+      "Maliev.LoggerService.Data/Properties/Resources.Designer.cs",
+      "Maliev.LoggerService.Data/Properties/Resources.resx",
+      "Maliev.LoggerService.Data/ScaffoldContext.ps1"
+    ],
+    "group": "Defaults-only Logger portion",
+    "disposition": "Pending exact owner assignment and behavior evidence; no whole-SHA closure"
+  },
+  {
+    "source": "03eaff1194c3ae2a54ceefeae31deffaff90436f",
+    "identity": "03eaff1194c3ae2a54ceefeae31deffaff90436f|5b6d94a02a7578783e0980af10ecd36856aba024|chore: add .dockerignore files for service Docker builds",
+    "loggerPaths": [
+      "Maliev.LoggerService.Api/.dockerignore"
+    ],
+    "group": "Defaults-only Logger portion",
+    "disposition": "Pending exact owner assignment and behavior evidence; no whole-SHA closure"
+  },
+  {
+    "source": "72163e9ae11f39f6579423841a2e20529b986fab",
+    "identity": "72163e9ae11f39f6579423841a2e20529b986fab|91a8f128ae155e2fe046015e8d66f9ba4b306b30|fix: propagate deployment script status reliably",
+    "loggerPaths": [
+      "Maliev.LoggerService.Api/deploy.ps1",
+      "Maliev.LoggerService.Api/deploy-service.ps1"
+    ],
+    "group": "Defaults-only Logger portion",
+    "disposition": "Pending exact owner assignment and behavior evidence; no whole-SHA closure"
+  },
+  {
+    "source": "f8921b1b1d5846eeaff999af10b640011655d1d4",
+    "identity": "f8921b1b1d5846eeaff999af10b640011655d1d4|601a0251204bfa0635dbf50f84c32d82863236a5|Render deployment manifests to a throwaway copy in every service",
+    "loggerPaths": [
+      "Maliev.LoggerService.Api/deploy.ps1"
+    ],
+    "group": "Defaults-only Logger portion",
+    "disposition": "Pending exact owner assignment and behavior evidence; no whole-SHA closure"
+  },
+  {
+    "source": "ee2bb593830c0b8aa30874d162ba2edee1596fea",
+    "identity": "ee2bb593830c0b8aa30874d162ba2edee1596fea|da854dfb86a3eb7093a81a63c7542bf30e099729|fix(web): correlate error pages with GKE logs",
+    "loggerPaths": [
+      "Maliev.LoggerService.NLog/nlog.config"
+    ],
+    "group": "Defaults-only Logger portion",
+    "disposition": "Pending exact owner assignment and behavior evidence; no whole-SHA closure"
+  },
+  {
+    "source": "143f53ba0a1c81c78d252864ca131d42ed79dc1b",
+    "identity": "143f53ba0a1c81c78d252864ca131d42ed79dc1b|618e3598c3da50c60845320479d36ecb4fcec264|fix: require runtime secrets across production services",
+    "loggerPaths": [
+      "Maliev.LoggerService.Api/deployment.yaml"
+    ],
+    "group": "Defaults-only Logger portion",
+    "disposition": "Pending exact owner assignment and behavior evidence; no whole-SHA closure"
+  },
+  {
+    "source": "abc057c985053c983ff3a23a78dcfe3ba1d0b2be",
+    "identity": "abc057c985053c983ff3a23a78dcfe3ba1d0b2be|baca341824ea727042095cf0a286d33c180a7892|feat: add distributed trace fields to production logs",
+    "loggerPaths": [
+      "Maliev.LoggerService.NLog/ILoggerManager.cs",
+      "Maliev.LoggerService.NLog/LoggerManager.cs",
+      "Maliev.LoggerService.NLog/Maliev.LoggerService.NLog.csproj",
+      "Maliev.LoggerService.NLog/Maliev.LoggerService.xml",
+      "Maliev.LoggerService.NLog/nlog.config",
+      "Maliev.LoggerService.NLog/RequestFailureLogEvent.cs"
+    ],
+    "group": "Defaults-only Logger portion",
+    "disposition": "Pending exact owner assignment and behavior evidence; no whole-SHA closure"
+  },
+  {
+    "source": "5fac706a7983a6d359b39acbd670e6800afe020e",
+    "identity": "5fac706a7983a6d359b39acbd670e6800afe020e||Initial commit",
+    "loggerPaths": [
+      "Maliev.LoggerService.Api/appsettings.Development.json",
+      "Maliev.LoggerService.Api/appsettings.json",
+      "Maliev.LoggerService.Api/Controllers/LogsController.cs",
+      "Maliev.LoggerService.Api/deployment.yaml",
+      "Maliev.LoggerService.Api/deploy.ps1",
+      "Maliev.LoggerService.Api/Dockerfile",
+      "Maliev.LoggerService.Api/Dockerfile.self-contained",
+      "Maliev.LoggerService.Api/Maliev.LoggerService.Api.csproj",
+      "Maliev.LoggerService.Api/Maliev.LoggerService.Api.xml",
+      "Maliev.LoggerService.Api/Program.cs",
+      "Maliev.LoggerService.Api/Properties/launchSettings.json",
+      "Maliev.LoggerService.Api/ServiceExtensions.cs",
+      "Maliev.LoggerService.Api/Startup.cs",
+      "Maliev.LoggerService.Common/Enumerations/LogSortType.cs",
+      "Maliev.LoggerService.Common/Maliev.LoggerService.Common.csproj",
+      "Maliev.LoggerService.Common/Maliev.LoggerService.Common.xml",
+      "Maliev.LoggerService.Data/Database/LoggerContext/LogContext.cs",
+      "Maliev.LoggerService.Data/Database/LoggerContext/Nlog.cs",
+      "Maliev.LoggerService.Data/Maliev.LoggerService.Data.csproj",
+      "Maliev.LoggerService.Data/Maliev.LoggerService.Data.xml",
+      "Maliev.LoggerService.Data/Properties/Resources.Designer.cs",
+      "Maliev.LoggerService.Data/Properties/Resources.resx",
+      "Maliev.LoggerService.Data/ScaffoldContext.ps1",
+      "Maliev.LoggerService.NLog/ILoggerManager.cs",
+      "Maliev.LoggerService.NLog/LoggerManager.cs",
+      "Maliev.LoggerService.NLog/Maliev.LoggerService.NLog.csproj",
+      "Maliev.LoggerService.NLog/Maliev.LoggerService.xml",
+      "Maliev.LoggerService.NLog/nlog.config",
+      "Maliev.LoggerService.Tests/Logs/GetLogDetailAsync_UnitTest.cs",
+      "Maliev.LoggerService.Tests/Logs/GetPaginatedLogsAsync_UnitTest.cs",
+      "Maliev.LoggerService.Tests/Maliev.LoggerService.Tests.csproj",
+      "Maliev.LoggerService.Tests/Maliev.LoggerService.Tests.xml"
+    ],
+    "group": "Mixed Defaults portion",
+    "disposition": "Pending exact owner assignment and behavior evidence; no whole-SHA closure"
+  },
+  {
+    "source": "72eb9f1949176392141951d35e6e06f7c30af4c2",
+    "identity": "72eb9f1949176392141951d35e6e06f7c30af4c2|023aa2f143fa5a8f557d72c1302b9add64792d6a|update",
+    "loggerPaths": [
+      "Maliev.LoggerService.Api/Maliev.LoggerService.Api.csproj",
+      "Maliev.LoggerService.Data/Database/LoggerContext/LogContext.cs",
+      "Maliev.LoggerService.Data/Database/LoggerContext/Nlog.cs",
+      "Maliev.LoggerService.Data/Maliev.LoggerService.Data.xml"
+    ],
+    "group": "Mixed Defaults portion",
+    "disposition": "Pending exact owner assignment and behavior evidence; no whole-SHA closure"
+  },
+  {
+    "source": "90f34b389c298d1ce85abe2ae7ac92877dbbf7af",
+    "identity": "90f34b389c298d1ce85abe2ae7ac92877dbbf7af|550eaeaac33f5e4fb016a48fc79459bc536a8f79|split the frontend deployment scripts",
+    "loggerPaths": [
+      "Maliev.LoggerService.Api/Maliev.LoggerService.Api.csproj",
+      "Maliev.LoggerService.Data/Maliev.LoggerService.Data.csproj",
+      "Maliev.LoggerService.Tests/Maliev.LoggerService.Tests.csproj"
+    ],
+    "group": "Mixed Defaults portion",
+    "disposition": "Pending exact owner assignment and behavior evidence; no whole-SHA closure"
+  },
+  {
+    "source": "9e51e6c5da29de8e617b65b59d46882cde6d3b64",
+    "identity": "9e51e6c5da29de8e617b65b59d46882cde6d3b64|600e79ac9b2836f540cf1547d3efd20362912aae|Remove deprecated LoggerService and use native logging",
+    "loggerPaths": [
+      "Maliev.LoggerService.Api/appsettings.Development.json",
+      "Maliev.LoggerService.Api/appsettings.json",
+      "Maliev.LoggerService.Api/Controllers/LogsController.cs",
+      "Maliev.LoggerService.Api/deployment.yaml",
+      "Maliev.LoggerService.Api/deploy.ps1",
+      "Maliev.LoggerService.Api/deploy-service.ps1",
+      "Maliev.LoggerService.Api/Dockerfile",
+      "Maliev.LoggerService.Api/Dockerfile.self-contained",
+      "Maliev.LoggerService.Api/.dockerignore",
+      "Maliev.LoggerService.Api/Maliev.LoggerService.Api.csproj",
+      "Maliev.LoggerService.Api/Maliev.LoggerService.Api.xml",
+      "Maliev.LoggerService.Api/Program.cs",
+      "Maliev.LoggerService.Api/Properties/launchSettings.json",
+      "Maliev.LoggerService.Api/ServiceExtensions.cs",
+      "Maliev.LoggerService.Api/service.yaml",
+      "Maliev.LoggerService.Api/Startup.cs",
+      "Maliev.LoggerService.Common/Enumerations/LogSortType.cs",
+      "Maliev.LoggerService.Common/Maliev.LoggerService.Common.csproj",
+      "Maliev.LoggerService.Common/Maliev.LoggerService.Common.xml",
+      "Maliev.LoggerService.Data/Database/LoggerContext/LogContext.cs",
+      "Maliev.LoggerService.Data/Database/LoggerContext/Nlog.cs",
+      "Maliev.LoggerService.Data/Maliev.LoggerService.Data.csproj",
+      "Maliev.LoggerService.Data/Maliev.LoggerService.Data.xml",
+      "Maliev.LoggerService.Data/Properties/Resources.Designer.cs",
+      "Maliev.LoggerService.Data/Properties/Resources.resx",
+      "Maliev.LoggerService.Data/ScaffoldContext.ps1",
+      "Maliev.LoggerService.NLog/ExceptionHandlerApplicationBuilderExtensions.cs",
+      "Maliev.LoggerService.NLog/ILoggerManager.cs",
+      "Maliev.LoggerService.NLog/LoggerManager.cs",
+      "Maliev.LoggerService.NLog/Maliev.LoggerService.NLog.csproj",
+      "Maliev.LoggerService.NLog/Maliev.LoggerService.xml",
+      "Maliev.LoggerService.NLog/nlog.config",
+      "Maliev.LoggerService.NLog/RequestFailureLogEvent.cs",
+      "Maliev.LoggerService.Tests/Logs/GetLogDetailAsync_UnitTest.cs",
+      "Maliev.LoggerService.Tests/Logs/GetPaginatedLogsAsync_UnitTest.cs",
+      "Maliev.LoggerService.Tests/Maliev.LoggerService.Tests.csproj",
+      "Maliev.LoggerService.Tests/Maliev.LoggerService.Tests.xml"
+    ],
+    "group": "Mixed Defaults portion",
+    "disposition": "Pending exact owner assignment and behavior evidence; no whole-SHA closure"
+  }
+]

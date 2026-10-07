@@ -1,0 +1,469 @@
+{
+  "acceptedDefaults": "7b3099bf67d0f17e56cfdb3dcf36541304abaac2",
+  "operationalAssignments": 19,
+  "witnesses": [
+    {
+      "source": "ee2bb593830c0b8aa30874d162ba2edee1596fea",
+      "path": "Maliev.LoggerService.NLog/nlog.config",
+      "sourceBodyRevision": "ee2bb593830c0b8aa30874d162ba2edee1596fea",
+      "sourceBlob": "7c1d811e37985b306272e21f64da6b526bcaafa7",
+      "methods": [],
+      "structuredFailureFields": [],
+      "passesExceptionObjectToLogger": false,
+      "removesQueryString": false,
+      "genericTextResponse": false,
+      "mapsTo": [
+        "provider-correlation",
+        "private-failure"
+      ],
+      "disposition": "Defaults owner adaptation or artifact supersession supported by exact source chain and retained native evidence; owner acceptance pending",
+      "limitations": [
+        "Only code-owned symbols and schema names retained; no source configuration values",
+        "Historical public API signatures are superseded, not restored",
+        "Generic message text compatibility and cloud ingestion are excluded"
+      ]
+    },
+    {
+      "source": "abc057c985053c983ff3a23a78dcfe3ba1d0b2be",
+      "path": "Maliev.LoggerService.NLog/ILoggerManager.cs",
+      "sourceBodyRevision": "abc057c985053c983ff3a23a78dcfe3ba1d0b2be",
+      "sourceBlob": "d3f1b8b26bc4b50a1c3eb9ff2861da79ab62bdf5",
+      "methods": [
+        "Log",
+        "LogDebug",
+        "LogError",
+        "LogFatal",
+        "LogInfo",
+        "LogTrace",
+        "LogWarn"
+      ],
+      "structuredFailureFields": [],
+      "passesExceptionObjectToLogger": false,
+      "removesQueryString": false,
+      "genericTextResponse": false,
+      "mapsTo": [
+        "provider-correlation",
+        "private-failure"
+      ],
+      "disposition": "Defaults owner adaptation or artifact supersession supported by exact source chain and retained native evidence; owner acceptance pending",
+      "limitations": [
+        "Only code-owned symbols and schema names retained; no source configuration values",
+        "Historical public API signatures are superseded, not restored",
+        "Generic message text compatibility and cloud ingestion are excluded"
+      ]
+    },
+    {
+      "source": "abc057c985053c983ff3a23a78dcfe3ba1d0b2be",
+      "path": "Maliev.LoggerService.NLog/LoggerManager.cs",
+      "sourceBodyRevision": "abc057c985053c983ff3a23a78dcfe3ba1d0b2be",
+      "sourceBlob": "085d5dfef84dda5e27a82ec8a2f2773de16143a4",
+      "methods": [
+        "Log",
+        "LogDebug",
+        "LogError",
+        "LogFatal",
+        "LogInfo",
+        "LogTrace",
+        "LogWarn"
+      ],
+      "structuredFailureFields": [],
+      "passesExceptionObjectToLogger": false,
+      "removesQueryString": false,
+      "genericTextResponse": false,
+      "mapsTo": [
+        "provider-correlation",
+        "private-failure"
+      ],
+      "disposition": "Defaults owner adaptation or artifact supersession supported by exact source chain and retained native evidence; owner acceptance pending",
+      "limitations": [
+        "Only code-owned symbols and schema names retained; no source configuration values",
+        "Historical public API signatures are superseded, not restored",
+        "Generic message text compatibility and cloud ingestion are excluded"
+      ]
+    },
+    {
+      "source": "abc057c985053c983ff3a23a78dcfe3ba1d0b2be",
+      "path": "Maliev.LoggerService.NLog/Maliev.LoggerService.NLog.csproj",
+      "sourceBodyRevision": "abc057c985053c983ff3a23a78dcfe3ba1d0b2be",
+      "sourceBlob": "09404715aeb20f863ba08de8f73ec7a7bb4cf4a5",
+      "methods": [],
+      "structuredFailureFields": [],
+      "passesExceptionObjectToLogger": false,
+      "removesQueryString": false,
+      "genericTextResponse": false,
+      "mapsTo": [
+        "obsolete-adapter-artifact"
+      ],
+      "disposition": "Defaults owner adaptation or artifact supersession supported by exact source chain and retained native evidence; owner acceptance pending",
+      "limitations": [
+        "Only code-owned symbols and schema names retained; no source configuration values",
+        "Historical public API signatures are superseded, not restored",
+        "Generic message text compatibility and cloud ingestion are excluded"
+      ]
+    },
+    {
+      "source": "abc057c985053c983ff3a23a78dcfe3ba1d0b2be",
+      "path": "Maliev.LoggerService.NLog/Maliev.LoggerService.xml",
+      "sourceBodyRevision": "abc057c985053c983ff3a23a78dcfe3ba1d0b2be",
+      "sourceBlob": "cee5c55e43f8eac72fab06a6cdf1d5da183a4292",
+      "methods": [],
+      "structuredFailureFields": [],
+      "passesExceptionObjectToLogger": false,
+      "removesQueryString": false,
+      "genericTextResponse": false,
+      "mapsTo": [
+        "obsolete-adapter-artifact"
+      ],
+      "disposition": "Defaults owner adaptation or artifact supersession supported by exact source chain and retained native evidence; owner acceptance pending",
+      "limitations": [
+        "Only code-owned symbols and schema names retained; no source configuration values",
+        "Historical public API signatures are superseded, not restored",
+        "Generic message text compatibility and cloud ingestion are excluded"
+      ]
+    },
+    {
+      "source": "abc057c985053c983ff3a23a78dcfe3ba1d0b2be",
+      "path": "Maliev.LoggerService.NLog/nlog.config",
+      "sourceBodyRevision": "abc057c985053c983ff3a23a78dcfe3ba1d0b2be",
+      "sourceBlob": "c83f6941e85e6feec948b8efab56a07af901b838",
+      "methods": [],
+      "structuredFailureFields": [],
+      "passesExceptionObjectToLogger": false,
+      "removesQueryString": false,
+      "genericTextResponse": false,
+      "mapsTo": [
+        "provider-correlation",
+        "private-failure"
+      ],
+      "disposition": "Defaults owner adaptation or artifact supersession supported by exact source chain and retained native evidence; owner acceptance pending",
+      "limitations": [
+        "Only code-owned symbols and schema names retained; no source configuration values",
+        "Historical public API signatures are superseded, not restored",
+        "Generic message text compatibility and cloud ingestion are excluded"
+      ]
+    },
+    {
+      "source": "abc057c985053c983ff3a23a78dcfe3ba1d0b2be",
+      "path": "Maliev.LoggerService.NLog/RequestFailureLogEvent.cs",
+      "sourceBodyRevision": "abc057c985053c983ff3a23a78dcfe3ba1d0b2be",
+      "sourceBlob": "576c5697b9d39d161cea91f0b221c83d88796e04",
+      "methods": [
+        "Create"
+      ],
+      "structuredFailureFields": [
+        "eventName",
+        "exceptionType",
+        "incidentId",
+        "method",
+        "occurredAtUtc",
+        "path",
+        "service",
+        "statusCode"
+      ],
+      "passesExceptionObjectToLogger": true,
+      "removesQueryString": true,
+      "genericTextResponse": false,
+      "mapsTo": [
+        "private-failure"
+      ],
+      "disposition": "Defaults owner adaptation or artifact supersession supported by exact source chain and retained native evidence; owner acceptance pending",
+      "limitations": [
+        "Only code-owned symbols and schema names retained; no source configuration values",
+        "Historical public API signatures are superseded, not restored",
+        "Generic message text compatibility and cloud ingestion are excluded"
+      ]
+    },
+    {
+      "source": "5fac706a7983a6d359b39acbd670e6800afe020e",
+      "path": "Maliev.LoggerService.NLog/ILoggerManager.cs",
+      "sourceBodyRevision": "5fac706a7983a6d359b39acbd670e6800afe020e",
+      "sourceBlob": "8c7c54ff44769249906be9d3d4699c13d837c699",
+      "methods": [
+        "Log",
+        "LogDebug",
+        "LogError",
+        "LogFatal",
+        "LogInfo",
+        "LogTrace",
+        "LogWarn"
+      ],
+      "structuredFailureFields": [],
+      "passesExceptionObjectToLogger": false,
+      "removesQueryString": false,
+      "genericTextResponse": false,
+      "mapsTo": [
+        "provider-correlation",
+        "private-failure"
+      ],
+      "disposition": "Defaults owner adaptation or artifact supersession supported by exact source chain and retained native evidence; owner acceptance pending",
+      "limitations": [
+        "Only code-owned symbols and schema names retained; no source configuration values",
+        "Historical public API signatures are superseded, not restored",
+        "Generic message text compatibility and cloud ingestion are excluded"
+      ]
+    },
+    {
+      "source": "5fac706a7983a6d359b39acbd670e6800afe020e",
+      "path": "Maliev.LoggerService.NLog/LoggerManager.cs",
+      "sourceBodyRevision": "5fac706a7983a6d359b39acbd670e6800afe020e",
+      "sourceBlob": "d33791c473ee172594f7d7326e47602e08b30dce",
+      "methods": [
+        "Log",
+        "LogDebug",
+        "LogError",
+        "LogFatal",
+        "LogInfo",
+        "LogTrace",
+        "LogWarn"
+      ],
+      "structuredFailureFields": [],
+      "passesExceptionObjectToLogger": false,
+      "removesQueryString": false,
+      "genericTextResponse": false,
+      "mapsTo": [
+        "provider-correlation",
+        "private-failure"
+      ],
+      "disposition": "Defaults owner adaptation or artifact supersession supported by exact source chain and retained native evidence; owner acceptance pending",
+      "limitations": [
+        "Only code-owned symbols and schema names retained; no source configuration values",
+        "Historical public API signatures are superseded, not restored",
+        "Generic message text compatibility and cloud ingestion are excluded"
+      ]
+    },
+    {
+      "source": "5fac706a7983a6d359b39acbd670e6800afe020e",
+      "path": "Maliev.LoggerService.NLog/Maliev.LoggerService.NLog.csproj",
+      "sourceBodyRevision": "5fac706a7983a6d359b39acbd670e6800afe020e",
+      "sourceBlob": "378ebdcd1e2ea23f40f2a974c7b7fcf630afc610",
+      "methods": [],
+      "structuredFailureFields": [],
+      "passesExceptionObjectToLogger": false,
+      "removesQueryString": false,
+      "genericTextResponse": false,
+      "mapsTo": [
+        "obsolete-adapter-artifact"
+      ],
+      "disposition": "Defaults owner adaptation or artifact supersession supported by exact source chain and retained native evidence; owner acceptance pending",
+      "limitations": [
+        "Only code-owned symbols and schema names retained; no source configuration values",
+        "Historical public API signatures are superseded, not restored",
+        "Generic message text compatibility and cloud ingestion are excluded"
+      ]
+    },
+    {
+      "source": "5fac706a7983a6d359b39acbd670e6800afe020e",
+      "path": "Maliev.LoggerService.NLog/Maliev.LoggerService.xml",
+      "sourceBodyRevision": "5fac706a7983a6d359b39acbd670e6800afe020e",
+      "sourceBlob": "4969c9d7ab3a971c0887bf99e7464f8f07dd6fe1",
+      "methods": [],
+      "structuredFailureFields": [],
+      "passesExceptionObjectToLogger": false,
+      "removesQueryString": false,
+      "genericTextResponse": false,
+      "mapsTo": [
+        "obsolete-adapter-artifact"
+      ],
+      "disposition": "Defaults owner adaptation or artifact supersession supported by exact source chain and retained native evidence; owner acceptance pending",
+      "limitations": [
+        "Only code-owned symbols and schema names retained; no source configuration values",
+        "Historical public API signatures are superseded, not restored",
+        "Generic message text compatibility and cloud ingestion are excluded"
+      ]
+    },
+    {
+      "source": "5fac706a7983a6d359b39acbd670e6800afe020e",
+      "path": "Maliev.LoggerService.NLog/nlog.config",
+      "sourceBodyRevision": "5fac706a7983a6d359b39acbd670e6800afe020e",
+      "sourceBlob": "a37906216b8ae6b5219f8261896959db452c3488",
+      "methods": [],
+      "structuredFailureFields": [],
+      "passesExceptionObjectToLogger": false,
+      "removesQueryString": false,
+      "genericTextResponse": false,
+      "mapsTo": [
+        "provider-correlation",
+        "private-failure"
+      ],
+      "disposition": "Defaults owner adaptation or artifact supersession supported by exact source chain and retained native evidence; owner acceptance pending",
+      "limitations": [
+        "Only code-owned symbols and schema names retained; no source configuration values",
+        "Historical public API signatures are superseded, not restored",
+        "Generic message text compatibility and cloud ingestion are excluded"
+      ]
+    },
+    {
+      "source": "9e51e6c5da29de8e617b65b59d46882cde6d3b64",
+      "path": "Maliev.LoggerService.NLog/ExceptionHandlerApplicationBuilderExtensions.cs",
+      "sourceBodyRevision": "600e79ac9b2836f540cf1547d3efd20362912aae",
+      "sourceBlob": "2ce6753e734577f2e16a3cd6032ff12e97ce3598",
+      "methods": [
+        "UseMalievProductionExceptionHandler"
+      ],
+      "structuredFailureFields": [],
+      "passesExceptionObjectToLogger": false,
+      "removesQueryString": false,
+      "genericTextResponse": true,
+      "mapsTo": [
+        "private-failure"
+      ],
+      "disposition": "Defaults owner adaptation or artifact supersession supported by exact source chain and retained native evidence; owner acceptance pending",
+      "limitations": [
+        "Only code-owned symbols and schema names retained; no source configuration values",
+        "Historical public API signatures are superseded, not restored",
+        "Generic message text compatibility and cloud ingestion are excluded"
+      ]
+    },
+    {
+      "source": "9e51e6c5da29de8e617b65b59d46882cde6d3b64",
+      "path": "Maliev.LoggerService.NLog/ILoggerManager.cs",
+      "sourceBodyRevision": "600e79ac9b2836f540cf1547d3efd20362912aae",
+      "sourceBlob": "d3f1b8b26bc4b50a1c3eb9ff2861da79ab62bdf5",
+      "methods": [
+        "Log",
+        "LogDebug",
+        "LogError",
+        "LogFatal",
+        "LogInfo",
+        "LogTrace",
+        "LogWarn"
+      ],
+      "structuredFailureFields": [],
+      "passesExceptionObjectToLogger": false,
+      "removesQueryString": false,
+      "genericTextResponse": false,
+      "mapsTo": [
+        "provider-correlation",
+        "private-failure"
+      ],
+      "disposition": "Defaults owner adaptation or artifact supersession supported by exact source chain and retained native evidence; owner acceptance pending",
+      "limitations": [
+        "Only code-owned symbols and schema names retained; no source configuration values",
+        "Historical public API signatures are superseded, not restored",
+        "Generic message text compatibility and cloud ingestion are excluded"
+      ]
+    },
+    {
+      "source": "9e51e6c5da29de8e617b65b59d46882cde6d3b64",
+      "path": "Maliev.LoggerService.NLog/LoggerManager.cs",
+      "sourceBodyRevision": "600e79ac9b2836f540cf1547d3efd20362912aae",
+      "sourceBlob": "085d5dfef84dda5e27a82ec8a2f2773de16143a4",
+      "methods": [
+        "Log",
+        "LogDebug",
+        "LogError",
+        "LogFatal",
+        "LogInfo",
+        "LogTrace",
+        "LogWarn"
+      ],
+      "structuredFailureFields": [],
+      "passesExceptionObjectToLogger": false,
+      "removesQueryString": false,
+      "genericTextResponse": false,
+      "mapsTo": [
+        "provider-correlation",
+        "private-failure"
+      ],
+      "disposition": "Defaults owner adaptation or artifact supersession supported by exact source chain and retained native evidence; owner acceptance pending",
+      "limitations": [
+        "Only code-owned symbols and schema names retained; no source configuration values",
+        "Historical public API signatures are superseded, not restored",
+        "Generic message text compatibility and cloud ingestion are excluded"
+      ]
+    },
+    {
+      "source": "9e51e6c5da29de8e617b65b59d46882cde6d3b64",
+      "path": "Maliev.LoggerService.NLog/Maliev.LoggerService.NLog.csproj",
+      "sourceBodyRevision": "600e79ac9b2836f540cf1547d3efd20362912aae",
+      "sourceBlob": "09404715aeb20f863ba08de8f73ec7a7bb4cf4a5",
+      "methods": [],
+      "structuredFailureFields": [],
+      "passesExceptionObjectToLogger": false,
+      "removesQueryString": false,
+      "genericTextResponse": false,
+      "mapsTo": [
+        "obsolete-adapter-artifact"
+      ],
+      "disposition": "Defaults owner adaptation or artifact supersession supported by exact source chain and retained native evidence; owner acceptance pending",
+      "limitations": [
+        "Only code-owned symbols and schema names retained; no source configuration values",
+        "Historical public API signatures are superseded, not restored",
+        "Generic message text compatibility and cloud ingestion are excluded"
+      ]
+    },
+    {
+      "source": "9e51e6c5da29de8e617b65b59d46882cde6d3b64",
+      "path": "Maliev.LoggerService.NLog/Maliev.LoggerService.xml",
+      "sourceBodyRevision": "600e79ac9b2836f540cf1547d3efd20362912aae",
+      "sourceBlob": "f858ac9ec1e517daabd3674a1c6668fa0a8d3083",
+      "methods": [],
+      "structuredFailureFields": [],
+      "passesExceptionObjectToLogger": false,
+      "removesQueryString": false,
+      "genericTextResponse": false,
+      "mapsTo": [
+        "obsolete-adapter-artifact"
+      ],
+      "disposition": "Defaults owner adaptation or artifact supersession supported by exact source chain and retained native evidence; owner acceptance pending",
+      "limitations": [
+        "Only code-owned symbols and schema names retained; no source configuration values",
+        "Historical public API signatures are superseded, not restored",
+        "Generic message text compatibility and cloud ingestion are excluded"
+      ]
+    },
+    {
+      "source": "9e51e6c5da29de8e617b65b59d46882cde6d3b64",
+      "path": "Maliev.LoggerService.NLog/nlog.config",
+      "sourceBodyRevision": "600e79ac9b2836f540cf1547d3efd20362912aae",
+      "sourceBlob": "c83f6941e85e6feec948b8efab56a07af901b838",
+      "methods": [],
+      "structuredFailureFields": [],
+      "passesExceptionObjectToLogger": false,
+      "removesQueryString": false,
+      "genericTextResponse": false,
+      "mapsTo": [
+        "provider-correlation",
+        "private-failure"
+      ],
+      "disposition": "Defaults owner adaptation or artifact supersession supported by exact source chain and retained native evidence; owner acceptance pending",
+      "limitations": [
+        "Only code-owned symbols and schema names retained; no source configuration values",
+        "Historical public API signatures are superseded, not restored",
+        "Generic message text compatibility and cloud ingestion are excluded"
+      ]
+    },
+    {
+      "source": "9e51e6c5da29de8e617b65b59d46882cde6d3b64",
+      "path": "Maliev.LoggerService.NLog/RequestFailureLogEvent.cs",
+      "sourceBodyRevision": "600e79ac9b2836f540cf1547d3efd20362912aae",
+      "sourceBlob": "576c5697b9d39d161cea91f0b221c83d88796e04",
+      "methods": [
+        "Create"
+      ],
+      "structuredFailureFields": [
+        "eventName",
+        "exceptionType",
+        "incidentId",
+        "method",
+        "occurredAtUtc",
+        "path",
+        "service",
+        "statusCode"
+      ],
+      "passesExceptionObjectToLogger": true,
+      "removesQueryString": true,
+      "genericTextResponse": false,
+      "mapsTo": [
+        "private-failure"
+      ],
+      "disposition": "Defaults owner adaptation or artifact supersession supported by exact source chain and retained native evidence; owner acceptance pending",
+      "limitations": [
+        "Only code-owned symbols and schema names retained; no source configuration values",
+        "Historical public API signatures are superseded, not restored",
+        "Generic message text compatibility and cloud ingestion are excluded"
+      ]
+    }
+  ],
+  "wholeSourceClosure": false
+}
