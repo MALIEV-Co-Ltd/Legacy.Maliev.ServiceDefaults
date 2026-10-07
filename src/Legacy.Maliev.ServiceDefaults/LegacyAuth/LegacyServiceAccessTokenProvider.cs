@@ -32,6 +32,8 @@ public interface ILegacyServiceAccessTokenProvider
     void Invalidate(string token);
 }
 
+internal enum LegacyServiceTokenProfile { Legacy, Iam }
+
 /// <summary>Exchanges a runtime-only client credential for a bounded, cached legacy service token.</summary>
 public sealed class LegacyServiceAccessTokenProvider : ILegacyServiceAccessTokenProvider
 {
@@ -42,6 +44,7 @@ public sealed class LegacyServiceAccessTokenProvider : ILegacyServiceAccessToken
     private const int MaximumTokenLength = 16 * 1024;
     private const int MaximumLifetimeSeconds = 3600;
     private readonly IHttpClientFactory clientFactory;
+    private readonly string loginPath;
     private readonly LegacyServiceAuthenticationOptions options;
     private readonly TimeProvider timeProvider;
     private readonly ILogger<LegacyServiceAccessTokenProvider> logger;
@@ -55,7 +58,23 @@ public sealed class LegacyServiceAccessTokenProvider : ILegacyServiceAccessToken
         IOptions<LegacyServiceAuthenticationOptions> options,
         TimeProvider timeProvider,
         ILogger<LegacyServiceAccessTokenProvider> logger)
+        : this(clientFactory, options, timeProvider, logger, LegacyServiceTokenProfile.Legacy)
     {
+    }
+
+    internal LegacyServiceAccessTokenProvider(
+        IHttpClientFactory clientFactory,
+        IOptions<LegacyServiceAuthenticationOptions> options,
+        TimeProvider timeProvider,
+        ILogger<LegacyServiceAccessTokenProvider> logger,
+        LegacyServiceTokenProfile profile)
+    {
+        loginPath = profile switch
+        {
+            LegacyServiceTokenProfile.Legacy => "/auth/v1/service/login",
+            LegacyServiceTokenProfile.Iam => "/auth/v1/service/iam-login",
+            _ => throw new ArgumentOutOfRangeException(nameof(profile)),
+        };
         this.clientFactory = clientFactory ?? throw new ArgumentNullException(nameof(clientFactory));
         this.options = options?.Value ?? throw new ArgumentNullException(nameof(options));
         this.timeProvider = timeProvider ?? throw new ArgumentNullException(nameof(timeProvider));
@@ -152,7 +171,7 @@ public sealed class LegacyServiceAccessTokenProvider : ILegacyServiceAccessToken
     {
         try
         {
-            using var request = new HttpRequestMessage(HttpMethod.Post, "/auth/v1/service/login")
+            using var request = new HttpRequestMessage(HttpMethod.Post, loginPath)
             {
                 Content = JsonContent.Create(new ServiceLoginRequest(options.ClientId, options.ClientSecret))
             };

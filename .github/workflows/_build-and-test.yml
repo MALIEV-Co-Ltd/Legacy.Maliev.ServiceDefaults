@@ -38,6 +38,13 @@ jobs:
             --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true \
             --filter "FullyQualifiedName~PrivateDependencyNativeDeadlineTests" \
             --logger "trx;LogFileName=send-observation.trx" --results-directory artifacts/send-observation
+      - name: Verify separately enrolled IAM profile exchange and real DI wiring
+        shell: bash
+        run: |
+          dotnet test tests/Legacy.Maliev.ServiceDefaults.Tests/Legacy.Maliev.ServiceDefaults.Tests.csproj \
+            --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true \
+            --filter "FullyQualifiedName~LegacyIamServiceAuthenticationTests" \
+            --logger "trx;LogFileName=iam-service-profile.trx" --results-directory artifacts/iam-service-profile
       - name: Validate .NET solution
         uses: MALIEV-Co-Ltd/Legacy.Maliev.Workflows/actions/dotnet-validate@73dd7304ffe85ec504389fd7664cc39070b9f148
         with:
@@ -136,6 +143,7 @@ jobs:
           & ./eng/Export-CoverageEvidence.ps1 -ResultsDirectory artifacts/response-ownership -OutputDirectory artifacts/coverage-evidence/response-ownership
           & ./eng/Export-CoverageEvidence.ps1 -ResultsDirectory artifacts/send-observation -OutputDirectory artifacts/coverage-evidence/send-observation
           & ./eng/Export-CoverageEvidence.ps1 -ResultsDirectory artifacts/iam-private-observation -OutputDirectory artifacts/coverage-evidence/iam-private-observation
+          & ./eng/Export-CoverageEvidence.ps1 -ResultsDirectory artifacts/iam-service-profile -OutputDirectory artifacts/coverage-evidence/iam-service-profile
       - name: Retain private validation evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
