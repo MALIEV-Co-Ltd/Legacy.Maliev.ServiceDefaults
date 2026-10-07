@@ -15,7 +15,8 @@ public sealed class LegacyIamServiceAuthenticationTests
 {
     private static IOptions<LegacyServiceAuthenticationOptions> Credentials() => Options.Create(new LegacyServiceAuthenticationOptions
     {
-        ClientId = "legacy-quotation", ClientSecret = "isolated-profile-exchange-secret-0123456789",
+        ClientId = "legacy-quotation",
+        ClientSecret = "isolated-profile-exchange-secret-0123456789",
     });
 
     /// <summary>Verifies static routes, credential-only bodies, distinct caches, and profile-specific invalidation.</summary>
