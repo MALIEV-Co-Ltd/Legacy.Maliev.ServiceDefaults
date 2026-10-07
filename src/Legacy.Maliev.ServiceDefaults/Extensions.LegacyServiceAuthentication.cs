@@ -14,18 +14,28 @@ public static class LegacyServiceAuthenticationExtensions
         return builder.AddHttpMessageHandler<LegacyServiceAuthenticationHandler>();
     }
 
+    /// <summary>Adds only the opt-in, separately enrolled IAM profile to the selected HTTP client.</summary>
+    /// <remarks>Register AddLegacyAuthServiceTokenExchange on the host first to bind credentials and the unauthenticated Auth exchange client.</remarks>
+    public static IHttpClientBuilder AddLegacyIamServiceAuthentication(this IHttpClientBuilder builder)
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+        builder.Services.TryAddSingleton<ILegacyIamServiceAccessTokenProvider, LegacyIamServiceAccessTokenProvider>();
+        builder.Services.TryAddTransient<LegacyIamServiceAuthenticationHandler>();
+        return builder.AddHttpMessageHandler<LegacyIamServiceAuthenticationHandler>();
+    }
+
     /// <summary>Registers the legacy AuthService camel-case service-login exchange.</summary>
     public static IHostApplicationBuilder AddLegacyAuthServiceTokenExchange(this IHostApplicationBuilder builder)
     {
         ArgumentNullException.ThrowIfNull(builder);
-        if (builder.Services.Any(descriptor => descriptor.ServiceType == typeof(ILegacyServiceAccessTokenProvider)))
+        if (builder.Services.Any(descriptor => descriptor.ServiceType == typeof(LegacyAuthExchangeRegistration)))
             return builder;
-
+        builder.Services.AddSingleton(new LegacyAuthExchangeRegistration());
         builder.Services.AddOptions<LegacyServiceAuthenticationOptions>()
             .Bind(builder.Configuration.GetSection(LegacyServiceAuthenticationOptions.SectionName));
         builder.Services.TryAddSingleton(TimeProvider.System);
-        builder.Services.AddSingleton<ILegacyServiceAccessTokenProvider, LegacyServiceAccessTokenProvider>();
-        builder.Services.AddTransient<LegacyServiceAuthenticationHandler>();
+        builder.Services.TryAddSingleton<ILegacyServiceAccessTokenProvider, LegacyServiceAccessTokenProvider>();
+        builder.Services.TryAddTransient<LegacyServiceAuthenticationHandler>();
         builder.Services.AddHttpClient(LegacyServiceAccessTokenProvider.HttpClientName, client =>
         {
             var configured = builder.Configuration["Services:Auth:BaseUrl"] ?? builder.Configuration["Services:Auth"];
@@ -37,6 +47,8 @@ public static class LegacyServiceAuthenticationExtensions
         .AddServiceDiscovery();
         return builder;
     }
+
+    private sealed class LegacyAuthExchangeRegistration { }
 
     private static Uri ResolveBaseAddress(string configured)
     {
