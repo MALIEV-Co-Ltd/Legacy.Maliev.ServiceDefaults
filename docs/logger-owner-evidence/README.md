@@ -28,7 +28,7 @@ established by the inventory.
 Run the validator with the accepted Defaults checkout supplied explicitly:
 
 ```powershell
-./Validate-LoggerObligations.ps1 -CanonicalDefaultsRoot B:/maliev-legacy/Legacy.Maliev.ServiceDefaults
+./Validate-LoggerObligations.ps1 -CanonicalDefaultsRoot B:/maliev-legacy/Legacy.Maliev.ServiceDefaults -HistoricalSourceRoot //maliev/repository/maliev-web
 ```
 
 This works from a frozen packet directory as well as the repository. The validator
@@ -42,7 +42,7 @@ assignments, each with exact committed source identity, accepted replacement
 bodies and passed native case IDs. Validate those records with:
 
 ```powershell
-./Validate-OperationalResolutions.ps1 -CanonicalDefaultsRoot B:/maliev-legacy/Legacy.Maliev.ServiceDefaults
+./Validate-OperationalResolutions.ps1 -CanonicalDefaultsRoot B:/maliev-legacy/Legacy.Maliev.ServiceDefaults -HistoricalSourceRoot //maliev/repository/maliev-web
 ```
 
 The 100 SQL delivery/query assignments remain separate.

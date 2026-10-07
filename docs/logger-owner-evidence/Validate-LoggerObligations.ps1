@@ -1,4 +1,7 @@
-param([Parameter(Mandatory)][string]$CanonicalDefaultsRoot)
+param(
+    [Parameter(Mandatory)][string]$CanonicalDefaultsRoot,
+    [Parameter(Mandatory)][string]$HistoricalSourceRoot
+)
 $ErrorActionPreference = 'Stop'
 $root = $PSScriptRoot
 $membership = Get-Content "$root/historical-memberships.json" -Raw | ConvertFrom-Json
@@ -33,6 +36,10 @@ if (@(Compare-Object $expected $actual).Count) { throw 'Exact source/path member
 if (@($actual | Select-Object -Unique).Count -ne 119) { throw 'Duplicate source/path assignments.' }
 foreach ($assignment in $packet.assignments) {
     if ($assignment.sourceBlob -notmatch '^[a-f0-9]{40}$') { throw 'Missing committed source blob.' }
+    $resolvedBlob = git -C $HistoricalSourceRoot rev-parse --verify "$($assignment.sourceBodyRevision):$($assignment.path)" 2>$null
+    if ($LASTEXITCODE -ne 0 -or $resolvedBlob -ne $assignment.sourceBlob) { throw 'Historical source body binding differs.' }
+    $ancestry = git -C $HistoricalSourceRoot rev-list --parents -n 1 $assignment.source
+    if ($LASTEXITCODE -ne 0 -or $assignment.sourceBodyRevision -notin ($ancestry -split ' ')) { throw 'Historical body revision is not the source or a direct parent.' }
     foreach ($id in $assignment.behaviorIds) {
         if (@($behaviors | Where-Object id -eq $id).Count -ne 1) { throw 'Unknown or ambiguous behavior assignment.' }
     }
