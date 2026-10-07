@@ -106,12 +106,14 @@ public sealed class LegacyIamServiceAuthenticationTests
     public async Task IamProfileRegistration_UsesConfiguredUnauthenticatedExchangeWithoutReplacingLegacyProvider(bool preRegistered)
     {
         var builder = Host.CreateApplicationBuilder();
+        builder.Configuration["Observability:RuntimeMetricsEnabled"] = "false";
         builder.Configuration["ServiceAuthentication:ClientId"] = "legacy-quotation";
         builder.Configuration["ServiceAuthentication:ClientSecret"] = "isolated-profile-exchange-secret-0123456789";
         builder.Configuration["Services:Auth:BaseUrl"] = "https://auth-profile.invalid";
         builder.Configuration["Services:Auth"] = "https://wrong-fallback-origin.invalid";
         var preserved = new LegacyTokenProvider();
         if (preRegistered) builder.Services.AddSingleton<ILegacyServiceAccessTokenProvider>(preserved);
+        builder.AddServiceDefaults();
         builder.AddLegacyAuthServiceTokenExchange();
         var exchange = new ExchangeHandler(HttpStatusCode.OK);
         builder.Services.AddHttpClient(LegacyServiceAccessTokenProvider.HttpClientName)
