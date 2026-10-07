@@ -28,6 +28,9 @@ public static class LegacyServiceAuthenticationExtensions
     public static IHostApplicationBuilder AddLegacyAuthServiceTokenExchange(this IHostApplicationBuilder builder)
     {
         ArgumentNullException.ThrowIfNull(builder);
+        if (builder.Services.Any(descriptor => descriptor.ServiceType == typeof(LegacyAuthExchangeRegistration)))
+            return builder;
+        builder.Services.AddSingleton(new LegacyAuthExchangeRegistration());
         builder.Services.AddOptions<LegacyServiceAuthenticationOptions>()
             .Bind(builder.Configuration.GetSection(LegacyServiceAuthenticationOptions.SectionName));
         builder.Services.TryAddSingleton(TimeProvider.System);
@@ -44,6 +47,8 @@ public static class LegacyServiceAuthenticationExtensions
         .AddServiceDiscovery();
         return builder;
     }
+
+    private sealed class LegacyAuthExchangeRegistration { }
 
     private static Uri ResolveBaseAddress(string configured)
     {

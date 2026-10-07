@@ -136,6 +136,28 @@ public sealed class LegacyIamServiceAuthenticationTests
         Assert.Equal(1, sink.Requests);
     }
 
+    /// <summary>Repeated exchange registration retains intervening named-client customization.</summary>
+    [Fact]
+    public void IamProfileRegistration_RepeatedExchangeRegistrationPreservesClientCustomization()
+    {
+        var builder = Host.CreateApplicationBuilder();
+        builder.Configuration["Observability:RuntimeMetricsEnabled"] = "false";
+        builder.Configuration["Services:Auth:BaseUrl"] = "https://initial-profile.invalid";
+        builder.AddServiceDefaults();
+        builder.AddLegacyAuthServiceTokenExchange();
+        builder.Services.AddHttpClient(LegacyServiceAccessTokenProvider.HttpClientName, client =>
+        {
+            client.BaseAddress = new Uri("https://custom-profile.invalid");
+            client.Timeout = TimeSpan.FromSeconds(17);
+        });
+        builder.AddLegacyAuthServiceTokenExchange();
+        using var host = builder.Build();
+        using var client = host.Services.GetRequiredService<IHttpClientFactory>()
+            .CreateClient(LegacyServiceAccessTokenProvider.HttpClientName);
+        Assert.Equal(new Uri("https://custom-profile.invalid"), client.BaseAddress);
+        Assert.Equal(TimeSpan.FromSeconds(17), client.Timeout);
+    }
+
     /// <summary>Real missing credentials stop both exchange and downstream transport.</summary>
     [Fact]
     public async Task IamProfileHandler_MissingCredentialsStopsBeforeEitherTransport()
