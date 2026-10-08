@@ -1,7 +1,7 @@
 namespace Maliev.Aspire.ServiceDefaults.Diagnostics;
 
 // A rendezvous owned only by one outer send, not by the pooled handler or any cancellation callback.
-internal sealed class PrivateDependencyObservationContext
+internal sealed class PrivateDependencyObservationContext(PrivateDependencyFailureObservation? observation = null)
 {
     internal static readonly HttpRequestOptionsKey<PrivateDependencyObservationContext?> Key =
         new("Maliev.PrivateDependencyObservationContext");
@@ -18,7 +18,11 @@ internal sealed class PrivateDependencyObservationContext
 
     internal void RecordOnce(Action record)
     {
-        if (Interlocked.Exchange(ref recorded, 1) == 0) record();
+        if (Interlocked.Exchange(ref recorded, 1) == 0)
+        {
+            observation?.MarkObserved();
+            record();
+        }
     }
 
     internal void TryRecordNativeDeadline(OperationCanceledException exception, CancellationToken callerToken)

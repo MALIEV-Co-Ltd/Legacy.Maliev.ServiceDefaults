@@ -24,11 +24,46 @@ jobs:
           ref: 78e48ffc4ee000df0510cba5e7c7a3c4c4d539d7
           path: .dependencies/Legacy.Maliev.CompatibilityContracts
           persist-credentials: false
+      - name: Set up focused observer validation
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68
+        with:
+          dotnet-version: 10.0.x
+      - name: Build and verify send observation ownership first
+        shell: bash
+        run: |
+          export GITHUB_ACTIONS=false
+          dotnet restore Legacy.Maliev.ServiceDefaults.slnx -p:UseLocalMalievDependencies=true
+          dotnet build Legacy.Maliev.ServiceDefaults.slnx --configuration Release --no-restore -warnaserror -p:UseLocalMalievDependencies=true
+          dotnet test tests/Legacy.Maliev.ServiceDefaults.Tests/Legacy.Maliev.ServiceDefaults.Tests.csproj \
+            --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true \
+            --filter "FullyQualifiedName~PrivateDependencyNativeDeadlineTests" \
+            --logger "trx;LogFileName=send-observation.trx" --results-directory artifacts/send-observation
+      - name: Verify separately enrolled IAM profile exchange and real DI wiring
+        shell: bash
+        run: |
+          dotnet test tests/Legacy.Maliev.ServiceDefaults.Tests/Legacy.Maliev.ServiceDefaults.Tests.csproj \
+            --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true \
+            --filter "FullyQualifiedName~LegacyIamServiceAuthenticationTests" \
+            --logger "trx;LogFileName=iam-service-profile.trx" --results-directory artifacts/iam-service-profile
       - name: Validate .NET solution
         uses: MALIEV-Co-Ltd/Legacy.Maliev.Workflows/actions/dotnet-validate@73dd7304ffe85ec504389fd7664cc39070b9f148
         with:
           solution: Legacy.Maliev.ServiceDefaults.slnx
           use-local-maliev-dependencies: 'true'
+      - name: Verify completed response failure ownership
+        shell: bash
+        run: |
+          dotnet test tests/Legacy.Maliev.ServiceDefaults.Tests/Legacy.Maliev.ServiceDefaults.Tests.csproj \
+            --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true \
+            --filter "FullyQualifiedName~PrivateRequestObservationContractTests" \
+            --logger "trx;LogFileName=response-ownership.trx" --results-directory artifacts/response-ownership
+      - name: Verify shared IAM private failure ownership
+        shell: bash
+        run: |
+          dotnet test tests/Legacy.Maliev.ServiceDefaults.Tests/Legacy.Maliev.ServiceDefaults.Tests.csproj \
+            --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true \
+            --filter "FullyQualifiedName~IamPrivateDiagnosticBoundaryTests|FullyQualifiedName~IamPrivateObservationOwnershipTests" \
+            --logger "trx;LogFileName=iam-private-observation.trx" --results-directory artifacts/iam-private-observation
       - name: Verify IAM cache ownership and permission compatibility
         shell: bash
         run: |
@@ -41,6 +76,12 @@ jobs:
           dotnet test tests/Legacy.Maliev.ServiceDefaults.Tests/Legacy.Maliev.ServiceDefaults.Tests.csproj \
             --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true \
             --filter "FullyQualifiedName~RetainedTypedHttpResponseTests"
+      - name: Verify legacy token owner deadline and cache lifecycle
+        shell: bash
+        run: |
+          dotnet test tests/Legacy.Maliev.ServiceDefaults.Tests/Legacy.Maliev.ServiceDefaults.Tests.csproj \
+            --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true \
+            --filter "FullyQualifiedName~LegacyTokenExchangeDeadlineTests|FullyQualifiedName~LegacyServiceAuthenticationTests"
       - name: Verify private coverage evidence controls
         shell: pwsh
         run: ./eng/Test-CoverageEvidence.ps1
@@ -99,6 +140,10 @@ jobs:
         shell: pwsh
         run: |
           & ./eng/Export-CoverageEvidence.ps1 -ResultsDirectory artifacts/owned-raw -OutputDirectory artifacts/coverage-evidence
+          & ./eng/Export-CoverageEvidence.ps1 -ResultsDirectory artifacts/response-ownership -OutputDirectory artifacts/coverage-evidence/response-ownership
+          & ./eng/Export-CoverageEvidence.ps1 -ResultsDirectory artifacts/send-observation -OutputDirectory artifacts/coverage-evidence/send-observation
+          & ./eng/Export-CoverageEvidence.ps1 -ResultsDirectory artifacts/iam-private-observation -OutputDirectory artifacts/coverage-evidence/iam-private-observation
+          & ./eng/Export-CoverageEvidence.ps1 -ResultsDirectory artifacts/iam-service-profile -OutputDirectory artifacts/coverage-evidence/iam-service-profile
       - name: Retain private validation evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

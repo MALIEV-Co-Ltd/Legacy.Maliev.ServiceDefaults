@@ -1,0 +1,707 @@
+[
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyOperationNameTests.Unknown_or_retired_first_resource_or_verb_EmitsOnlyUnknownOperation",
+    "outcome": "Passed",
+    "testId": "b1117fd6-e999-6231-df87-e6a726f31404"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyOperationNameTests.Uppercase_verb_and_case_insensitive_first_resource_EmitLiteralOperation",
+    "outcome": "Passed",
+    "testId": "b09e2e6a-3bf9-0a61-0363-c66dbb852a4f"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProvenanceTests.Write_ThrownNestedException_EmitsTypesAndCodeOwnedOuterMethodWithoutPrivateText",
+    "outcome": "Passed",
+    "testId": "89646abb-e4e3-e714-6ea1-1b8f919fcb18"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.Middleware.ExceptionEventLoggingTests.DirectNotFoundResponse_DoesNotEmitExceptionEvent",
+    "outcome": "Passed",
+    "testId": "0a5d3c73-e8bc-676c-b24b-0deaa8819c57"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyOperationNameTests.Unknown_or_retired_first_resource_or_verb_EmitsOnlyUnknownOperation",
+    "outcome": "Passed",
+    "testId": "9cfa617a-fe94-f26f-9b9e-59b81994bc3a"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyOperationNameTests.Unknown_or_retired_first_resource_or_verb_EmitsOnlyUnknownOperation",
+    "outcome": "Passed",
+    "testId": "8137f46f-46f9-6cfc-8ebf-63599026b832"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyNativeDeadlineTests.Recorded_send_ownership_survives_late_caller_cancellation_and_sink_failure",
+    "outcome": "Passed",
+    "testId": "ca737e12-5f41-58ea-4710-3f332334ce74"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyOperationNameTests.InFlightCallerCancellation_RemainsQuiet",
+    "outcome": "Passed",
+    "testId": "6a0aa3aa-4d16-1cce-b79e-b2b281cb1c91"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeJsonLoggingTests.Defaults_ConfigureScopedUtcJsonAndActivityCorrelation",
+    "outcome": "Passed",
+    "testId": "c6968165-21ef-3044-25ed-64c162cb3bcd"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyNativeDeadlineTests.Unselected_helper_or_existing_direct_send_does_not_gain_native_deadline_observation",
+    "outcome": "Passed",
+    "testId": "5380ec15-06cc-27ca-bfb3-533c1911c25a"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProducerContractTests.Private_formatter_keeps_success_and_disabled_levels_quiet",
+    "outcome": "Passed",
+    "testId": "66959475-6345-5fd8-7f03-bf51e125fbb0"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyNativeDeadlineTests.Forged_timeout_without_native_cancellation_preserves_exception_and_existing_single_event",
+    "outcome": "Passed",
+    "testId": "9d6fc690-817f-2c2b-008f-1f434519f17b"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyNativeDeadlineTests.Recorded_send_ownership_survives_late_caller_cancellation_and_sink_failure",
+    "outcome": "Passed",
+    "testId": "f565ae8d-b13a-5c86-2789-74f1c493a959"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProvenanceTests.Write_SuppressedLevel_DoesNotEnumerateOrRenderProvenance",
+    "outcome": "Passed",
+    "testId": "5aafba34-17e5-30de-e3ad-099c389dfc96"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyOperationNameTests.Retained_resource_EmitsOnlyBoundedOperation",
+    "outcome": "Passed",
+    "testId": "ba49a1b5-67ef-c871-dac0-99f21c245c1b"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProvenanceTests.Write_Failure_EmitsEntryAssemblyIdentityNotStateOrScopeIdentity",
+    "outcome": "Passed",
+    "testId": "e1157a9e-5f76-6d3e-5ff9-2e16d3bc1d4a"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyNativeDeadlineTests.Native_deadline_records_once_after_real_HttpClient_rewrites_terminal_cancellation",
+    "outcome": "Passed",
+    "testId": "4c75d695-bd67-e299-a7e0-1a0ab4b5f04d"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyNativeDeadlineTests.Real_pending_or_dispose_cancellation_is_quiet_even_with_transport_forged_timeout",
+    "outcome": "Passed",
+    "testId": "cb4df704-ee3d-3819-1faf-759bb98eca41"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.Middleware.ExceptionEventLoggingTests.StartedResponse_PreservesStatusAndBody_WithoutLoggingExceptionSecrets",
+    "outcome": "Passed",
+    "testId": "e928fbd2-e961-877f-3dd2-74580493592d"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProducerContractTests.Scope_enumeration_stops_after_sixteen_scopes",
+    "outcome": "Passed",
+    "testId": "35a9a233-d548-2b99-f5da-b846f618a89b"
+  },
+  {
+    "testName": "Maliev.Aspire.Tests.Unit.ExceptionHandlingMiddlewareTests.InvokeAsync_ProductionArgumentException_UsesSanitizedClientMessage",
+    "outcome": "Passed",
+    "testId": "810444dd-d26d-09f3-3e5d-47772aa7b56b"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyNativeDeadlineTests.Outer_send_preserves_existing_transport_or_503_event_without_duplication",
+    "outcome": "Passed",
+    "testId": "beb17b80-8934-8eaf-30d8-736d58f3d941"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.OpenTelemetryBackgroundEvent_HasNoInventedRequestContext",
+    "outcome": "Passed",
+    "testId": "637858ca-6274-b3f8-ac61-d11fe23b8ec8"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProducerContractTests.Non_code_owned_category_is_replaced_without_echo",
+    "outcome": "Passed",
+    "testId": "c8fd59d3-c5e6-32f5-fc3f-2a1bdcafa095"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyOperationNameTests.Retained_resource_EmitsOnlyBoundedOperation",
+    "outcome": "Passed",
+    "testId": "7b38ecb6-6ba3-878b-b69e-32ac2ab709c1"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProducerContractTests.State_enumeration_stops_after_sixty_four_fields",
+    "outcome": "Passed",
+    "testId": "63c9d2f3-6db0-28d1-1c05-a1f87e05347b"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.Middleware.ExceptionEventLoggingTests.NotFoundException_EmitsDebugEventWithoutSecrets_AndPreserves404",
+    "outcome": "Passed",
+    "testId": "b42f8220-cd91-4155-bb38-1fd73e7f3491"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyOperationNameTests.Retained_resource_EmitsOnlyBoundedOperation",
+    "outcome": "Passed",
+    "testId": "362bf685-6e5f-0336-4650-050bb1ef2d8a"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyOperationNameTests.Uppercase_verb_and_case_insensitive_first_resource_EmitLiteralOperation",
+    "outcome": "Passed",
+    "testId": "be201993-f1a1-25b9-7a7d-94cf817b0bba"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProducerContractTests.Private_formatter_keeps_success_and_disabled_levels_quiet",
+    "outcome": "Passed",
+    "testId": "43434af3-84c5-c4a4-fe2c-43934a2bc309"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyNativeDeadlineTests.Completed_native_send_leaves_retained_request_options_free_of_observation_or_unsafe_references",
+    "outcome": "Passed",
+    "testId": "945d5bb6-4e3e-8832-bac7-d3c49851445e"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyOperationNameTests.InFlightCallerCancellation_RemainsQuiet",
+    "outcome": "Passed",
+    "testId": "488caeaf-b1d1-823b-dca8-2a3de5c84f1c"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyOperationNameTests.Transport_failure_PreservesOriginalExceptionAndSafeCustomersPost",
+    "outcome": "Passed",
+    "testId": "0111b455-7379-06e5-6eb5-b46b00c999b1"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.Middleware.ExceptionEventLoggingTests.Failure_EmitsCorrelatedNativeEventWithoutSecrets_AndPreservesJson",
+    "outcome": "Passed",
+    "testId": "645c8b68-69ba-296e-be87-98a5892e2a0c"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyNativeDeadlineTests.Real_pending_or_dispose_cancellation_is_quiet_even_with_transport_forged_timeout",
+    "outcome": "Passed",
+    "testId": "6cbb77b7-947b-5c76-3578-64bdb89eb36a"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyNativeDeadlineTests.Real_pending_or_dispose_cancellation_is_quiet_even_with_transport_forged_timeout",
+    "outcome": "Passed",
+    "testId": "fccb476e-83f4-053d-fc7c-f234eda58096"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyOperationNameTests.Retained_resource_EmitsOnlyBoundedOperation",
+    "outcome": "Passed",
+    "testId": "8191791f-c62d-8602-1f3e-fd07ee847e6f"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProducerContractTests.Private_formatter_emits_native_severity_without_rendering_protected_text",
+    "outcome": "Passed",
+    "testId": "72c9386c-1608-12d0-b72a-7a8ea21a3b1b"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyNativeDeadlineTests.Unselected_helper_or_existing_direct_send_does_not_gain_native_deadline_observation",
+    "outcome": "Passed",
+    "testId": "796f1ae1-6244-7f11-8f7d-9cd28ca9ebba"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeJsonLoggingTests.Defaults_PreserveExistingProvidersFiltersAndOpenTelemetry",
+    "outcome": "Passed",
+    "testId": "38708aa4-6635-9139-2d24-c0829241d5e0"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.Middleware.RequestLoggingPathTests.RequestLogs_UseRouteTemplateWithoutLiteralSegments",
+    "outcome": "Passed",
+    "testId": "8d9a91e5-f967-eaad-0a77-ba509f399534"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProvenanceTests.Write_ActiveW3cActivity_EmitsActualTraceAndSpanNotSpoofedFields",
+    "outcome": "Passed",
+    "testId": "47337eaf-9408-9c00-3e88-0b9dcc079082"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyOperationNameTests.Retained_resource_EmitsOnlyBoundedOperation",
+    "outcome": "Passed",
+    "testId": "4f9f62b9-583b-e2f2-1687-29951ac5ff2e"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyOperationNameTests.Unknown_or_retired_first_resource_or_verb_EmitsOnlyUnknownOperation",
+    "outcome": "Passed",
+    "testId": "bdcd53d3-bc14-15d7-5dd6-00b3b6d244d0"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.Middleware.ExceptionEventLoggingTests.NotFoundException_EmitsDebugEventWithoutSecrets_AndPreserves404",
+    "outcome": "Passed",
+    "testId": "6803ab82-77ae-348d-9acb-b6ccaf3fa67f"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyNativeDeadlineTests.Real_pending_or_dispose_cancellation_is_quiet_even_with_transport_forged_timeout",
+    "outcome": "Passed",
+    "testId": "cba5de88-2453-51a3-7577-ad15f40feb74"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyOperationNameTests.Retained_resource_EmitsOnlyBoundedOperation",
+    "outcome": "Passed",
+    "testId": "52e5e3bd-3797-7041-213a-268f0b21a9ee"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyNativeDeadlineTests.Completed_native_send_leaves_retained_request_options_free_of_observation_or_unsafe_references",
+    "outcome": "Passed",
+    "testId": "c0d7f734-f654-612a-75cc-2afbc00cb54f"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyOperationNameTests.Retained_resource_EmitsOnlyBoundedOperation",
+    "outcome": "Passed",
+    "testId": "162a916f-5350-34bd-fb0e-6287d3c55e8f"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.Source5acLoggingRemovalContractTests.SharedDefaults_DoNotDependOnRetiredNativeLoggingAssemblyOrSourceApi",
+    "outcome": "Passed",
+    "testId": "26652739-9513-2d27-19f0-75569fbd133a"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.Defaults_MapAllCloudSeveritiesWithoutSerializingExceptionText",
+    "outcome": "Passed",
+    "testId": "75dbd30e-ea9d-5bcb-ff51-19476cdaf6b5"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.StandardPipeline_ControlledHttpFailure_EmitsOneCorrelatedRedactedEvent",
+    "outcome": "Passed",
+    "testId": "1c91f3c2-b8b8-ff7e-51c0-e2e709223ce8"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.StandardPipeline_ControlledHttpFailure_EmitsOneCorrelatedRedactedEvent",
+    "outcome": "Passed",
+    "testId": "6ca3151d-4402-9cb6-44df-8b384f7dc2e5"
+  },
+  {
+    "testName": "Maliev.Aspire.Tests.Unit.ExceptionHandlingMiddlewareTests.InvokeAsync_ClientCancellation_RethrowsWithoutWritingErrorResponse",
+    "outcome": "Passed",
+    "testId": "33729efa-13cb-245c-2790-682de23fa205"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyNativeDeadlineTests.Native_deadline_records_once_after_real_HttpClient_rewrites_terminal_cancellation",
+    "outcome": "Passed",
+    "testId": "afec92e7-6dd4-1e47-80cc-fb66630bff4f"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyNativeDeadlineTests.Real_caller_cancellation_preserves_caller_token_and_stays_quiet",
+    "outcome": "Passed",
+    "testId": "979b05d8-fdb0-bdd1-00c8-d0a5099191a9"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProvenanceTests.Write_FailureLevel_EmitsAuthoritativeUtcTimestamp",
+    "outcome": "Passed",
+    "testId": "2949c9cf-1d65-fb88-36a0-927846b0eb33"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyOperationNameTests.ExistingGenericRegistration_PreservesHttpRequestOperation",
+    "outcome": "Passed",
+    "testId": "3a56fd5d-560b-53c0-17b6-bf03909df5e0"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProvenanceTests.Write_NoActivity_OmitsTraceAndSpanDespiteValidLookingStateAndScope",
+    "outcome": "Passed",
+    "testId": "59acb026-4e65-0373-c970-232b826782ef"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyNativeDeadlineTests.Forged_timeout_without_native_cancellation_preserves_exception_and_existing_single_event",
+    "outcome": "Passed",
+    "testId": "fa362031-125d-9b63-64fa-7d5762f75efc"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyNativeDeadlineTests.Native_deadline_records_once_after_real_HttpClient_rewrites_terminal_cancellation",
+    "outcome": "Passed",
+    "testId": "1be64cc3-dcca-1bfc-8ad0-85a26a64a072"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProducerContractTests.Private_formatter_emits_native_severity_without_rendering_protected_text",
+    "outcome": "Passed",
+    "testId": "10e8cacf-9c16-dc00-170d-7d5dbf37c30c"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyOperationNameTests.Retained_resource_EmitsOnlyBoundedOperation",
+    "outcome": "Passed",
+    "testId": "5d19d298-5d91-c57a-ad8d-2f9588ca2734"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyOperationNameTests.Uppercase_verb_and_case_insensitive_first_resource_EmitLiteralOperation",
+    "outcome": "Passed",
+    "testId": "3a4424eb-f327-4a62-9cf9-178e97c1068f"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProvenanceTests.Write_ProvenanceWithProtectedPayloads_DoesNotExposeMessagesDataOrArbitraryObjects",
+    "outcome": "Passed",
+    "testId": "a56adde2-71e3-d811-6f51-b6de58e869f6"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyNativeDeadlineTests.Real_pending_or_dispose_cancellation_is_quiet_even_with_transport_forged_timeout",
+    "outcome": "Passed",
+    "testId": "db13adf2-de76-c9ee-b15b-e2866728c2fb"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyOperationNameTests.Unknown_or_retired_first_resource_or_verb_EmitsOnlyUnknownOperation",
+    "outcome": "Passed",
+    "testId": "fa9007b9-fb0b-c1d0-ad50-b9c3e1f5d7a9"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyNativeDeadlineTests.Outer_send_preserves_existing_transport_or_503_event_without_duplication",
+    "outcome": "Passed",
+    "testId": "e79e387d-4b2f-8c5f-2bf5-559057948065"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProducerContractTests.Allowlisted_fields_require_scalar_types_and_bounded_code_owned_values",
+    "outcome": "Passed",
+    "testId": "b85fc72a-0c1b-aa67-bf42-6e3ed63c6c87"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyOperationNameTests.Retained_resource_EmitsOnlyBoundedOperation",
+    "outcome": "Passed",
+    "testId": "426df5c6-fe9b-a542-1d44-7642a492724f"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProvenanceTests.Write_SuppressedLevel_DoesNotEnumerateOrRenderProvenance",
+    "outcome": "Passed",
+    "testId": "5668a53f-c9e9-acb9-487f-038827e9f7b6"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyNativeDeadlineTests.Native_deadline_throwing_provider_does_not_replace_the_real_native_exception",
+    "outcome": "Passed",
+    "testId": "b3be79e3-be51-e969-4524-cadf04c4235a"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyNativeDeadlineTests.Unobserved_send_state_is_quiet_and_cannot_be_reused",
+    "outcome": "Passed",
+    "testId": "56a49a99-1216-e539-b345-a51c48b6849e"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyNativeDeadlineTests.Native_deadline_throwing_provider_does_not_replace_the_real_native_exception",
+    "outcome": "Passed",
+    "testId": "ccb98a5d-cf97-8bb5-c05e-1dde94ef4d4a"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProducerContractTests.Non_code_owned_category_is_replaced_without_echo",
+    "outcome": "Passed",
+    "testId": "596153e0-dcc0-d80e-28bc-4b85773e3017"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyNativeDeadlineTests.Real_caller_cancellation_preserves_caller_token_and_stays_quiet",
+    "outcome": "Passed",
+    "testId": "e7ad85f5-2455-17eb-1949-94b1437e142e"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyNativeDeadlineTests.Recorded_send_ownership_survives_late_caller_cancellation_and_sink_failure",
+    "outcome": "Passed",
+    "testId": "bf977bff-1cf0-a47f-0607-94386d54bd0a"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProvenanceTests.Write_AsyncThrowSite_FailsClosedForCompilerGeneratedType",
+    "outcome": "Passed",
+    "testId": "73b54b6c-5fc0-d6af-4ca0-4be1430fed35"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyOperationNameTests.Uppercase_verb_and_case_insensitive_first_resource_EmitLiteralOperation",
+    "outcome": "Passed",
+    "testId": "4c40f0c7-d4df-85cb-7792-20ebf8e9a0e2"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyOperationNameTests.Transport_failure_PreservesOriginalExceptionAndSafeCustomersPost",
+    "outcome": "Passed",
+    "testId": "478edb9b-49be-97a3-f680-c47e866f167f"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyNativeDeadlineTests.Real_pending_or_dispose_cancellation_is_quiet_even_with_transport_forged_timeout",
+    "outcome": "Passed",
+    "testId": "e8861415-ac7d-b8d8-32ae-b0c2ae505153"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.CorrelationBoundary_RejectsUntrustedOrOversizedIdentifiers",
+    "outcome": "Passed",
+    "testId": "7a2c17e9-05c5-5c5d-d1ac-635a5e8cc56f"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyOperationNameTests.Retained_resource_EmitsOnlyBoundedOperation",
+    "outcome": "Passed",
+    "testId": "552d4c25-8a37-4842-53f5-a7aa504365b5"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyOperationNameTests.Retained_resource_EmitsOnlyBoundedOperation",
+    "outcome": "Passed",
+    "testId": "ff3f3403-3d73-9cd1-1cb3-c6e412ef6bdc"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyNativeDeadlineTests.Outer_send_preserves_existing_transport_or_503_event_without_duplication",
+    "outcome": "Passed",
+    "testId": "24aca790-0a34-a397-eb36-b0a5c6780fa9"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProducerContractTests.Private_formatter_keeps_success_and_disabled_levels_quiet",
+    "outcome": "Passed",
+    "testId": "ee036b1d-dcf1-70af-000c-7b827f4053d0"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProducerContractTests.Reserved_fields_cannot_be_spoofed_or_repeated_by_state_and_scopes",
+    "outcome": "Passed",
+    "testId": "45e345d8-64fe-4e10-ea55-c75082688d3a"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyOperationNameTests.Retained_resource_EmitsOnlyBoundedOperation",
+    "outcome": "Passed",
+    "testId": "0c268c33-826d-a984-f811-ba28f557ae6e"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyNativeDeadlineTests.Unselected_helper_or_existing_direct_send_does_not_gain_native_deadline_observation",
+    "outcome": "Passed",
+    "testId": "bde27822-f07d-65e9-a813-56508cff3d5b"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.Caching.CacheLoggingContractTests.Cache_log_identifier_is_stable_but_does_not_include_the_input",
+    "outcome": "Passed",
+    "testId": "05236af4-58bf-b869-c654-57975cb4092a"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProvenanceTests.Write_FailureLevel_EmitsAuthoritativeUtcTimestamp",
+    "outcome": "Passed",
+    "testId": "ab4a48ea-2088-c0d6-7711-2c7114be6f74"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.StandardPipeline_ControlledHttpFailure_EmitsOneCorrelatedRedactedEvent",
+    "outcome": "Passed",
+    "testId": "4adf6553-0d5e-4df6-dd0d-e0b6f27939d4"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyNativeDeadlineTests.Unobserved_send_state_is_quiet_and_cannot_be_reused",
+    "outcome": "Passed",
+    "testId": "3defd7dd-3fc7-4ed4-ca55-6786272f2a90"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyOperationNameTests.Retained_resource_EmitsOnlyBoundedOperation",
+    "outcome": "Passed",
+    "testId": "3c1e8d9b-459b-71de-d12c-5c85f03b2d86"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyOperationNameTests.Unknown_or_retired_first_resource_or_verb_EmitsOnlyUnknownOperation",
+    "outcome": "Passed",
+    "testId": "2b4d1d10-e8bd-2846-15d3-de660982a507"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProvenanceTests.Write_MissingThrowSite_DoesNotInventSourceLocation",
+    "outcome": "Passed",
+    "testId": "1c9545eb-a871-c56f-3a79-527ee65b34a8"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyNativeDeadlineTests.Concurrent_distinct_requests_keep_terminal_response_and_native_deadline_operations_independent",
+    "outcome": "Passed",
+    "testId": "b0e3d44e-3398-e701-5eea-d2c41b9c7367"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyOperationNameTests.Retained_resource_EmitsOnlyBoundedOperation",
+    "outcome": "Passed",
+    "testId": "20f7da59-811b-df5f-d065-fda659e61ccc"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyOperationNameTests.Retained_resource_EmitsOnlyBoundedOperation",
+    "outcome": "Passed",
+    "testId": "ef7e937a-d485-59cd-8711-80ccfe7fd0f8"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyOperationNameTests.OperationRegistration_ConflictingDependency_FailsClosed",
+    "outcome": "Passed",
+    "testId": "6177f528-9c24-0afa-0240-38a889d5ebd7"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyOperationNameTests.Retained_resource_EmitsOnlyBoundedOperation",
+    "outcome": "Passed",
+    "testId": "afa653bb-b609-ee98-b7e6-464471fb03a3"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyNativeDeadlineTests.Unobserved_send_state_is_quiet_and_cannot_be_reused",
+    "outcome": "Passed",
+    "testId": "9b6751c3-0799-c6c6-1301-d629ba66b021"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyOperationNameTests.Retained_resource_EmitsOnlyBoundedOperation",
+    "outcome": "Passed",
+    "testId": "de5509aa-cf57-85c7-a3c4-0ae91d2785e6"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyNativeDeadlineTests.Real_pending_or_dispose_cancellation_is_quiet_even_with_transport_forged_timeout",
+    "outcome": "Passed",
+    "testId": "3022854c-8634-ba86-e6d1-36cdf1a8d146"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyOperationNameTests.RepeatedOperationRegistration_IsIdempotent",
+    "outcome": "Passed",
+    "testId": "eac3e356-9a22-e156-02ad-342912688778"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProducerContractTests.Private_formatter_keeps_success_and_disabled_levels_quiet",
+    "outcome": "Passed",
+    "testId": "22ef4fd8-6bca-1876-9b27-a253d9d22fb6"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProvenanceTests.Write_SuppressedLevel_DoesNotEnumerateOrRenderProvenance",
+    "outcome": "Passed",
+    "testId": "dc9cc3ff-368d-1d7f-708e-47b7c47a93a3"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyOperationNameTests.Uppercase_verb_and_case_insensitive_first_resource_EmitLiteralOperation",
+    "outcome": "Passed",
+    "testId": "0dd291d4-6c6e-549d-ee94-aa91e0c958c6"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.NativeLoggingWireTests.Defaults_EmitActualScopedUtcJson_AndDeliverToExistingProvider",
+    "outcome": "Passed",
+    "testId": "f636087d-07f8-4329-6adc-7962c39d49fb"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyOperationNameTests.MixedRegistrationModes_FailClosed",
+    "outcome": "Passed",
+    "testId": "2e9adab4-c680-1fae-ac98-13f923200031"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProvenanceTests.Write_FailureLevel_EmitsAuthoritativeUtcTimestamp",
+    "outcome": "Passed",
+    "testId": "055e99be-4b1d-aa9e-3e0e-1008727368a3"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyOperationNameTests.Retained_resource_EmitsOnlyBoundedOperation",
+    "outcome": "Passed",
+    "testId": "c60d95ad-6c96-ff30-83f4-5ee579fedc77"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProvenanceTests.Write_ProvenanceWithOversizedStateAndScopes_PreservesIndependentTraversalBudgets",
+    "outcome": "Passed",
+    "testId": "c9614231-5aa9-008a-0b6e-a3db974ba5e3"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.Middleware.RequestLoggingPathTests.RequestLogs_UseRouteTemplateWithoutLiteralSegments",
+    "outcome": "Passed",
+    "testId": "1a7ebd7f-b313-0ccb-1789-3d407608786a"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyOperationNameTests.Retained_resource_EmitsOnlyBoundedOperation",
+    "outcome": "Passed",
+    "testId": "92f38308-eee8-6290-147d-6f0992167cd2"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyNativeDeadlineTests.Unobserved_send_state_is_quiet_and_cannot_be_reused",
+    "outcome": "Passed",
+    "testId": "c1efae6f-b6d0-0723-0dc1-bf7077a4c7de"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProvenanceTests.Write_SuppressedLevel_DoesNotEnumerateOrRenderProvenance",
+    "outcome": "Passed",
+    "testId": "2af7bc13-11ed-2aea-9585-445cb15a352c"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyOperationNameTests.Uppercase_verb_and_case_insensitive_first_resource_EmitLiteralOperation",
+    "outcome": "Passed",
+    "testId": "675e66a5-71f0-7d1b-a2d9-39f409f9c913"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.Middleware.ExceptionEventLoggingTests.Failure_EmitsCorrelatedNativeEventWithoutSecrets_AndPreservesJson",
+    "outcome": "Passed",
+    "testId": "c6dabd7a-cb76-a399-3809-6e78eab7e23a"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyOperationNameTests.RepeatedOperationRegistration_IsIdempotent",
+    "outcome": "Passed",
+    "testId": "47196fc4-9310-7139-ccc6-88c6ceb45763"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyOperationNameTests.MixedRegistrationModes_FailClosed",
+    "outcome": "Passed",
+    "testId": "c4ef14fb-e84e-17bb-be32-d7324c7ec0b4"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyNativeDeadlineTests.Unobserved_send_state_is_quiet_and_cannot_be_reused",
+    "outcome": "Passed",
+    "testId": "24e43aab-bcd3-ef64-7a52-d8cd573162c3"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyNativeDeadlineTests.Recorded_send_ownership_survives_late_caller_cancellation_and_sink_failure",
+    "outcome": "Passed",
+    "testId": "a8ea86d0-be23-f9fa-f6c7-1ef1d4dc9978"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyNativeDeadlineTests.Real_pending_or_dispose_cancellation_is_quiet_even_with_transport_forged_timeout",
+    "outcome": "Passed",
+    "testId": "2d7cfe03-4f1b-e5c7-d2ee-ad6d601714cb"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProducerContractTests.First_valid_scalar_survives_and_safe_scope_only_fills_absent_fields",
+    "outcome": "Passed",
+    "testId": "d724eb67-ef90-7405-d0dc-7f8c956e5ae5"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProvenanceTests.Write_HierarchicalActivity_DoesNotInventW3cIdentifiers",
+    "outcome": "Passed",
+    "testId": "2a336805-5ba0-7e2c-5f5b-3e905113506a"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyOperationNameTests.Retained_resource_EmitsOnlyBoundedOperation",
+    "outcome": "Passed",
+    "testId": "50b7bce6-c7f2-0870-f9bd-9f82dd755298"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyNativeDeadlineTests.Outer_send_preserves_existing_transport_or_503_event_without_duplication",
+    "outcome": "Passed",
+    "testId": "0fab0401-a62e-e19b-ba7c-192375bb032c"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyNativeDeadlineTests.Native_deadline_records_once_after_real_HttpClient_rewrites_terminal_cancellation",
+    "outcome": "Passed",
+    "testId": "f6e216da-5065-eb5b-635a-e0bdccaf04e4"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyOperationNameTests.Unknown_or_retired_first_resource_or_verb_EmitsOnlyUnknownOperation",
+    "outcome": "Passed",
+    "testId": "f63ef943-1160-b3f7-925c-7882ce4ad1e5"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProducerContractTests.Private_formatter_emits_native_severity_without_rendering_protected_text",
+    "outcome": "Passed",
+    "testId": "d773b6b1-6577-a0e8-5336-639f2c8b54ba"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyOperationNameTests.Unknown_or_retired_first_resource_or_verb_EmitsOnlyUnknownOperation",
+    "outcome": "Passed",
+    "testId": "0d395aca-4d23-20b1-e5fc-8dea8a8e55db"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyOperationNameTests.ExistingGenericRegistration_PreservesHttpRequestOperation",
+    "outcome": "Passed",
+    "testId": "e33b9849-61a0-9d5c-fbd0-95b3a57f01fc"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyNativeDeadlineTests.Concurrent_distinct_requests_keep_terminal_response_and_native_deadline_operations_independent",
+    "outcome": "Passed",
+    "testId": "fb06644a-f77a-3f66-f594-86b131872e90"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyOperationNameTests.Uppercase_verb_and_case_insensitive_first_resource_EmitLiteralOperation",
+    "outcome": "Passed",
+    "testId": "9d41ddf4-8aa6-8005-c0a9-61b1119cdb59"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.Middleware.ExceptionEventLoggingTests.MatchedFailure_LogsRouteTemplateWithoutLiteralIdentifier",
+    "outcome": "Passed",
+    "testId": "b45872c9-d0d0-b1d8-ce27-185c2ea62352"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyNativeDeadlineTests.Unselected_helper_or_existing_direct_send_does_not_gain_native_deadline_observation",
+    "outcome": "Passed",
+    "testId": "6ba7b1f3-5c94-f838-23a1-b7c6a0ba4f11"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateFailureProvenanceTests.Write_MissingThrowSite_DoesNotInventSourceLocation",
+    "outcome": "Passed",
+    "testId": "0cc26681-d0b5-9a4a-d199-6f5d7cabbde7"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.Middleware.RequestLoggingPathTests.EndpointSelectedDownstream_CompletionUsesTemplateAndStartUsesFallback",
+    "outcome": "Passed",
+    "testId": "f59a8ee3-5735-1cd3-6694-18966af8621c"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyNativeDeadlineTests.Unobserved_send_state_is_quiet_and_cannot_be_reused",
+    "outcome": "Passed",
+    "testId": "1ec046f2-e1a9-72a1-2e55-6461a2ddeeec"
+  },
+  {
+    "testName": "Legacy.Maliev.ServiceDefaults.Tests.PrivateDependencyOperationNameTests.OversizedUnknownResource_DoesNotExportOrClassifyLaterResource",
+    "outcome": "Passed",
+    "testId": "83eb0e48-4f29-b44a-d15c-911623b0ea06"
+  }
+]

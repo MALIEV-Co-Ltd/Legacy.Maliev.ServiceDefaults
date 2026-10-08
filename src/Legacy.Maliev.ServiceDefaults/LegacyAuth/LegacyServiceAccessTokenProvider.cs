@@ -32,6 +32,8 @@ public interface ILegacyServiceAccessTokenProvider
     void Invalidate(string token);
 }
 
+internal enum LegacyServiceTokenProfile { Legacy, Iam }
+
 /// <summary>Exchanges a runtime-only client credential for a bounded, cached legacy service token.</summary>
 public sealed class LegacyServiceAccessTokenProvider : ILegacyServiceAccessTokenProvider
 {
@@ -42,6 +44,7 @@ public sealed class LegacyServiceAccessTokenProvider : ILegacyServiceAccessToken
     private const int MaximumTokenLength = 16 * 1024;
     private const int MaximumLifetimeSeconds = 3600;
     private readonly IHttpClientFactory clientFactory;
+    private readonly string loginPath;
     private readonly LegacyServiceAuthenticationOptions options;
     private readonly TimeProvider timeProvider;
     private readonly ILogger<LegacyServiceAccessTokenProvider> logger;
@@ -55,7 +58,23 @@ public sealed class LegacyServiceAccessTokenProvider : ILegacyServiceAccessToken
         IOptions<LegacyServiceAuthenticationOptions> options,
         TimeProvider timeProvider,
         ILogger<LegacyServiceAccessTokenProvider> logger)
+        : this(clientFactory, options, timeProvider, logger, LegacyServiceTokenProfile.Legacy)
     {
+    }
+
+    internal LegacyServiceAccessTokenProvider(
+        IHttpClientFactory clientFactory,
+        IOptions<LegacyServiceAuthenticationOptions> options,
+        TimeProvider timeProvider,
+        ILogger<LegacyServiceAccessTokenProvider> logger,
+        LegacyServiceTokenProfile profile)
+    {
+        loginPath = profile switch
+        {
+            LegacyServiceTokenProfile.Legacy => "/auth/v1/service/login",
+            LegacyServiceTokenProfile.Iam => "/auth/v1/service/iam-login",
+            _ => throw new ArgumentOutOfRangeException(nameof(profile)),
+        };
         this.clientFactory = clientFactory ?? throw new ArgumentNullException(nameof(clientFactory));
         this.options = options?.Value ?? throw new ArgumentNullException(nameof(options));
         this.timeProvider = timeProvider ?? throw new ArgumentNullException(nameof(timeProvider));
@@ -129,16 +148,38 @@ public sealed class LegacyServiceAccessTokenProvider : ILegacyServiceAccessToken
             return null;
         }
 
+        var client = clientFactory.CreateClient(HttpClientName);
+        using var deadline = new CancellationTokenSource(client.Timeout);
+        var exchange = ExchangeCoreAsync(client, deadline.Token);
         try
         {
-            using var request = new HttpRequestMessage(HttpMethod.Post, "/auth/v1/service/login")
+            return await exchange.WaitAsync(deadline.Token);
+        }
+        catch (OperationCanceledException)
+        {
+            _ = exchange.ContinueWith(
+                static completed => { _ = completed.Exception; },
+                CancellationToken.None,
+                TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnFaulted,
+                TaskScheduler.Default);
+            logger.LogWarning("Legacy AuthService service-token exchange exceeded its configured deadline.");
+            return null;
+        }
+    }
+
+    private async Task<CacheEntry?> ExchangeCoreAsync(HttpClient client, CancellationToken cancellationToken)
+    {
+        try
+        {
+            using var request = new HttpRequestMessage(HttpMethod.Post, loginPath)
             {
                 Content = JsonContent.Create(new ServiceLoginRequest(options.ClientId, options.ClientSecret))
             };
-            using var response = await clientFactory.CreateClient(HttpClientName).SendAsync(
+            using var response = await client.SendAsync(
                 request,
                 HttpCompletionOption.ResponseHeadersRead,
-                CancellationToken.None);
+                cancellationToken);
+            cancellationToken.ThrowIfCancellationRequested();
             if (!response.IsSuccessStatusCode)
             {
                 logger.LogWarning("Legacy AuthService rejected a service identity with status {StatusCode}.", (int)response.StatusCode);
@@ -151,7 +192,8 @@ public sealed class LegacyServiceAccessTokenProvider : ILegacyServiceAccessToken
                 return null;
             }
 
-            var content = await ReadBoundedContentAsync(response.Content);
+            var content = await ReadBoundedContentAsync(response.Content, cancellationToken);
+            cancellationToken.ThrowIfCancellationRequested();
             if (content is null)
             {
                 logger.LogWarning("Legacy AuthService returned an oversized service-login response.");
@@ -173,24 +215,25 @@ public sealed class LegacyServiceAccessTokenProvider : ILegacyServiceAccessToken
             var refreshSkew = TimeSpan.FromSeconds(Math.Min(120, Math.Max(1, login.ExpiresIn / 5)));
             return new CacheEntry(login.AccessToken, now + lifetime - refreshSkew);
         }
-        catch (Exception exception) when (exception is HttpRequestException or JsonException or NotSupportedException or TaskCanceledException)
+        catch (Exception exception) when (exception is HttpRequestException or JsonException or NotSupportedException or OperationCanceledException)
         {
             logger.LogWarning("Legacy AuthService was unavailable or returned a malformed service-login response.");
             return null;
         }
     }
 
-    private static async Task<byte[]?> ReadBoundedContentAsync(HttpContent content)
+    private static async Task<byte[]?> ReadBoundedContentAsync(HttpContent content, CancellationToken cancellationToken)
     {
-        await using var stream = await content.ReadAsStreamAsync(CancellationToken.None);
+        await using var stream = await content.ReadAsStreamAsync(cancellationToken);
         using var buffer = new MemoryStream(MaximumResponseBytes);
         var block = new byte[4096];
         while (true)
         {
-            var read = await stream.ReadAsync(block, CancellationToken.None);
+            var read = await stream.ReadAsync(block, cancellationToken);
+            cancellationToken.ThrowIfCancellationRequested();
             if (read == 0) return buffer.ToArray();
             if (buffer.Length + read > MaximumResponseBytes) return null;
-            await buffer.WriteAsync(block.AsMemory(0, read), CancellationToken.None);
+            await buffer.WriteAsync(block.AsMemory(0, read), cancellationToken);
         }
     }
 
