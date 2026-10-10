@@ -38,7 +38,11 @@ public static class PrivateDependencyHttpClientExtensions
     /// <param name="observation">Fresh state for this send.</param>
     /// <param name="completionOption">The caller's original buffering and native deadline boundary.</param>
     /// <returns>The original response returned by the client.</returns>
-    /// <remarks>Native buffering is preserved; failures outside the selected handler are not classified as proven handler deadlines.</remarks>
+    /// <remarks>
+    /// Native buffering is preserved. Source-mode selection observes non-cancellation buffering failures after the
+    /// selected handler returned a response, and defers its response-status event until buffering completes.
+    /// Buffering cancellations are not classified as proven handler deadlines. Later body reads remain outside this send.
+    /// </remarks>
     public static Task<HttpResponseMessage> SendWithPrivateFailureObservationAsync(
         this HttpClient client, HttpRequestMessage request, CancellationToken cancellationToken,
         PrivateDependencyFailureObservation observation, HttpCompletionOption completionOption)
@@ -56,7 +60,7 @@ public static class PrivateDependencyHttpClientExtensions
             throw new InvalidOperationException("Dependency observation already owns this request.");
 
         observation?.Begin();
-        var context = new PrivateDependencyObservationContext(observation);
+        var context = new PrivateDependencyObservationContext(observation, completionOption == HttpCompletionOption.ResponseContentRead);
         request.Options.Set(PrivateDependencyObservationContext.Key, context);
         try
         {
@@ -74,10 +78,20 @@ public static class PrivateDependencyHttpClientExtensions
     private static async Task<HttpResponseMessage> ObserveAsync(Task<HttpResponseMessage> pending,
         HttpRequestMessage request, PrivateDependencyObservationContext context, CancellationToken callerToken)
     {
-        try { return await pending.ConfigureAwait(false); }
+        try
+        {
+            var response = await pending.ConfigureAwait(false);
+            context.CompleteBufferedResponse();
+            return response;
+        }
         catch (OperationCanceledException exception)
         {
             context.TryRecordNativeDeadline(exception, callerToken);
+            throw;
+        }
+        catch (Exception exception)
+        {
+            context.TryRecordBufferedFailure(exception);
             throw;
         }
         finally { Clear(request, context); }

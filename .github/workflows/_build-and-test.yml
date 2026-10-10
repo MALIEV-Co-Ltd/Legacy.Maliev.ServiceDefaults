@@ -68,6 +68,21 @@ jobs:
               $null -eq $counters -or [int] $counters.total -ne 59 -or [int] $counters.executed -ne 59 -or [int] $counters.passed -ne 59) {
             throw 'Expected all 59 compiled source metadata cases to execute and pass.'
           }
+      - name: Verify selected source native buffering ownership
+        shell: pwsh
+        run: |
+          dotnet test tests/Legacy.Maliev.ServiceDefaults.Tests/Legacy.Maliev.ServiceDefaults.Tests.csproj `
+            --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true `
+            --filter "FullyQualifiedName~PrivateDependencyBufferedSourceTests" `
+            --logger "trx;LogFileName=source-buffering.trx" --results-directory artifacts/source-buffering
+          if ($LASTEXITCODE -ne 0) { throw 'Source native buffering tests failed.' }
+          [xml] $trx = Get-Content artifacts/source-buffering/source-buffering.trx -Raw
+          $results = @($trx.SelectNodes('/*[local-name()="TestRun"]/*[local-name()="Results"]/*[local-name()="UnitTestResult"]'))
+          $counters = $trx.SelectSingleNode('/*[local-name()="TestRun"]/*[local-name()="ResultSummary"]/*[local-name()="Counters"]')
+          if ($results.Count -ne 80 -or @($results | Where-Object outcome -ne 'Passed').Count -ne 0 -or
+              $null -eq $counters -or [int] $counters.total -ne 80 -or [int] $counters.executed -ne 80 -or [int] $counters.passed -ne 80) {
+            throw 'Expected all 80 compiled source native buffering cases to execute and pass.'
+          }
       - name: Verify separately enrolled IAM profile exchange and real DI wiring
         shell: bash
         run: |
@@ -176,6 +191,7 @@ jobs:
           & ./eng/Export-CoverageEvidence.ps1 -ResultsDirectory artifacts/iam-service-profile -OutputDirectory artifacts/coverage-evidence/iam-service-profile
           & ./eng/Export-CoverageEvidence.ps1 -ResultsDirectory artifacts/source-failure -OutputDirectory artifacts/coverage-evidence/source-failure
           & ./eng/Export-CoverageEvidence.ps1 -ResultsDirectory artifacts/source-metadata -OutputDirectory artifacts/coverage-evidence/source-metadata
+          & ./eng/Export-CoverageEvidence.ps1 -ResultsDirectory artifacts/source-buffering -OutputDirectory artifacts/coverage-evidence/source-buffering
       - name: Retain private validation evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
