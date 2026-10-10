@@ -4,7 +4,7 @@ namespace Maliev.Aspire.ServiceDefaults.Diagnostics;
 
 /// <summary>Observes only the selected client's terminal outcome without exporting protected transport details.</summary>
 internal sealed class PrivateDependencyFailureHandler(
-    ILogger<PrivateDependencyFailureHandler> logger, string dependency, bool observeOperation)
+    ILogger<PrivateDependencyFailureHandler> logger, string dependency, bool observeOperation, bool observeAllFailures = false)
     : DelegatingHandler
 {
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
@@ -14,7 +14,7 @@ internal sealed class PrivateDependencyFailureHandler(
         try
         {
             var response = await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
-            if ((int)response.StatusCode is >= 500 and <= 599)
+            if (observeAllFailures ? !response.IsSuccessStatusCode : (int)response.StatusCode is >= 500 and <= 599)
             {
                 Record(request, (int)response.StatusCode);
             }
@@ -31,6 +31,11 @@ internal sealed class PrivateDependencyFailureHandler(
             throw;
         }
         catch (Exception exception) when (exception is TimeoutException or OperationCanceledException or Polly.Timeout.TimeoutRejectedException)
+        {
+            Record(request, null);
+            throw;
+        }
+        catch (Exception) when (observeAllFailures)
         {
             Record(request, null);
             throw;
