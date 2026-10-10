@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Reflection;
 using System.Text.Json;
+using Maliev.Aspire.ServiceDefaults.Diagnostics;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Logging.Console;
@@ -99,6 +100,12 @@ public sealed class PrivateFailureConsoleFormatter : ConsoleFormatter
             if (field.Key is "StatusCode" or "ElapsedMs" or "AttemptCount" && field.Value is int or long)
             {
                 payload.Add(field.Key, field.Value);
+            }
+            else if (field.Key == "ExceptionType" && field.Value is string exceptionType
+                && PrivateDependencyFailureMetadata.IsExceptionType(exceptionType))
+            {
+                // Structured transport taxonomy is separate from runtime exceptionType provenance.
+                payload.Add(field.Key, exceptionType);
             }
             else if (field.Key is "EventName" or "Dependency" or "Operation" or "Method"
                 && field.Value is string identifier && IsCodeIdentifier(identifier))
