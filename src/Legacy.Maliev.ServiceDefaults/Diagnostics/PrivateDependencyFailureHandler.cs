@@ -12,10 +12,17 @@ internal sealed class PrivateDependencyFailureHandler(
         var context = PrivateDependencyObservationContext.Get(request);
         // This callback runs only for the outer HttpClient deadline wrapper proven by the rendezvous.
         context?.Bind(() => RecordCore(request, null, observeAllFailures ? nameof(TaskCanceledException) : null));
+        var bufferSourceResponse = observeAllFailures && context?.BindBufferedSource(exception => RecordCore(request, null,
+            PrivateDependencyFailureMetadata.GetExceptionType(exception))) == true;
         try
         {
             var response = await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
-            if (observeAllFailures ? !response.IsSuccessStatusCode : (int)response.StatusCode is >= 500 and <= 599)
+            if (bufferSourceResponse)
+            {
+                var status = (int)response.StatusCode;
+                context!.CaptureBufferedResponse(response.IsSuccessStatusCode ? null : () => RecordCore(request, status));
+            }
+            else if (observeAllFailures ? !response.IsSuccessStatusCode : (int)response.StatusCode is >= 500 and <= 599)
             {
                 Record(request, (int)response.StatusCode);
             }
