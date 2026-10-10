@@ -38,6 +38,21 @@ jobs:
             --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true \
             --filter "FullyQualifiedName~PrivateDependencyNativeDeadlineTests" \
             --logger "trx;LogFileName=send-observation.trx" --results-directory artifacts/send-observation
+      - name: Verify opt-in outbound source failure predicate
+        shell: pwsh
+        run: |
+          dotnet test tests/Legacy.Maliev.ServiceDefaults.Tests/Legacy.Maliev.ServiceDefaults.Tests.csproj `
+            --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true `
+            --filter "FullyQualifiedName~PrivateDependencySourceFailureTests" `
+            --logger "trx;LogFileName=source-failure.trx" --results-directory artifacts/source-failure
+          if ($LASTEXITCODE -ne 0) { throw 'Source failure predicate tests failed.' }
+          [xml] $trx = Get-Content artifacts/source-failure/source-failure.trx -Raw
+          $results = @($trx.SelectNodes('/*[local-name()="TestRun"]/*[local-name()="Results"]/*[local-name()="UnitTestResult"]'))
+          $counters = $trx.SelectSingleNode('/*[local-name()="TestRun"]/*[local-name()="ResultSummary"]/*[local-name()="Counters"]')
+          if ($results.Count -ne 45 -or @($results | Where-Object outcome -ne 'Passed').Count -ne 0 -or
+              $null -eq $counters -or [int] $counters.total -ne 45 -or [int] $counters.passed -ne 45) {
+            throw 'Expected all 45 compiled source failure cases to execute and pass.'
+          }
       - name: Verify separately enrolled IAM profile exchange and real DI wiring
         shell: bash
         run: |
@@ -144,6 +159,7 @@ jobs:
           & ./eng/Export-CoverageEvidence.ps1 -ResultsDirectory artifacts/send-observation -OutputDirectory artifacts/coverage-evidence/send-observation
           & ./eng/Export-CoverageEvidence.ps1 -ResultsDirectory artifacts/iam-private-observation -OutputDirectory artifacts/coverage-evidence/iam-private-observation
           & ./eng/Export-CoverageEvidence.ps1 -ResultsDirectory artifacts/iam-service-profile -OutputDirectory artifacts/coverage-evidence/iam-service-profile
+          & ./eng/Export-CoverageEvidence.ps1 -ResultsDirectory artifacts/source-failure -OutputDirectory artifacts/coverage-evidence/source-failure
       - name: Retain private validation evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
