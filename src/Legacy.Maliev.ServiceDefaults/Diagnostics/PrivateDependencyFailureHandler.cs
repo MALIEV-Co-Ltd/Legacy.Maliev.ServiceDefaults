@@ -10,7 +10,8 @@ internal sealed class PrivateDependencyFailureHandler(
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
         var context = PrivateDependencyObservationContext.Get(request);
-        context?.Bind(() => RecordCore(request, null));
+        // This callback runs only for the outer HttpClient deadline wrapper proven by the rendezvous.
+        context?.Bind(() => RecordCore(request, null, observeAllFailures ? nameof(TaskCanceledException) : null));
         try
         {
             var response = await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
@@ -27,34 +28,53 @@ internal sealed class PrivateDependencyFailureHandler(
         }
         catch (HttpRequestException exception)
         {
-            Record(request, exception.StatusCode is { } status ? (int)status : null);
+            Record(request, exception.StatusCode is { } status ? (int)status : null, exception);
             throw;
         }
         catch (Exception exception) when (exception is TimeoutException or OperationCanceledException or Polly.Timeout.TimeoutRejectedException)
         {
-            Record(request, null);
+            Record(request, null, exception);
             throw;
         }
-        catch (Exception) when (observeAllFailures)
+        catch (Exception exception) when (observeAllFailures)
         {
-            Record(request, null);
+            Record(request, null, exception);
             throw;
         }
     }
 
-    private void Record(HttpRequestMessage request, int? status)
+    private void Record(HttpRequestMessage request, int? status, Exception? exception = null)
     {
+        var exceptionType = observeAllFailures && exception is not null
+            ? PrivateDependencyFailureMetadata.GetExceptionType(exception) : null;
         if (PrivateDependencyObservationContext.Get(request) is { } context)
-            context.RecordOnce(() => RecordCore(request, status));
-        else RecordCore(request, status);
+            context.RecordOnce(() => RecordCore(request, status, exceptionType));
+        else RecordCore(request, status, exceptionType);
     }
 
-    private void RecordCore(HttpRequestMessage request, int? status)
+    private void RecordCore(HttpRequestMessage request, int? status, string? exceptionType = null)
     {
         try
         {
             var operation = observeOperation ? PrivateDependencyOperationMapper.GetOperation(request) : "HttpRequest";
             // Never pass the caught exception to ILogger: other providers need the same safe event boundary.
+            if (observeAllFailures)
+            {
+                var method = PrivateDependencyFailureMetadata.GetMethod(request);
+                if (status is { } sourceStatus)
+                {
+                    logger.LogError(new EventId(5101, "DependencyRequestFailure"),
+                        "{EventName} Dependency={Dependency} Operation={Operation} StatusCode={StatusCode} Method={Method} ExceptionType={ExceptionType}",
+                        "DependencyRequestFailure", dependency, operation, sourceStatus, method, exceptionType);
+                }
+                else
+                {
+                    logger.LogError(new EventId(5101, "DependencyRequestFailure"),
+                        "{EventName} Dependency={Dependency} Operation={Operation} Method={Method} ExceptionType={ExceptionType}",
+                        "DependencyRequestFailure", dependency, operation, method, exceptionType);
+                }
+                return;
+            }
             if (status is { } knownStatus)
             {
                 logger.LogError(new EventId(5101, "DependencyRequestFailure"),
