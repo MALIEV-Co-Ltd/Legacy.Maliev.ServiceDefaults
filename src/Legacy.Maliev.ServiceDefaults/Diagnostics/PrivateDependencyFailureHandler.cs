@@ -7,6 +7,11 @@ internal sealed class PrivateDependencyFailureHandler(
     ILogger<PrivateDependencyFailureHandler> logger, string dependency, bool observeOperation, bool observeAllFailures = false)
     : DelegatingHandler
 {
+    private static readonly HttpRequestOptionsKey<bool> CallerFailureLogging = new("Maliev.DependencyFailureOwnedByCaller");
+
+    private static bool CallerOwnsFailure(HttpRequestMessage request) =>
+        request.Options.TryGetValue(CallerFailureLogging, out var owned) && owned;
+
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
         var context = PrivateDependencyObservationContext.Get(request);
@@ -52,6 +57,7 @@ internal sealed class PrivateDependencyFailureHandler(
 
     private void Record(HttpRequestMessage request, int? status, Exception? exception = null)
     {
+        if (CallerOwnsFailure(request)) return;
         var exceptionType = observeAllFailures && exception is not null
             ? PrivateDependencyFailureMetadata.GetExceptionType(exception) : null;
         if (PrivateDependencyObservationContext.Get(request) is { } context)
@@ -61,6 +67,7 @@ internal sealed class PrivateDependencyFailureHandler(
 
     private void RecordCore(HttpRequestMessage request, int? status, string? exceptionType = null)
     {
+        if (CallerOwnsFailure(request)) return;
         try
         {
             var operation = observeOperation ? PrivateDependencyOperationMapper.GetOperation(request) : "HttpRequest";
@@ -68,6 +75,13 @@ internal sealed class PrivateDependencyFailureHandler(
             if (observeAllFailures)
             {
                 var method = PrivateDependencyFailureMetadata.GetMethod(request);
+                if (status == 404 && exceptionType is null)
+                {
+                    logger.LogDebug(new EventId(5101, "DependencyResourceNotFound"),
+                        "{EventName} Dependency={Dependency} Operation={Operation} StatusCode={StatusCode} Method={Method}",
+                        "DependencyResourceNotFound", dependency, operation, 404, method);
+                    return;
+                }
                 if (status is { } sourceStatus)
                 {
                     logger.LogError(new EventId(5101, "DependencyRequestFailure"),
