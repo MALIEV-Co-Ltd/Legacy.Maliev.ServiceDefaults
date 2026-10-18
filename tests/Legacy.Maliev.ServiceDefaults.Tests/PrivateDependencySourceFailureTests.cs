@@ -22,8 +22,6 @@ public sealed class PrivateDependencySourceFailureTests
     [InlineData(true, 400)]
     [InlineData(false, 401)]
     [InlineData(true, 401)]
-    [InlineData(false, 404)]
-    [InlineData(true, 404)]
     [InlineData(false, 409)]
     [InlineData(true, 409)]
     [InlineData(false, 429)]
@@ -44,6 +42,84 @@ public sealed class PrivateDependencySourceFailureTests
         Assert.Equal("private-response-sentinel", await response.Content.ReadAsStringAsync());
         Assert.True(observation.WasObserved);
         fixture.AssertFailure(status);
+    }
+
+    [Theory]
+    [InlineData(false, 1, false)]
+    [InlineData(true, 1, false)]
+    [InlineData(false, 1, true)]
+    [InlineData(true, 1, true)]
+    [InlineData(false, 3, false)]
+    [InlineData(true, 3, false)]
+    [InlineData(false, 3, true)]
+    [InlineData(true, 3, true)]
+    public async Task Caller_ownership_option_suppresses_duplicate_but_keeps_unmarked_fallback(bool typed, int mode, bool owned)
+    {
+        using var fixture = new Fixture(typed, mode);
+        fixture.Transport.Status = HttpStatusCode.ServiceUnavailable;
+        using var request = Request();
+        request.Options.Set(new HttpRequestOptionsKey<bool>("Maliev.DependencyFailureOwnedByCaller"), owned);
+        using var response = await fixture.Client.SendAsync(request);
+        Assert.Same(fixture.Transport.Response, response);
+        Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
+        if (owned) Assert.Empty(fixture.Events.Entries);
+        else
+        {
+            var entry = Assert.Single(fixture.Events.Entries);
+            Assert.Equal(LogLevel.Error, entry.Level);
+            Assert.Equal(503, entry.Fields["StatusCode"]);
+        }
+    }
+
+    [Theory]
+    [InlineData(false, false)]
+    [InlineData(true, false)]
+    [InlineData(false, true)]
+    [InlineData(true, true)]
+    public async Task Caller_ownership_transport_preserves_exact_exception_and_dependency_fallback(bool typed, bool owned)
+    {
+        using var fixture = new Fixture(typed, 1);
+        var expected = new HttpRequestException("private-exception-sentinel");
+        fixture.Transport.Failure = expected;
+        using var request = Request();
+        request.Options.Set(new HttpRequestOptionsKey<bool>("Maliev.DependencyFailureOwnedByCaller"), owned);
+        Assert.Same(expected, await Record.ExceptionAsync(() => fixture.Client.SendAsync(request)));
+        if (owned) Assert.Empty(fixture.Events.Entries);
+        else Assert.Equal(LogLevel.Error, Assert.Single(fixture.Events.Entries).Level);
+    }
+
+    // Source a1df keeps an absent resource diagnostic below the production warning/error stream.
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task Source_not_found_is_one_debug_record_and_no_production_error_wire(bool typed)
+    {
+        using var fixture = new Fixture(typed, 3);
+        fixture.Transport.Status = HttpStatusCode.NotFound;
+        using var request = Request();
+        var observation = new PrivateDependencyFailureObservation();
+
+        using var response = await fixture.Client.SendWithPrivateFailureObservationAsync(request, CancellationToken.None, observation);
+
+        Assert.Same(fixture.Transport.Response, response);
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        Assert.Equal("private-response-sentinel", await response.Content.ReadAsStringAsync());
+        Assert.True(observation.WasObserved);
+        var entry = Assert.Single(fixture.Events.Entries);
+        Assert.Equal(LogLevel.Debug, entry.Level);
+        Assert.Equal("DependencyResourceNotFound", entry.Id.Name);
+        Assert.Equal("DependencyResourceNotFound", entry.Fields["EventName"]);
+        Assert.Equal("ControlledDependency", entry.Fields["Dependency"]);
+        Assert.Equal("Orders.Post", entry.Fields["Operation"]);
+        Assert.Equal(404, entry.Fields["StatusCode"]);
+        Assert.Equal("POST", entry.Fields["Method"]);
+        Assert.Null(entry.Exception);
+        Assert.DoesNotContain("private-", JsonSerializer.Serialize(entry.Fields), StringComparison.Ordinal);
+        var log = new LogEntry<IReadOnlyDictionary<string, object?>>(entry.Level, entry.Category, entry.Id,
+            entry.Fields, entry.Exception, (_, _) => "private-rendered-sentinel");
+        using var writer = new StringWriter();
+        new PrivateFailureConsoleFormatter().Write(log, null, writer);
+        Assert.Equal(string.Empty, writer.ToString());
     }
 
     [Theory]
@@ -233,6 +309,7 @@ public sealed class PrivateDependencySourceFailureTests
         {
             Transport.Retry = retry;
             var builder = Microsoft.Extensions.Hosting.Host.CreateApplicationBuilder(new HostApplicationBuilderSettings { DisableDefaults = true });
+            builder.Logging.SetMinimumLevel(LogLevel.Debug);
             builder.Logging.AddProvider(Events);
             var registration = typed
                 ? builder.Services.AddHttpClient<SourceClient>("SourceProof", client => client.BaseAddress = new Uri("https://dependency.example.invalid/"))
@@ -306,6 +383,7 @@ public sealed class PrivateDependencySourceFailureTests
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             Calls++;
+            Assert.False(request.Headers.Contains("Maliev.DependencyFailureOwnedByCaller"));
             Assert.Equal("Bearer private-auth-sentinel", request.Headers.Authorization?.ToString());
             if (Failure is not null) throw Failure;
             if (Block)
@@ -334,7 +412,7 @@ public sealed class PrivateDependencySourceFailureTests
             public bool IsEnabled(LogLevel logLevel) => logLevel != LogLevel.None;
             public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
             {
-                if (eventId.Id != 5101 || eventId.Name != "DependencyRequestFailure") return;
+                if (eventId.Id != 5101 || eventId.Name is not ("DependencyRequestFailure" or "DependencyResourceNotFound")) return;
                 var fields = Assert.IsAssignableFrom<IEnumerable<KeyValuePair<string, object?>>>(state)
                     .ToDictionary(pair => pair.Key, pair => pair.Value, StringComparer.Ordinal);
                 owner.Entries.Enqueue(new(logLevel, category, eventId, exception, fields));
