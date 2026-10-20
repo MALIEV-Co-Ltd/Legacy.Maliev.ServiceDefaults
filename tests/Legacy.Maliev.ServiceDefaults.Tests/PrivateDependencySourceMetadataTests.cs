@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Globalization;
 using System.Net;
 using System.Text.Json;
 using Maliev.Aspire.ServiceDefaults.Diagnostics;
@@ -13,7 +14,7 @@ using Microsoft.Extensions.Options;
 namespace Legacy.Maliev.ServiceDefaults.Tests;
 
 // Original source fields: 3d6506285a58671651d046e97a35fbb8885cea4f and
-// 9e51e6c5da29de8e617b65b59d46882cde6d3b64. Unknown custom metadata is an explicit adaptation.
+// 9e51e6c5da29de8e617b65b59d46882cde6d3b64. Only source-owned state may export actual custom type names.
 public sealed class PrivateDependencySourceMetadataTests
 {
     [Theory]
@@ -69,7 +70,11 @@ public sealed class PrivateDependencySourceMetadataTests
     [InlineData(true, 8)]
     [InlineData(false, 9)]
     [InlineData(true, 9)]
-    public async Task Normal_host_and_private_formatter_preserve_exact_known_type_or_explicit_unknown(bool typed, int kind)
+    [InlineData(false, 10)]
+    [InlineData(true, 10)]
+    [InlineData(false, 11)]
+    [InlineData(true, 11)]
+    public async Task Normal_host_and_private_formatter_preserve_actual_exception_type(bool typed, int kind)
     {
         Exception failure = kind switch
         {
@@ -82,7 +87,9 @@ public sealed class PrivateDependencySourceMetadataTests
             6 => new InvalidOperationException("private-exception-sentinel"),
             7 => new ArgumentException("private-exception-sentinel"),
             8 => new NotSupportedException("private-exception-sentinel"),
-            _ => new CustomerAccountSecretException()
+            9 => new CustomerAccountSecretException(),
+            10 => new GenericDependencyException<int>(),
+            _ => new ข้อยกเว้นDependency()
         };
         failure.Data["private-data-sentinel"] = "private-data-sentinel";
         using var fixture = new Fixture(typed);
@@ -90,7 +97,7 @@ public sealed class PrivateDependencySourceMetadataTests
         using var request = Request("POST");
         var actual = await Record.ExceptionAsync(() => fixture.Client.SendAsync(request));
         Assert.Same(failure, actual);
-        fixture.AssertFailure("POST", kind == 9 ? "UnknownException" : failure.GetType().Name);
+        fixture.AssertFailure("POST", failure.GetType().Name);
     }
 
     [Theory]
@@ -209,6 +216,166 @@ public sealed class PrivateDependencySourceMetadataTests
         Assert.DoesNotContain("CustomerAccountSecretException", writer.ToString(), StringComparison.Ordinal);
     }
 
+    [Fact]
+    public void Private_formatter_rejects_custom_type_in_caller_scope()
+    {
+        var scopes = new LoggerExternalScopeProvider();
+        using var scope = scopes.Push(new Dictionary<string, object?>
+        {
+            ["ExceptionType"] = nameof(CustomerAccountSecretException)
+        });
+        var log = new LogEntry<string>(LogLevel.Error, "Controlled.Dependency", new EventId(5101),
+            "private-state-sentinel", null, (_, _) => "private-rendered-sentinel");
+        using var writer = new StringWriter();
+        new PrivateFailureConsoleFormatter().Write(log, scopes, writer);
+        using var json = JsonDocument.Parse(writer.ToString());
+        Assert.False(json.RootElement.TryGetProperty("ExceptionType", out _));
+        Assert.DoesNotContain(nameof(CustomerAccountSecretException), writer.ToString(), StringComparison.Ordinal);
+        Assert.DoesNotContain("private-", writer.ToString(), StringComparison.Ordinal);
+    }
+
+    [Theory]
+    [InlineData(false, false, "en-US")]
+    [InlineData(true, false, "en-US")]
+    [InlineData(false, true, "en-US")]
+    [InlineData(true, true, "en-US")]
+    [InlineData(false, false, "ar-SA")]
+    [InlineData(true, false, "ar-SA")]
+    [InlineData(false, true, "ar-SA")]
+    [InlineData(true, true, "ar-SA")]
+    public async Task Source_state_retains_original_scalar_template_and_invariant_message(bool typed, bool status, string culture)
+    {
+        var previous = CultureInfo.CurrentCulture;
+        try
+        {
+            CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo(culture);
+            using var fixture = new Fixture(typed);
+            Exception failure = status ? new SourceHttpRequestException() : new CustomerAccountSecretException();
+            fixture.Transport.Failure = failure;
+            using var request = Request("POST");
+            Assert.Same(failure, await Record.ExceptionAsync(() => fixture.Client.SendAsync(request)));
+            var entry = fixture.AssertFailure("POST", failure.GetType().Name);
+            if (status) Assert.Equal(502, entry.Fields["StatusCode"]);
+            else Assert.False(entry.Fields.ContainsKey("StatusCode"));
+            var expected = new Dictionary<string, object?>
+            {
+                ["EventName"] = "DependencyRequestFailure",
+                ["Dependency"] = "ControlledDependency",
+                ["Operation"] = "UnknownOperation"
+            };
+            if (status) expected.Add("StatusCode", 502);
+            expected.Add("Method", "POST");
+            expected.Add("ExceptionType", failure.GetType().Name);
+            const string prefix = "{EventName} Dependency={Dependency} Operation={Operation}";
+            const string suffix = " Method={Method} ExceptionType={ExceptionType}";
+            expected.Add("{OriginalFormat}", prefix + (status ? " StatusCode={StatusCode}" : string.Empty) + suffix);
+            Assert.Equal(expected.ToArray(), entry.Fields.ToArray());
+            var expectedMessage = "DependencyRequestFailure Dependency=ControlledDependency Operation=UnknownOperation"
+                + (status ? " StatusCode=502" : string.Empty) + " Method=POST ExceptionType=" + failure.GetType().Name;
+            Assert.Equal(expectedMessage, entry.Message);
+            using var normal = JsonDocument.Parse(entry.Wire);
+            Assert.Equal(expectedMessage, normal.RootElement.GetProperty("Message").GetString());
+        }
+        finally
+        {
+            CultureInfo.CurrentCulture = previous;
+        }
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task Copying_source_fields_does_not_transfer_private_formatter_trust(bool typed)
+    {
+        using var fixture = new Fixture(typed);
+        fixture.Transport.Failure = new CustomerAccountSecretException();
+        using var request = Request("POST");
+        Assert.Same(fixture.Transport.Failure, await Record.ExceptionAsync(() => fixture.Client.SendAsync(request)));
+        var entry = fixture.AssertFailure("POST", nameof(CustomerAccountSecretException));
+        var copied = entry.Fields.ToDictionary(pair => pair.Key, pair => pair.Value, StringComparer.Ordinal);
+        Assert.IsType<string>(copied["ExceptionType"]);
+        var log = new LogEntry<Dictionary<string, object?>>(LogLevel.Error, "Controlled.Dependency", new EventId(5101),
+            copied, null, (_, _) => "private-rendered-sentinel");
+        using var writer = new StringWriter();
+        new PrivateFailureConsoleFormatter().Write(log, null, writer);
+        using var json = JsonDocument.Parse(writer.ToString());
+        Assert.False(json.RootElement.TryGetProperty("ExceptionType", out _));
+        Assert.Equal(JsonValueKind.Null, json.RootElement.GetProperty("exceptionType").ValueKind);
+        Assert.DoesNotContain(nameof(CustomerAccountSecretException), writer.ToString(), StringComparison.Ordinal);
+        Assert.DoesNotContain("private-", writer.ToString(), StringComparison.Ordinal);
+    }
+
+    [Theory]
+    [InlineData(false, "en-US")]
+    [InlineData(true, "en-US")]
+    [InlineData(false, "ar-SA")]
+    [InlineData(true, "ar-SA")]
+    public async Task Source_response_retains_null_scalar_and_original_formatted_null_token(bool typed, string culture)
+    {
+        var previous = CultureInfo.CurrentCulture;
+        try
+        {
+            CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo(culture);
+            using var fixture = new Fixture(typed);
+            using var request = Request("POST");
+            using var response = await fixture.Client.SendAsync(request);
+            var entry = fixture.AssertFailure("POST", null);
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.Equal(400, entry.Fields["StatusCode"]);
+            Assert.Null(entry.Fields["ExceptionType"]);
+            Assert.Equal("{EventName} Dependency={Dependency} Operation={Operation} StatusCode={StatusCode} Method={Method} ExceptionType={ExceptionType}",
+                entry.Fields["{OriginalFormat}"]);
+            const string expected = "DependencyRequestFailure Dependency=ControlledDependency Operation=UnknownOperation StatusCode=400 Method=POST ExceptionType=(null)";
+            Assert.Equal(expected, entry.Message);
+            using var normal = JsonDocument.Parse(entry.Wire);
+            Assert.Equal(expected, normal.RootElement.GetProperty("Message").GetString());
+        }
+        finally
+        {
+            CultureInfo.CurrentCulture = previous;
+        }
+    }
+
+    [Theory]
+    [InlineData(false, "en-US")]
+    [InlineData(true, "en-US")]
+    [InlineData(false, "ar-SA")]
+    [InlineData(true, "ar-SA")]
+    public void Source_null_state_matches_platform_logger_for_both_status_shapes(bool hasStatus, string culture)
+    {
+        var previous = CultureInfo.CurrentCulture;
+        try
+        {
+            CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo(culture);
+            using var fixture = new Fixture(typed: false);
+            var logger = fixture.Events.CreateLogger("Controlled.Dependency");
+            var id = new EventId(5101, "DependencyRequestFailure");
+            if (hasStatus)
+                logger.LogError(id, "{EventName} Dependency={Dependency} Operation={Operation} StatusCode={StatusCode} Method={Method} ExceptionType={ExceptionType}",
+                    "DependencyRequestFailure", "ControlledDependency", "UnknownOperation", 400, "POST", null);
+            else
+                logger.LogError(id, "{EventName} Dependency={Dependency} Operation={Operation} Method={Method} ExceptionType={ExceptionType}",
+                    "DependencyRequestFailure", "ControlledDependency", "UnknownOperation", "POST", null);
+            var original = Assert.Single(fixture.Events.Entries);
+            var source = new PrivateDependencyFailureMetadata.SourceFailureState(
+                "ControlledDependency", "UnknownOperation", hasStatus ? 400 : null, "POST", null);
+            logger.Log(LogLevel.Error, id, source, null, static (state, _) => state.ToString());
+            Assert.Equal(2, fixture.Events.Entries.Count);
+            var actual = fixture.Events.Entries.Last();
+            Assert.Equal(original.Fields.ToArray(), actual.Fields.ToArray());
+            Assert.Equal(original.Message, actual.Message);
+            Assert.EndsWith("ExceptionType=(null)", actual.Message, StringComparison.Ordinal);
+            using var originalWire = JsonDocument.Parse(original.Wire);
+            using var actualWire = JsonDocument.Parse(actual.Wire);
+            Assert.Equal(originalWire.RootElement.GetProperty("Message").GetString(),
+                actualWire.RootElement.GetProperty("Message").GetString());
+        }
+        finally
+        {
+            CultureInfo.CurrentCulture = previous;
+        }
+    }
+
     private static HttpRequestMessage Request(string method)
     {
         var request = new HttpRequestMessage(new HttpMethod(method), "private-route-sentinel?token=private-query-sentinel")
@@ -218,8 +385,11 @@ public sealed class PrivateDependencySourceMetadataTests
     }
 
     private sealed class CustomerAccountSecretException() : IOException("private-exception-sentinel") { }
+    private sealed class SourceHttpRequestException() : HttpRequestException("private-exception-sentinel", null, HttpStatusCode.BadGateway) { }
+    private sealed class GenericDependencyException<T>() : Exception("private-exception-sentinel") { }
+    private sealed class ข้อยกเว้นDependency() : Exception("private-exception-sentinel") { }
     private sealed class SourceClient(HttpClient client) { public HttpClient Client { get; } = client; }
-    private sealed record Entry(IReadOnlyDictionary<string, object?> Fields, string Wire, Exception? Exception);
+    private sealed record Entry(IReadOnlyDictionary<string, object?> Fields, string Wire, Exception? Exception, object State, string Message);
 
     private sealed class Fixture : IDisposable
     {
@@ -269,6 +439,7 @@ public sealed class PrivateDependencySourceMetadataTests
             Assert.Null(entry.Exception);
             Assert.Equal(method, entry.Fields["Method"]);
             Assert.Equal(exceptionType, entry.Fields["ExceptionType"]);
+            if (exceptionType is not null) Assert.IsType<string>(entry.Fields["ExceptionType"]);
             using var normal = JsonDocument.Parse(entry.Wire);
             Assert.Equal(5101, normal.RootElement.GetProperty("EventId").GetInt32());
             Assert.Equal("ERROR", normal.RootElement.GetProperty("severity").GetString());
@@ -276,8 +447,8 @@ public sealed class PrivateDependencySourceMetadataTests
             var state = normal.RootElement.GetProperty("State");
             Assert.Equal(method, state.GetProperty("Method").GetString());
             Assert.Equal(exceptionType, state.GetProperty("ExceptionType").GetString());
-            var log = new LogEntry<IReadOnlyDictionary<string, object?>>(LogLevel.Error, "Controlled.Dependency", new EventId(5101),
-                entry.Fields, null, (_, _) => "private-rendered-sentinel");
+            var log = new LogEntry<object>(LogLevel.Error, "Controlled.Dependency", new EventId(5101),
+                entry.State, null, (_, _) => "private-rendered-sentinel");
             using var writer = new StringWriter();
             new PrivateFailureConsoleFormatter().Write(log, null, writer);
             using var alternate = JsonDocument.Parse(writer.ToString());
@@ -289,7 +460,8 @@ public sealed class PrivateDependencySourceMetadataTests
             {
                 Assert.DoesNotContain("private-", output, StringComparison.Ordinal);
                 Assert.DoesNotContain("dependency.example.invalid", output, StringComparison.Ordinal);
-                Assert.DoesNotContain(nameof(CustomerAccountSecretException), output, StringComparison.Ordinal);
+                if (exceptionType != nameof(CustomerAccountSecretException))
+                    Assert.DoesNotContain(nameof(CustomerAccountSecretException), output, StringComparison.Ordinal);
             }
             return entry;
         }
@@ -362,7 +534,7 @@ public sealed class PrivateDependencySourceMetadataTests
                 using var writer = new StringWriter();
                 var log = new LogEntry<TState>(logLevel, category, eventId, state, exception, formatter);
                 owner.Formatter.Write(log, null, writer);
-                owner.Entries.Enqueue(new(fields, writer.ToString(), exception));
+                owner.Entries.Enqueue(new(fields, writer.ToString(), exception, state!, formatter(state, exception)));
                 if (owner.Throw) throw new IOException("private-provider-sentinel");
             }
         }

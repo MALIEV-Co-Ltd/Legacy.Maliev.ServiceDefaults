@@ -62,7 +62,7 @@ public sealed class PrivateDependencyBufferedSourceTests
         }
         else Assert.Same(failure, actual);
         Assert.True(observation.WasObserved);
-        fixture.AssertFailure(kind == 3 ? "UnknownException" : Assert.IsAssignableFrom<Exception>(actual).GetType().Name, null);
+        fixture.AssertFailure(Assert.IsAssignableFrom<Exception>(actual).GetType().Name, null);
         Assert.Equal(1, fixture.Transport.Calls);
         AssertClear(request);
     }
@@ -385,7 +385,7 @@ public sealed class PrivateDependencyBufferedSourceTests
 
     private sealed class CustomerContentSecretException() : InvalidOperationException("private-buffer-sentinel") { }
     private sealed class SourceClient(HttpClient client) { public HttpClient Client { get; } = client; }
-    private sealed record Entry(IReadOnlyDictionary<string, object?> Fields, string Wire, Exception? Exception);
+    private sealed record Entry(IReadOnlyDictionary<string, object?> Fields, string Wire, Exception? Exception, object State);
 
     private sealed class Fixture : IDisposable
     {
@@ -439,18 +439,23 @@ public sealed class PrivateDependencyBufferedSourceTests
             Assert.Equal(5101, normal.RootElement.GetProperty("EventId").GetInt32());
             Assert.Equal(JsonValueKind.Null, normal.RootElement.GetProperty("Exception").ValueKind);
             Assert.Equal(type, normal.RootElement.GetProperty("State").GetProperty("ExceptionType").GetString());
-            var log = new LogEntry<IReadOnlyDictionary<string, object?>>(LogLevel.Error, "Controlled.Dependency", new EventId(5101),
-                entry.Fields, null, (_, _) => "private-rendered-sentinel");
+            var log = new LogEntry<object>(LogLevel.Error, "Controlled.Dependency", new EventId(5101),
+                entry.State, null, (_, _) => "private-rendered-sentinel");
             using var writer = new StringWriter();
             new PrivateFailureConsoleFormatter().Write(log, null, writer);
             using var alternate = JsonDocument.Parse(writer.ToString());
             Assert.Equal(method, alternate.RootElement.GetProperty("Method").GetString());
-            if (type is not null) Assert.Equal(type, alternate.RootElement.GetProperty("ExceptionType").GetString());
+            if (type is not null)
+            {
+                Assert.IsType<string>(entry.Fields["ExceptionType"]);
+                Assert.Equal(type, alternate.RootElement.GetProperty("ExceptionType").GetString());
+            }
             foreach (var output in new[] { entry.Wire, writer.ToString(), JsonSerializer.Serialize(entry.Fields) })
             {
                 Assert.DoesNotContain("private-", output, StringComparison.Ordinal);
                 Assert.DoesNotContain("dependency.example.invalid", output, StringComparison.Ordinal);
-                Assert.DoesNotContain(nameof(CustomerContentSecretException), output, StringComparison.Ordinal);
+                if (type != nameof(CustomerContentSecretException))
+                    Assert.DoesNotContain(nameof(CustomerContentSecretException), output, StringComparison.Ordinal);
             }
         }
 
@@ -553,7 +558,7 @@ public sealed class PrivateDependencyBufferedSourceTests
                 using var writer = new StringWriter();
                 var entry = new LogEntry<TState>(logLevel, category, eventId, state, exception, formatter);
                 owner.Formatter.Write(entry, null, writer);
-                owner.Entries.Enqueue(new(fields, writer.ToString(), exception));
+                owner.Entries.Enqueue(new(fields, writer.ToString(), exception, state!));
                 owner.OnFailure?.Invoke();
                 if (owner.Throw) throw new IOException("private-provider-sentinel");
             }
