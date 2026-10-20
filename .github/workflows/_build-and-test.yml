@@ -64,9 +64,9 @@ jobs:
           [xml] $trx = Get-Content artifacts/source-metadata/source-metadata.trx -Raw
           $results = @($trx.SelectNodes('/*[local-name()="TestRun"]/*[local-name()="Results"]/*[local-name()="UnitTestResult"]'))
           $counters = $trx.SelectSingleNode('/*[local-name()="TestRun"]/*[local-name()="ResultSummary"]/*[local-name()="Counters"]')
-          if ($results.Count -ne 59 -or @($results | Where-Object outcome -ne 'Passed').Count -ne 0 -or
-              $null -eq $counters -or [int] $counters.total -ne 59 -or [int] $counters.executed -ne 59 -or [int] $counters.passed -ne 59) {
-            throw 'Expected all 59 compiled source metadata cases to execute and pass.'
+          if ($results.Count -ne 82 -or @($results | Where-Object outcome -ne 'Passed').Count -ne 0 -or
+              $null -eq $counters -or [int] $counters.total -ne 82 -or [int] $counters.executed -ne 82 -or [int] $counters.passed -ne 82) {
+            throw 'Expected all 82 compiled source metadata cases to execute and pass.'
           }
       - name: Verify selected source native buffering ownership
         shell: pwsh

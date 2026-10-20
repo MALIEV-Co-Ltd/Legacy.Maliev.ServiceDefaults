@@ -54,7 +54,7 @@ public sealed class PrivateFailureConsoleFormatter : ConsoleFormatter
             payload.Add("traceId", activity.TraceId.ToHexString());
             payload.Add("spanId", activity.SpanId.ToHexString());
         }
-        AddSafeFields(payload, logEntry.State);
+        AddSafeFields(payload, logEntry.State, logEntry.State is PrivateDependencyFailureMetadata.SourceFailureState);
         if (scopeProvider is not null)
         {
             var stop = new ScopeBudgetReachedException();
@@ -78,7 +78,7 @@ public sealed class PrivateFailureConsoleFormatter : ConsoleFormatter
         textWriter.WriteLine(JsonSerializer.Serialize(payload));
     }
 
-    private static void AddSafeFields(Dictionary<string, object?> payload, object? state)
+    private static void AddSafeFields(Dictionary<string, object?> payload, object? state, bool sourceOwned = false)
     {
         if (state is not IEnumerable<KeyValuePair<string, object?>> fields)
         {
@@ -102,9 +102,9 @@ public sealed class PrivateFailureConsoleFormatter : ConsoleFormatter
                 payload.Add(field.Key, field.Value);
             }
             else if (field.Key == "ExceptionType" && field.Value is string exceptionType
-                && PrivateDependencyFailureMetadata.IsExceptionType(exceptionType))
+                && (sourceOwned || PrivateDependencyFailureMetadata.IsExceptionType(exceptionType)))
             {
-                // Structured transport taxonomy is separate from runtime exceptionType provenance.
+                // Only the source producer may extend transport taxonomy; scopes and arbitrary state retain the allowlist.
                 payload.Add(field.Key, exceptionType);
             }
             else if (field.Key is "EventName" or "Dependency" or "Operation" or "Method"

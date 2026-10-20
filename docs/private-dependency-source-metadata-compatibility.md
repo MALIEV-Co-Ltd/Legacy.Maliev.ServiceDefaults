@@ -30,18 +30,19 @@ type, omitted by the private formatter, and retain a standalone method.
 | Exact standard method GET, HEAD, POST, PUT, DELETE, CONNECT, OPTIONS, TRACE, PATCH | Same uppercase method |
 | Other method token | `UnknownMethod` |
 | Exact runtime HttpRequestException, TimeoutException, OperationCanceledException, TaskCanceledException, Polly.Timeout.TimeoutRejectedException, IOException, InvalidOperationException, ArgumentException, NotSupportedException | Same simple type name |
-| Any custom or derived exception type | `UnknownException` |
+| Custom or derived exception from the explicitly selected source producer | Same actual simple type name |
 
-Custom type names can encode application or customer information; identifier
-syntax alone is not permission to export them. Exact runtime type equality,
-including rejection of an IOException subclass, prevents that leak. This is
-an explicit adaptation requiring source review, not a claim of arbitrary
-exception-type parity. Operation remains an independent finite resource/verb
+Custom type names can encode application information. Source-mode selection
+retains the original actual runtime type name, including derived types, through
+an internal source-owned log state. Its structured values remain strings for
+every provider. Only that exact state type admits custom names in the private
+formatter; arbitrary string fields and scopes retain the existing allowlist.
+The state retains neither the exception nor its runtime Type. Operation remains an independent finite resource/verb
 taxonomy, including `UnknownOperation` while a standard standalone method is
 still retained.
 
 Caught exceptions never reach ILogger; messages, inner exceptions, stack,
-Data, arbitrary type names, URI/host/path/query, request/response content and
+Data, caller-supplied type names, URI/host/path/query, request/response content and
 authorization fields do not enter this event. The provider may fail without
 replacing a response or thrown exception. Caller cancellation remains quiet.
 The outer observer still surrounds authentication and resilience. A recovered
@@ -51,6 +52,21 @@ the outer native deadline wrapper it already proves; cancellation callbacks
 do not log independently.
 
 ## Validation and remaining obligations
+
+The custom-type successor adds 23 cases: four named/typed generic and Unicode
+runtime type cases, eight status/no-status scalar-state and invariant-message
+cases under English/Arabic cultures, two copied-state trust rejections, and a
+caller-scope spoof rejection, four actual null-exception response cases, and
+four direct null-state comparisons against the platform logger for both status
+shapes. Null scalar values retain the platform's formatted `(null)` token. The existing two
+custom-type rows now require the original actual simple type; all other cases
+and privacy assertions remain. These changes are authored, NOT RUN. Build,
+focused/full tests, formatting, security, package and unchanged coverage gates
+must pass on the successor exact head and protected main before acceptance.
+No current memory admission or execution is inferred from the historical
+proposal checkpoint below.
+
+### Historical metadata proposal checkpoint
 
 59 named/typed factory and normal-host formatter cases are authored, NOT RUN.
 They cover standalone methods on unknown resources, exact known and custom
@@ -70,7 +86,7 @@ or runtime correctness. Publication and protected acceptance remain pending
 review and the exact proposed-head/protected-main required checks.
 
 Web CountryClient and Intranet Catalog/Orders adoption are independent owner
-slices and are not edited by this proposal. Arbitrary custom source types and
+slices and are not edited by this proposal. The custom-type successor remains unaccepted, and
 post-handler generic buffering failures remain OPEN; the send wrapper does not
 close all buffering behavior. No financial, authentication grant, database,
 deployment or production data work is included.
