@@ -197,6 +197,7 @@ public sealed class PrivateFailureProducerContractTests
     [InlineData("OccurredAtUtc", "2026-10-21")]
     [InlineData("OccurredAtUtc", "10/21/2026 10:00:00")]
     [InlineData("OccurredAtUtc", "2026-10-21T10:00:00.0000000")]
+    [InlineData("OccurredAtUtc", "2026-10-21T10:00:00.0000000+7:00")]
     [InlineData("OccurredAtUtc", "private-customer-timestamp")]
     public void Source_incident_fields_reject_noncontract_strings_without_echo(string key, string value)
     {

@@ -113,6 +113,7 @@ public sealed class PrivateFailureConsoleFormatter : ConsoleFormatter
                 payload.Add(field.Key, incidentId.ToString("N"));
             }
             else if (field.Key == "OccurredAtUtc" && field.Value is string timestamp
+                && timestamp.Length == 33
                 && DateTimeOffset.TryParseExact(timestamp, "O", CultureInfo.InvariantCulture,
                     DateTimeStyles.None, out var occurredAt))
             {
