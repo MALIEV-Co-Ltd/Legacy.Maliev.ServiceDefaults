@@ -1,3 +1,4 @@
+using Maliev.Aspire.ServiceDefaults.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -15,6 +16,7 @@ public class ExceptionHandlingMiddleware
     private readonly RequestDelegate _next;
     private readonly ILogger<ExceptionHandlingMiddleware> _logger;
     private readonly IHostEnvironment _environment;
+    private readonly bool _includePrivateFailureProvenance;
 
     /// <summary>
     /// Initializes a new instance of the ExceptionHandlingMiddleware.
@@ -26,10 +28,26 @@ public class ExceptionHandlingMiddleware
         RequestDelegate next,
         ILogger<ExceptionHandlingMiddleware> logger,
         IHostEnvironment environment)
+        : this(next, logger, environment, new MiddlewareOptions())
     {
+    }
+
+    /// <summary>Initializes the existing exception boundary with explicitly selected observation options.</summary>
+    /// <param name="next">The next middleware in the pipeline.</param>
+    /// <param name="logger">The logger receiving the existing safe event fields.</param>
+    /// <param name="environment">The environment controlling the unchanged public error response.</param>
+    /// <param name="options">The standard middleware options; provenance is disabled by default.</param>
+    internal ExceptionHandlingMiddleware(
+        RequestDelegate next,
+        ILogger<ExceptionHandlingMiddleware> logger,
+        IHostEnvironment environment,
+        MiddlewareOptions options)
+    {
+        ArgumentNullException.ThrowIfNull(options);
         _next = next;
         _logger = logger;
         _environment = environment;
+        _includePrivateFailureProvenance = options.IncludePrivateFailureProvenance;
     }
 
     /// <summary>
@@ -63,17 +81,29 @@ public class ExceptionHandlingMiddleware
         // Any literal route segment may contain customer data or a token.
         var path = RouteLogPath.FromContext(context);
         var logLevel = statusCode == HttpStatusCode.NotFound ? LogLevel.Debug : LogLevel.Critical;
-        _logger.Log(
-            logLevel,
-            "{EventName} Service={Service} Method={Method} Path={Path} StatusCode={StatusCode} ExceptionType={ExceptionType} IncidentId={IncidentId} OccurredAtUtc={OccurredAtUtc}",
-            "UnhandledRequestFailure",
-            _environment.ApplicationName,
-            context.Request.Method,
-            path,
-            context.Response.HasStarted ? context.Response.StatusCode : (int)statusCode,
-            exception.GetType().Name,
-            context.TraceIdentifier,
-            DateTimeOffset.UtcNow.ToString("O"));
+        if (_includePrivateFailureProvenance)
+        {
+            var state = PrivateFailureProvenanceState.ForRequest(
+                _environment.ApplicationName, context.Request.Method, path,
+                context.Response.HasStarted ? context.Response.StatusCode : (int)statusCode,
+                exception.GetType().Name, context.TraceIdentifier, DateTimeOffset.UtcNow.ToString("O"),
+                PrivateFailureProvenanceState.Capture(exception));
+            _logger.Log(logLevel, default, state, null, static (source, _) => source.ToString());
+        }
+        else
+        {
+            _logger.Log(
+                logLevel,
+                "{EventName} Service={Service} Method={Method} Path={Path} StatusCode={StatusCode} ExceptionType={ExceptionType} IncidentId={IncidentId} OccurredAtUtc={OccurredAtUtc}",
+                "UnhandledRequestFailure",
+                _environment.ApplicationName,
+                context.Request.Method,
+                path,
+                context.Response.HasStarted ? context.Response.StatusCode : (int)statusCode,
+                exception.GetType().Name,
+                context.TraceIdentifier,
+                DateTimeOffset.UtcNow.ToString("O"));
+        }
 
         if (context.Response.HasStarted)
         {
