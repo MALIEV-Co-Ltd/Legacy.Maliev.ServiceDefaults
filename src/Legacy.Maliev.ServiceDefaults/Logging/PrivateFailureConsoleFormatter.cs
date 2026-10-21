@@ -158,13 +158,17 @@ public sealed class PrivateFailureConsoleFormatter : ConsoleFormatter
 
     private static string? SafeSourceLocation(MethodBase? targetSite)
     {
-        var typeName = SafeTypeName(targetSite?.DeclaringType?.FullName);
+        var typeName = targetSite?.DeclaringType?.FullName;
         var methodName = targetSite?.Name;
-        return typeName is not null && methodName is { Length: >= 1 and <= 96 }
-            && (char.IsAsciiLetter(methodName[0]) || methodName[0] == '_')
-            && methodName.All(character => char.IsAsciiLetterOrDigit(character) || character == '_')
-                ? typeName + "." + methodName : null;
+        return IsRuntimeLocationPart(typeName, 256) && IsRuntimeLocationPart(methodName, 96)
+            ? typeName + "." + methodName : null;
     }
+
+    // Only actual MethodBase provenance accepts CLR compiler-name punctuation, never state or scopes.
+    private static bool IsRuntimeLocationPart(string? value, int maximum) =>
+        value is { Length: >= 1 } && value.Length <= maximum
+        && value.All(character => char.IsAsciiLetterOrDigit(character)
+            || character is '_' or '.' or '+' or '`' or '<' or '>' or '|' or '$');
 
     private sealed class ScopeBudgetReachedException : Exception;
 }
