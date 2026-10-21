@@ -101,6 +101,24 @@ public sealed class PrivateFailureConsoleFormatter : ConsoleFormatter
             {
                 payload.Add(field.Key, field.Value);
             }
+            else if (field.Key == "Code" && field.Value is string code
+                && code is "upload_invalid" or "quote_invalid" or "quote_expired" or "upload_expired" or "quote_mismatch")
+            {
+                payload.Add(field.Key, code);
+            }
+            else if (field.Key == "IncidentId" && field.Value is string incident
+                && incident.Length == 32
+                && Guid.TryParseExact(incident, "N", out var incidentId) && incidentId != Guid.Empty)
+            {
+                payload.Add(field.Key, incidentId.ToString("N"));
+            }
+            else if (field.Key == "OccurredAtUtc" && field.Value is string timestamp
+                && timestamp.Length == 33
+                && DateTimeOffset.TryParseExact(timestamp, "O", CultureInfo.InvariantCulture,
+                    DateTimeStyles.None, out var occurredAt))
+            {
+                payload.Add(field.Key, occurredAt.ToUniversalTime().ToString("O", CultureInfo.InvariantCulture));
+            }
             else if (field.Key == "ExceptionType" && field.Value is string exceptionType
                 && (sourceOwned || PrivateDependencyFailureMetadata.IsExceptionType(exceptionType)))
             {
