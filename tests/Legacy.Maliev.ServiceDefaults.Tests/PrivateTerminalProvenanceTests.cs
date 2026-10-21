@@ -426,9 +426,9 @@ public sealed class PrivateTerminalProvenanceTests
             if (Failure is { } failure) ExceptionDispatchInfo.Capture(failure).Throw();
             if (Response is { } response) return response;
             try { await Task.Delay(Timeout.InfiniteTimeSpan, token); }
-            catch (OperationCanceledException failure)
+            catch (OperationCanceledException cancellation)
             {
-                Cancellation = failure;
+                Cancellation = cancellation;
                 throw;
             }
             throw new InvalidOperationException("Controlled transport must complete through cancellation.");
