@@ -242,7 +242,8 @@ public sealed class PrivateFailureProducerContractTests
         var scopes = new LoggerExternalScopeProvider();
         using var scope = scopes.Push(new Dictionary<string, object?>
         {
-            ["IncidentId"] = "abcdef0123456789abcdef0123456789", ["Code"] = "quote_mismatch",
+            ["IncidentId"] = "abcdef0123456789abcdef0123456789",
+            ["Code"] = "quote_mismatch",
             ["OccurredAtUtc"] = "2026-10-20T03:30:00.0000000+00:00"
         });
         using var activity = new System.Diagnostics.Activity("ControlledIncident")
@@ -268,7 +269,9 @@ public sealed class PrivateFailureProducerContractTests
     {
         var fields = new Dictionary<string, object?>
         {
-            ["Code"] = new ProtectedValue(), ["IncidentId"] = new ProtectedValue(), ["OccurredAtUtc"] = new ProtectedValue()
+            ["Code"] = new ProtectedValue(),
+            ["IncidentId"] = new ProtectedValue(),
+            ["OccurredAtUtc"] = new ProtectedValue()
         };
         var entry = new LogEntry<Dictionary<string, object?>>(LogLevel.Error, "Controlled.Web", default, fields,
             null, (_, _) => throw new InvalidOperationException("Must not render"));
@@ -277,7 +280,8 @@ public sealed class PrivateFailureProducerContractTests
         var scopes = new LoggerExternalScopeProvider();
         using var scope = scopes.Push(new Dictionary<string, object?>
         {
-            ["Code"] = "quote_expired", ["IncidentId"] = "0123456789abcdef0123456789abcdef",
+            ["Code"] = "quote_expired",
+            ["IncidentId"] = "0123456789abcdef0123456789abcdef",
             ["OccurredAtUtc"] = "2026-10-21T03:30:00.0000000+00:00"
         });
         using var accepted = JsonDocument.Parse(Render(entry, scopes));
