@@ -4,7 +4,8 @@ namespace Maliev.Aspire.ServiceDefaults.Diagnostics;
 
 /// <summary>Observes only the selected client's terminal outcome without exporting protected transport details.</summary>
 internal sealed class PrivateDependencyFailureHandler(
-    ILogger<PrivateDependencyFailureHandler> logger, string dependency, bool observeOperation, bool observeAllFailures = false)
+    ILogger<PrivateDependencyFailureHandler> logger, string dependency, bool observeOperation, bool observeAllFailures = false,
+    bool includePrivateProvenance = false)
     : DelegatingHandler
 {
     private static readonly HttpRequestOptionsKey<bool> CallerFailureLogging = new("Maliev.DependencyFailureOwnedByCaller");
@@ -16,7 +17,8 @@ internal sealed class PrivateDependencyFailureHandler(
     {
         var context = PrivateDependencyObservationContext.Get(request);
         // This callback runs only for the outer HttpClient deadline wrapper proven by the rendezvous.
-        context?.Bind(() => RecordCore(request, null, observeAllFailures ? typeof(TaskCanceledException) : null));
+        context?.Bind(exception => RecordCore(request, null, observeAllFailures ? typeof(TaskCanceledException) : null,
+            includePrivateProvenance ? PrivateFailureProvenanceState.Capture(exception) : null));
         var bufferSourceResponse = observeAllFailures && context?.BindBufferedSource(exception => RecordCore(request, null,
             exception.GetType())) == true;
         try
@@ -60,12 +62,15 @@ internal sealed class PrivateDependencyFailureHandler(
         if (CallerOwnsFailure(request)) return;
         var exceptionType = observeAllFailures && exception is not null
             ? exception.GetType() : null;
+        var provenance = includePrivateProvenance && exception is not null
+            ? PrivateFailureProvenanceState.Capture(exception) : null;
         if (PrivateDependencyObservationContext.Get(request) is { } context)
-            context.RecordOnce(() => RecordCore(request, status, exceptionType));
-        else RecordCore(request, status, exceptionType);
+            context.RecordOnce(() => RecordCore(request, status, exceptionType, provenance));
+        else RecordCore(request, status, exceptionType, provenance);
     }
 
-    private void RecordCore(HttpRequestMessage request, int? status, Type? exceptionType = null)
+    private void RecordCore(HttpRequestMessage request, int? status, Type? exceptionType = null,
+        PrivateFailureProvenanceState.Snapshot? provenance = null)
     {
         if (CallerOwnsFailure(request)) return;
         try
@@ -83,6 +88,13 @@ internal sealed class PrivateDependencyFailureHandler(
                     return;
                 }
                 var state = new PrivateDependencyFailureMetadata.SourceFailureState(dependency, operation, status, method, exceptionType);
+                logger.Log(LogLevel.Error, new EventId(5101, "DependencyRequestFailure"), state, null,
+                    static (source, _) => source.ToString());
+                return;
+            }
+            if (provenance is not null)
+            {
+                var state = PrivateFailureProvenanceState.ForDependency(dependency, operation, status, provenance);
                 logger.Log(LogLevel.Error, new EventId(5101, "DependencyRequestFailure"), state, null,
                     static (source, _) => source.ToString());
                 return;

@@ -3,6 +3,7 @@ using Maliev.Aspire.ServiceDefaults.Diagnostics;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System.Net;
 
 namespace Microsoft.Extensions.Hosting;
@@ -90,7 +91,9 @@ public static class MiddlewareExtensions
             app.UseMiddleware<RequestLoggingMiddleware>();
         }
 
-        app.UseMiddleware<ExceptionHandlingMiddleware>();
+        app.Use(next => new ExceptionHandlingMiddleware(next,
+            app.ApplicationServices.GetRequiredService<ILogger<ExceptionHandlingMiddleware>>(),
+            app.ApplicationServices.GetRequiredService<IHostEnvironment>(), options).InvokeAsync);
 
         if (observation is not null)
         {
@@ -110,6 +113,12 @@ public class MiddlewareOptions
     /// Default: false
     /// </summary>
     public bool EnableRequestLogging { get; set; } = false;
+
+    /// <summary>
+    /// Capture bounded CLR exception types and throw sites at the existing exception boundary.
+    /// Default: false. No exception object is passed to logging providers.
+    /// </summary>
+    public bool IncludePrivateFailureProvenance { get; set; } = false;
 
     /// <summary>
     /// Include stack traces in error responses in development.
