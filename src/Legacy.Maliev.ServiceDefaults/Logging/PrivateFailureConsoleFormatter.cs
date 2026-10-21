@@ -30,6 +30,8 @@ public sealed class PrivateFailureConsoleFormatter : ConsoleFormatter
 
         var assembly = Assembly.GetEntryAssembly();
         var failure = logEntry.Exception;
+        var provenance = failure is null && logEntry.State is PrivateFailureProvenanceState trusted
+            ? trusted.Provenance : null;
         var payload = new Dictionary<string, object?>(StringComparer.Ordinal)
         {
             ["severity"] = logEntry.LogLevel switch
@@ -44,9 +46,9 @@ public sealed class PrivateFailureConsoleFormatter : ConsoleFormatter
             ["message"] = "Application diagnostic; see event and exception metadata",
             ["service"] = SafeServiceName(assembly?.GetName().Name),
             ["deploymentVersion"] = SafeDeploymentVersion(assembly?.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion),
-            ["exceptionType"] = SafeTypeName(failure?.GetType().FullName),
-            ["innerExceptionType"] = SafeTypeName(failure?.InnerException?.GetType().FullName),
-            ["sourceLocation"] = SafeSourceLocation(failure?.TargetSite)
+            ["exceptionType"] = failure is null ? provenance?.ExceptionType : SafeTypeName(failure.GetType().FullName),
+            ["innerExceptionType"] = failure is null ? provenance?.InnerExceptionType : SafeTypeName(failure.InnerException?.GetType().FullName),
+            ["sourceLocation"] = failure is null ? provenance?.SourceLocation : SafeSourceLocation(failure.TargetSite)
         };
         if (Activity.Current is { IdFormat: ActivityIdFormat.W3C } activity
             && activity.TraceId != default && activity.SpanId != default)
@@ -151,12 +153,12 @@ public sealed class PrivateFailureConsoleFormatter : ConsoleFormatter
         && version.All(character => char.IsAsciiLetterOrDigit(character) || character is '_' or '.' or '-' or '+')
             ? version : null;
 
-    private static string? SafeTypeName(string? name) => name is { Length: >= 1 and <= 256 }
+    internal static string? SafeTypeName(string? name) => name is { Length: >= 1 and <= 256 }
         && (char.IsAsciiLetter(name[0]) || name[0] == '_')
         && name.All(character => char.IsAsciiLetterOrDigit(character) || character is '_' or '.' or '+' or '`')
             ? name : null;
 
-    private static string? SafeSourceLocation(MethodBase? targetSite)
+    internal static string? SafeSourceLocation(MethodBase? targetSite)
     {
         var typeName = targetSite?.DeclaringType?.FullName;
         var methodName = targetSite?.Name;

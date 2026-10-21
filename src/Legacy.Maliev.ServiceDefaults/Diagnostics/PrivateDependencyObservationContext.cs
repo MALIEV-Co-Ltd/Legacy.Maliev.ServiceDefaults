@@ -6,7 +6,7 @@ internal sealed class PrivateDependencyObservationContext(PrivateDependencyFailu
 {
     internal static readonly HttpRequestOptionsKey<PrivateDependencyObservationContext?> Key =
         new("Maliev.PrivateDependencyObservationContext");
-    private Action? recordNativeDeadline;
+    private Action<Exception>? recordNativeDeadline;
     private OperationCanceledException? terminalCancellation;
     private Action<Exception>? recordBufferedFailure;
     private Action? recordBufferedResponse;
@@ -16,7 +16,7 @@ internal sealed class PrivateDependencyObservationContext(PrivateDependencyFailu
     internal static PrivateDependencyObservationContext? Get(HttpRequestMessage request) =>
         request.Options.TryGetValue(Key, out var context) ? context : null;
 
-    internal void Bind(Action record) => recordNativeDeadline = record;
+    internal void Bind(Action<Exception> record) => recordNativeDeadline = record;
 
     internal bool BindBufferedSource(Action<Exception> recordFailure)
     {
@@ -65,7 +65,7 @@ internal sealed class PrivateDependencyObservationContext(PrivateDependencyFailu
             && exception is TaskCanceledException { InnerException: TimeoutException timeout }
             && ReferenceEquals(timeout.InnerException, original)
             && recordNativeDeadline is { } record)
-            RecordOnce(record);
+            RecordOnce(() => record(exception));
     }
 
     internal void Clear()
