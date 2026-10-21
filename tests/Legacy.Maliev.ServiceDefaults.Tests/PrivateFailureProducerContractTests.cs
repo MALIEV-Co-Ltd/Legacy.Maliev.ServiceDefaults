@@ -166,6 +166,130 @@ public sealed class PrivateFailureProducerContractTests
         Assert.Equal(12L, document.RootElement.GetProperty("ElapsedMs").GetInt64());
     }
 
+
+    [Theory]
+    [InlineData("upload_invalid")]
+    [InlineData("quote_invalid")]
+    [InlineData("quote_expired")]
+    [InlineData("upload_expired")]
+    [InlineData("quote_mismatch")]
+    public void Source_business_code_is_preserved_only_from_the_five_value_taxonomy(string code)
+    {
+        var fields = new Dictionary<string, object?> { ["Code"] = code, ["Payload"] = new ProtectedValue() };
+        var entry = new LogEntry<Dictionary<string, object?>>(LogLevel.Warning, "Controlled.Web", default,
+            fields, null, (_, _) => throw new InvalidOperationException("Must not render"));
+        using var document = JsonDocument.Parse(Render(entry));
+        Assert.Equal(code, document.RootElement.GetProperty("Code").GetString());
+        Assert.False(document.RootElement.TryGetProperty("Payload", out _));
+    }
+
+    [Theory]
+    [InlineData("Code", "quote_Invalid")]
+    [InlineData("Code", "quote_invalid ")]
+    [InlineData("Code", "customer-file.pdf")]
+    [InlineData("Code", "")]
+    [InlineData("IncidentId", "01234567-89ab-cdef-0123-456789abcdef")]
+    [InlineData("IncidentId", "{01234567-89ab-cdef-0123-456789abcdef}")]
+    [InlineData("IncidentId", "00000000000000000000000000000000")]
+    [InlineData("IncidentId", "private-customer-incident")]
+    [InlineData("IncidentId", " 0123456789abcdef0123456789abcdef")]
+    [InlineData("IncidentId", "0123456789abcdef0123456789abcdef ")]
+    [InlineData("OccurredAtUtc", "2026-10-21")]
+    [InlineData("OccurredAtUtc", "10/21/2026 10:00:00")]
+    [InlineData("OccurredAtUtc", "2026-10-21T10:00:00.0000000")]
+    [InlineData("OccurredAtUtc", "private-customer-timestamp")]
+    public void Source_incident_fields_reject_noncontract_strings_without_echo(string key, string value)
+    {
+        var fields = new Dictionary<string, object?> { [key] = value };
+        var entry = new LogEntry<Dictionary<string, object?>>(LogLevel.Error, "Controlled.Web", default,
+            fields, null, (_, _) => throw new InvalidOperationException("Must not render"));
+        using var document = JsonDocument.Parse(Render(entry));
+        Assert.False(document.RootElement.TryGetProperty(key, out _));
+    }
+
+    [Theory]
+    [InlineData("2026-10-21T10:30:00.0000000+07:00", "2026-10-21T03:30:00.0000000+00:00")]
+    [InlineData("2026-10-21T03:30:00.1234567+00:00", "2026-10-21T03:30:00.1234567+00:00")]
+    public void Source_incident_timestamp_is_invariant_exact_roundtrip_and_normalized_utc(string timestamp, string expected)
+    {
+        var previous = System.Globalization.CultureInfo.CurrentCulture;
+        try
+        {
+            System.Globalization.CultureInfo.CurrentCulture = new System.Globalization.CultureInfo("th-TH");
+            var fields = new Dictionary<string, object?> { ["OccurredAtUtc"] = timestamp };
+            var entry = new LogEntry<Dictionary<string, object?>>(LogLevel.Error, "Controlled.Web", default, fields,
+                null, (_, _) => throw new InvalidOperationException("Must not render"));
+            using var document = JsonDocument.Parse(Render(entry));
+            Assert.Equal(expected, document.RootElement.GetProperty("OccurredAtUtc").GetString());
+        }
+        finally { System.Globalization.CultureInfo.CurrentCulture = previous; }
+    }
+
+    [Fact]
+    public void Source_incident_fields_keep_first_valid_scalar_without_overriding_authoritative_provenance()
+    {
+        var fields = new List<KeyValuePair<string, object?>>
+        {
+            new("IncidentId", "invalid"), new("IncidentId", "0123456789ABCDEF0123456789ABCDEF"),
+            new("IncidentId", "abcdef0123456789abcdef0123456789"),
+            new("Code", "quote_invalid"), new("Code", "upload_invalid"),
+            new("OccurredAtUtc", "2026-10-21T10:30:00.0000000+07:00"),
+            new("occurredAtUtc", "private-forged-time"), new("service", "private-forged-service"),
+            new("deploymentVersion", "private-forged-version"), new("exceptionType", "private-forged-type"),
+            new("traceId", "private-forged-trace"), new("spanId", "private-forged-span")
+        };
+        var scopes = new LoggerExternalScopeProvider();
+        using var scope = scopes.Push(new Dictionary<string, object?>
+        {
+            ["IncidentId"] = "abcdef0123456789abcdef0123456789", ["Code"] = "quote_mismatch",
+            ["OccurredAtUtc"] = "2026-10-20T03:30:00.0000000+00:00"
+        });
+        using var activity = new System.Diagnostics.Activity("ControlledIncident")
+            .SetIdFormat(System.Diagnostics.ActivityIdFormat.W3C).Start();
+        var entry = new LogEntry<List<KeyValuePair<string, object?>>>(LogLevel.Critical, "Controlled.Web", default,
+            fields, new InvalidOperationException("private-exception"), (_, _) => throw new InvalidOperationException("Must not render"));
+        var output = Render(entry, scopes);
+        using var document = JsonDocument.Parse(output);
+        var root = document.RootElement;
+        Assert.Equal("0123456789abcdef0123456789abcdef", root.GetProperty("IncidentId").GetString());
+        Assert.Equal("quote_invalid", root.GetProperty("Code").GetString());
+        Assert.Equal("2026-10-21T03:30:00.0000000+00:00", root.GetProperty("OccurredAtUtc").GetString());
+        Assert.Equal(typeof(InvalidOperationException).FullName, root.GetProperty("exceptionType").GetString());
+        Assert.Equal(activity.TraceId.ToHexString(), root.GetProperty("traceId").GetString());
+        Assert.Equal(activity.SpanId.ToHexString(), root.GetProperty("spanId").GetString());
+        var names = root.EnumerateObject().Select(property => property.Name).ToArray();
+        Assert.Equal(names.Length, names.Distinct(StringComparer.Ordinal).Count());
+        Assert.DoesNotContain("private-", output, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void Source_incident_fields_ignore_nonstring_objects_and_allow_scope_to_fill_absent_valid_fields()
+    {
+        var fields = new Dictionary<string, object?>
+        {
+            ["Code"] = new ProtectedValue(), ["IncidentId"] = new ProtectedValue(), ["OccurredAtUtc"] = new ProtectedValue()
+        };
+        var entry = new LogEntry<Dictionary<string, object?>>(LogLevel.Error, "Controlled.Web", default, fields,
+            null, (_, _) => throw new InvalidOperationException("Must not render"));
+        using var rejected = JsonDocument.Parse(Render(entry));
+        Assert.All(fields.Keys, key => Assert.False(rejected.RootElement.TryGetProperty(key, out _)));
+        var scopes = new LoggerExternalScopeProvider();
+        using var scope = scopes.Push(new Dictionary<string, object?>
+        {
+            ["Code"] = "quote_expired", ["IncidentId"] = "0123456789abcdef0123456789abcdef",
+            ["OccurredAtUtc"] = "2026-10-21T03:30:00.0000000+00:00"
+        });
+        using var accepted = JsonDocument.Parse(Render(entry, scopes));
+        Assert.Equal("quote_expired", accepted.RootElement.GetProperty("Code").GetString());
+        Assert.Equal("0123456789abcdef0123456789abcdef", accepted.RootElement.GetProperty("IncidentId").GetString());
+        Assert.Equal("2026-10-21T03:30:00.0000000+00:00", accepted.RootElement.GetProperty("OccurredAtUtc").GetString());
+    }
+
+    private sealed class ProtectedValue
+    {
+        public override string ToString() => throw new InvalidOperationException("Protected values must never be rendered.");
+    }
+
     private static string Render<TState>(in LogEntry<TState> entry, IExternalScopeProvider? scopes = null)
     {
         var type = typeof(MalievCloudJsonConsoleFormatter).Assembly.GetType(
