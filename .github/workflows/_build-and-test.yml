@@ -194,7 +194,7 @@ jobs:
           & ./eng/Export-CoverageEvidence.ps1 -ResultsDirectory artifacts/source-buffering -OutputDirectory artifacts/coverage-evidence/source-buffering
       - name: Retain private validation evidence
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: owned-validation-${{ github.run_id }}-${{ github.run_attempt }}
           path: artifacts/coverage-evidence
