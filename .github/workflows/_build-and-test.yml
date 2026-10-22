@@ -49,9 +49,9 @@ jobs:
           [xml] $trx = Get-Content artifacts/source-failure/source-failure.trx -Raw
           $results = @($trx.SelectNodes('/*[local-name()="TestRun"]/*[local-name()="Results"]/*[local-name()="UnitTestResult"]'))
           $counters = $trx.SelectSingleNode('/*[local-name()="TestRun"]/*[local-name()="ResultSummary"]/*[local-name()="Counters"]')
-          if ($results.Count -ne 45 -or @($results | Where-Object outcome -ne 'Passed').Count -ne 0 -or
-              $null -eq $counters -or [int] $counters.total -ne 45 -or [int] $counters.passed -ne 45) {
-            throw 'Expected all 45 compiled source failure cases to execute and pass.'
+          if ($results.Count -ne 57 -or @($results | Where-Object outcome -ne 'Passed').Count -ne 0 -or
+              $null -eq $counters -or [int] $counters.total -ne 57 -or [int] $counters.passed -ne 57) {
+            throw 'Expected all 57 compiled source failure cases to execute and pass.'
           }
       - name: Verify bounded source metadata through normal host formatter
         shell: pwsh
@@ -64,9 +64,9 @@ jobs:
           [xml] $trx = Get-Content artifacts/source-metadata/source-metadata.trx -Raw
           $results = @($trx.SelectNodes('/*[local-name()="TestRun"]/*[local-name()="Results"]/*[local-name()="UnitTestResult"]'))
           $counters = $trx.SelectSingleNode('/*[local-name()="TestRun"]/*[local-name()="ResultSummary"]/*[local-name()="Counters"]')
-          if ($results.Count -ne 59 -or @($results | Where-Object outcome -ne 'Passed').Count -ne 0 -or
-              $null -eq $counters -or [int] $counters.total -ne 59 -or [int] $counters.executed -ne 59 -or [int] $counters.passed -ne 59) {
-            throw 'Expected all 59 compiled source metadata cases to execute and pass.'
+          if ($results.Count -ne 82 -or @($results | Where-Object outcome -ne 'Passed').Count -ne 0 -or
+              $null -eq $counters -or [int] $counters.total -ne 82 -or [int] $counters.executed -ne 82 -or [int] $counters.passed -ne 82) {
+            throw 'Expected all 82 compiled source metadata cases to execute and pass.'
           }
       - name: Verify selected source native buffering ownership
         shell: pwsh
@@ -194,7 +194,7 @@ jobs:
           & ./eng/Export-CoverageEvidence.ps1 -ResultsDirectory artifacts/source-buffering -OutputDirectory artifacts/coverage-evidence/source-buffering
       - name: Retain private validation evidence
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: owned-validation-${{ github.run_id }}-${{ github.run_attempt }}
           path: artifacts/coverage-evidence

@@ -4,16 +4,23 @@ namespace Maliev.Aspire.ServiceDefaults.Diagnostics;
 
 /// <summary>Observes only the selected client's terminal outcome without exporting protected transport details.</summary>
 internal sealed class PrivateDependencyFailureHandler(
-    ILogger<PrivateDependencyFailureHandler> logger, string dependency, bool observeOperation, bool observeAllFailures = false)
+    ILogger<PrivateDependencyFailureHandler> logger, string dependency, bool observeOperation, bool observeAllFailures = false,
+    bool includePrivateProvenance = false)
     : DelegatingHandler
 {
+    private static readonly HttpRequestOptionsKey<bool> CallerFailureLogging = new("Maliev.DependencyFailureOwnedByCaller");
+
+    private static bool CallerOwnsFailure(HttpRequestMessage request) =>
+        request.Options.TryGetValue(CallerFailureLogging, out var owned) && owned;
+
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
         var context = PrivateDependencyObservationContext.Get(request);
         // This callback runs only for the outer HttpClient deadline wrapper proven by the rendezvous.
-        context?.Bind(() => RecordCore(request, null, observeAllFailures ? nameof(TaskCanceledException) : null));
+        context?.Bind(exception => RecordCore(request, null, observeAllFailures ? typeof(TaskCanceledException) : null,
+            includePrivateProvenance ? PrivateFailureProvenanceState.Capture(exception) : null));
         var bufferSourceResponse = observeAllFailures && context?.BindBufferedSource(exception => RecordCore(request, null,
-            PrivateDependencyFailureMetadata.GetExceptionType(exception))) == true;
+            exception.GetType())) == true;
         try
         {
             var response = await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
@@ -52,15 +59,20 @@ internal sealed class PrivateDependencyFailureHandler(
 
     private void Record(HttpRequestMessage request, int? status, Exception? exception = null)
     {
+        if (CallerOwnsFailure(request)) return;
         var exceptionType = observeAllFailures && exception is not null
-            ? PrivateDependencyFailureMetadata.GetExceptionType(exception) : null;
+            ? exception.GetType() : null;
+        var provenance = includePrivateProvenance && exception is not null
+            ? PrivateFailureProvenanceState.Capture(exception) : null;
         if (PrivateDependencyObservationContext.Get(request) is { } context)
-            context.RecordOnce(() => RecordCore(request, status, exceptionType));
-        else RecordCore(request, status, exceptionType);
+            context.RecordOnce(() => RecordCore(request, status, exceptionType, provenance));
+        else RecordCore(request, status, exceptionType, provenance);
     }
 
-    private void RecordCore(HttpRequestMessage request, int? status, string? exceptionType = null)
+    private void RecordCore(HttpRequestMessage request, int? status, Type? exceptionType = null,
+        PrivateFailureProvenanceState.Snapshot? provenance = null)
     {
+        if (CallerOwnsFailure(request)) return;
         try
         {
             var operation = observeOperation ? PrivateDependencyOperationMapper.GetOperation(request) : "HttpRequest";
@@ -68,18 +80,23 @@ internal sealed class PrivateDependencyFailureHandler(
             if (observeAllFailures)
             {
                 var method = PrivateDependencyFailureMetadata.GetMethod(request);
-                if (status is { } sourceStatus)
+                if (status == 404 && exceptionType is null)
                 {
-                    logger.LogError(new EventId(5101, "DependencyRequestFailure"),
-                        "{EventName} Dependency={Dependency} Operation={Operation} StatusCode={StatusCode} Method={Method} ExceptionType={ExceptionType}",
-                        "DependencyRequestFailure", dependency, operation, sourceStatus, method, exceptionType);
+                    logger.LogDebug(new EventId(5101, "DependencyResourceNotFound"),
+                        "{EventName} Dependency={Dependency} Operation={Operation} StatusCode={StatusCode} Method={Method}",
+                        "DependencyResourceNotFound", dependency, operation, 404, method);
+                    return;
                 }
-                else
-                {
-                    logger.LogError(new EventId(5101, "DependencyRequestFailure"),
-                        "{EventName} Dependency={Dependency} Operation={Operation} Method={Method} ExceptionType={ExceptionType}",
-                        "DependencyRequestFailure", dependency, operation, method, exceptionType);
-                }
+                var state = new PrivateDependencyFailureMetadata.SourceFailureState(dependency, operation, status, method, exceptionType);
+                logger.Log(LogLevel.Error, new EventId(5101, "DependencyRequestFailure"), state, null,
+                    static (source, _) => source.ToString());
+                return;
+            }
+            if (provenance is not null)
+            {
+                var state = PrivateFailureProvenanceState.ForDependency(dependency, operation, status, provenance);
+                logger.Log(LogLevel.Error, new EventId(5101, "DependencyRequestFailure"), state, null,
+                    static (source, _) => source.ToString());
                 return;
             }
             if (status is { } knownStatus)

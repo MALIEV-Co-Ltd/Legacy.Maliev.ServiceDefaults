@@ -16,6 +16,16 @@ public static class PrivateFailureObservationExtensions
     public static IHttpClientBuilder AddPrivateFailureObservation(this IHttpClientBuilder builder, string dependency)
         => SelectObservation(builder, dependency, observeOperation: false);
 
+    /// <summary>Adds generic terminal observation with optional bounded runtime exception provenance.</summary>
+    /// <param name="builder">The explicitly selected named or typed HTTP client.</param>
+    /// <param name="dependency">A bounded code-owned dependency identifier, never a URL or customer value.</param>
+    /// <param name="includePrivateProvenance">Whether to capture only validated CLR type and throw-site metadata.</param>
+    /// <returns>The unchanged client builder.</returns>
+    /// <remarks>Does not widen the generic failure predicate or pass exceptions to logging providers.</remarks>
+    public static IHttpClientBuilder AddPrivateFailureObservation(this IHttpClientBuilder builder, string dependency,
+        bool includePrivateProvenance)
+        => SelectObservation(builder, dependency, observeOperation: false, includePrivateProvenance: includePrivateProvenance);
+
     /// <summary>Adds terminal failure observation with a finite resource-and-method operation taxonomy.</summary>
     /// <param name="builder">The explicitly selected named or typed HTTP client.</param>
     /// <param name="dependency">A bounded code-owned dependency identifier, never a URL or customer value.</param>
@@ -36,7 +46,7 @@ public static class PrivateFailureObservationExtensions
         => SelectObservation(builder, dependency, observeOperation: true, observeAllFailures: true);
 
     private static IHttpClientBuilder SelectObservation(IHttpClientBuilder builder, string dependency, bool observeOperation,
-        bool observeAllFailures = false)
+        bool observeAllFailures = false, bool includePrivateProvenance = false)
     {
         ArgumentNullException.ThrowIfNull(builder);
         if (string.IsNullOrWhiteSpace(builder.Name) || builder.Name.Length > 256 || builder.Name.Any(char.IsWhiteSpace))
@@ -55,19 +65,21 @@ public static class PrivateFailureObservationExtensions
         if (existing is not null)
         {
             if (!string.Equals(existing.Dependency, dependency, StringComparison.Ordinal)
-                || existing.ObserveOperation != observeOperation || existing.ObserveAllFailures != observeAllFailures)
+                || existing.ObserveOperation != observeOperation || existing.ObserveAllFailures != observeAllFailures
+                || existing.IncludePrivateProvenance != includePrivateProvenance)
             {
                 throw new InvalidOperationException("The selected client already has a different failure observation identity or mode.");
             }
             return builder;
         }
 
-        builder.Services.AddSingleton(new PrivateFailureClientSelection(builder.Name, dependency, observeOperation, observeAllFailures));
+        builder.Services.AddSingleton(new PrivateFailureClientSelection(builder.Name, dependency, observeOperation, observeAllFailures, includePrivateProvenance));
         builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IHttpMessageHandlerBuilderFilter, PrivateFailureHandlerBuilderFilter>());
         return builder;
     }
 
-    private sealed record PrivateFailureClientSelection(string ClientName, string Dependency, bool ObserveOperation, bool ObserveAllFailures);
+    private sealed record PrivateFailureClientSelection(string ClientName, string Dependency, bool ObserveOperation, bool ObserveAllFailures,
+        bool IncludePrivateProvenance);
 
     private sealed class PrivateFailureHandlerBuilderFilter(IEnumerable<PrivateFailureClientSelection> selections)
         : IHttpMessageHandlerBuilderFilter
@@ -80,7 +92,7 @@ public static class PrivateFailureObservationExtensions
             {
                 builder.AdditionalHandlers.Insert(0, new PrivateDependencyFailureHandler(
                     builder.Services.GetRequiredService<ILogger<PrivateDependencyFailureHandler>>(), selection.Dependency,
-                    selection.ObserveOperation, selection.ObserveAllFailures));
+                    selection.ObserveOperation, selection.ObserveAllFailures, selection.IncludePrivateProvenance));
             }
         };
     }

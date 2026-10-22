@@ -218,17 +218,54 @@ public sealed class PrivateFailureProvenanceTests
     }
 
     [Fact]
-    public async Task Write_AsyncThrowSite_FailsClosedForCompilerGeneratedType()
+    public async Task Write_AsyncThrowSite_PreservesRuntimeLocationAndPrivacy()
     {
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(ThrowAsyncFailure);
-        Assert.NotNull(exception.TargetSite);
-        var entry = CreateEntry(LogLevel.Error, SpoofedProvenance(), exception);
-        var output = Render(in entry);
+        var target = Assert.IsAssignableFrom<MethodBase>(exception.TargetSite);
+        var declaring = Assert.IsType<string>(target.DeclaringType?.FullName);
+        Assert.Contains("<", declaring, StringComparison.Ordinal);
+        var fields = SpoofedProvenance();
+        fields.Add(new("sourceLocation", "private-provenance-<forged>|$"));
+        var scopes = new LoggerExternalScopeProvider();
+        using var scope = scopes.Push(fields);
+        var entry = CreateEntry(LogLevel.Error, fields, exception);
+
+        var output = Render(in entry, scopes);
+
         using var document = JsonDocument.Parse(output);
-        Assert.Equal(JsonValueKind.Null, document.RootElement.GetProperty("sourceLocation").ValueKind);
+        Assert.Equal(declaring + "." + target.Name,
+            document.RootElement.GetProperty("sourceLocation").GetString());
         Assert.Equal(typeof(InvalidOperationException).FullName,
             document.RootElement.GetProperty("exceptionType").GetString());
         Assert.DoesNotContain("private-provenance-", output, StringComparison.Ordinal);
+        AssertUniquePropertyNames(document.RootElement);
+    }
+
+    [Fact]
+    public void Write_ClosureThrowSite_PreservesRuntimeLocationAndPrivacy()
+    {
+        var privateValue = "private-provenance-closure-message";
+        Action thrower = [MethodImpl(MethodImplOptions.NoInlining)] () =>
+            throw new InvalidOperationException(privateValue);
+        var exception = Assert.Throws<InvalidOperationException>(thrower);
+        var target = Assert.IsAssignableFrom<MethodBase>(exception.TargetSite);
+        var declaring = Assert.IsType<string>(target.DeclaringType?.FullName);
+        Assert.Contains("<", target.Name, StringComparison.Ordinal);
+        var fields = SpoofedProvenance();
+        fields.Add(new("sourceLocation", "private-provenance-<forged>|$"));
+        var scopes = new LoggerExternalScopeProvider();
+        using var scope = scopes.Push(fields);
+        var entry = CreateEntry(LogLevel.Error, fields, exception);
+
+        var output = Render(in entry, scopes);
+
+        using var document = JsonDocument.Parse(output);
+        Assert.Equal(declaring + "." + target.Name,
+            document.RootElement.GetProperty("sourceLocation").GetString());
+        Assert.Equal(typeof(InvalidOperationException).FullName,
+            document.RootElement.GetProperty("exceptionType").GetString());
+        Assert.DoesNotContain("private-provenance-", output, StringComparison.Ordinal);
+        AssertUniquePropertyNames(document.RootElement);
     }
 
     private static async Task ThrowAsyncFailure()
