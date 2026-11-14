@@ -1,10 +1,12 @@
 param(
     [string]$PackageDirectory = 'artifacts',
-    [string]$EvidenceDirectory = 'artifacts/coverage-evidence'
+    [string]$EvidenceDirectory = 'artifacts/coverage-evidence',
+    [ValidateSet('net10.0', 'net11.0')] [string]$TargetFramework = 'net10.0'
 )
 $ErrorActionPreference = 'Stop'
 if ($env:GITHUB_ACTIONS -ne 'true') { throw 'This package-consumer gate runs only in hosted validation.' }
 $packageRoot = (Resolve-Path -LiteralPath $PackageDirectory).Path
+$EvidenceDirectory = [System.IO.Path]::GetFullPath($EvidenceDirectory)
 $packages = @(Get-ChildItem -LiteralPath $packageRoot -Filter 'Legacy.Maliev.ServiceDefaults.*.nupkg' -File)
 if ($packages.Count -ne 1) { throw 'Expected one produced Defaults package.' }
 $archive = [System.IO.Compression.ZipFile]::OpenRead($packages[0].FullName)
@@ -38,7 +40,7 @@ try {
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net10.0</TargetFramework>
+    <TargetFramework>TARGET_FRAMEWORK</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -48,7 +50,7 @@ try {
   </ItemGroup>
 </Project>
 '@
-    $project.Replace('PACKAGE_VERSION', $version) | Set-Content -LiteralPath (Join-Path $scratch 'Consumer.csproj')
+    $project.Replace('PACKAGE_VERSION', $version).Replace('TARGET_FRAMEWORK', $TargetFramework) | Set-Content -LiteralPath (Join-Path $scratch 'Consumer.csproj')
     $program = @'
 using System.Net;
 using System.Net.Http.Json;
@@ -96,6 +98,10 @@ internal sealed class ObservedContent : HttpContent
     "<configuration><packageSources><clear/><add key='produced' value='$localSource'/><add key='nuget.org' value='https://api.nuget.org/v3/index.json'/></packageSources></configuration>" |
         Set-Content -LiteralPath (Join-Path $scratch 'NuGet.Config')
     $consumerProject = Join-Path $scratch 'Consumer.csproj'
+    $sdkVersion = if ($TargetFramework -eq 'net10.0') { '10.0.404' } else { '11.0.100' }
+    @{ sdk = @{ version = $sdkVersion; rollForward = 'disable' } } | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $scratch 'global.json')
+    Push-Location $scratch
+    $locationPushed = $true
     & dotnet restore $consumerProject --configfile (Join-Path $scratch 'NuGet.Config') --packages (Join-Path $scratch 'packages')
     if ($LASTEXITCODE -ne 0) { throw 'Packed consumer restore failed.' }
     $build = @(& dotnet build $consumerProject --configuration Release --no-restore 2>&1)
@@ -109,7 +115,12 @@ internal sealed class ObservedContent : HttpContent
 
     $assets = Get-Content -LiteralPath (Join-Path $scratch 'obj/project.assets.json') -Raw | ConvertFrom-Json -AsHashtable
     $target = @($assets.targets.Keys | Where-Object { $_ -notlike '*/*' })
-    if ($target.Count -ne 1) { throw 'Expected one consumer target framework.' }
+    if ($target.Count -ne 1 -or $target[0] -ne $TargetFramework) { throw 'Expected the requested consumer target framework.' }
+    $defaults = $assets.targets[$target[0]]["Legacy.Maliev.ServiceDefaults/$version"]
+    $expectedAsset = "lib/$TargetFramework/Legacy.Maliev.ServiceDefaults.dll"
+    if ($null -eq $defaults -or $expectedAsset -notin @($defaults.compile.Keys) -or $expectedAsset -notin @($defaults.runtime.Keys)) {
+        throw 'Consumer did not select the expected framework-specific Defaults asset.'
+    }
     $formatter = $assets.targets[$target[0]]['Microsoft.AspNet.WebApi.Client/6.0.0']
     if ($null -eq $formatter) { throw 'Packed formatter runtime dependency was not restored.' }
     $compile = @($formatter.compile.Keys | Where-Object { $_ -ne '_._' -and $_ -notlike '*/_._' })
@@ -118,9 +129,10 @@ internal sealed class ObservedContent : HttpContent
     $actualHash = [Convert]::ToBase64String([System.Security.Cryptography.SHA512]::HashData([System.IO.File]::ReadAllBytes($packages[0].FullName)))
     if ($assets.libraries["Legacy.Maliev.ServiceDefaults/$version"].sha512 -ne $actualHash) { throw 'Consumer did not restore the exact produced package.' }
     New-Item -ItemType Directory -Path $EvidenceDirectory -Force | Out-Null
-    @{ package = $packages[0].Name; version = $version; packageSha512 = $actualHash; projectReference = $false; dependencyBuildWarnings = 0; dependencyBuildErrors = 0; buildWarnings = 0; buildErrors = 0; runtime = 'pass'; formatterCompileAssets = $compile; formatterRuntimeAssets = $runtime } |
-        ConvertTo-Json -Depth 5 | Set-Content -LiteralPath (Join-Path $EvidenceDirectory 'packed-consumer.json')
+    @{ framework = $TargetFramework; package = $packages[0].Name; version = $version; packageSha512 = $actualHash; projectReference = $false; dependencyBuildWarnings = 0; dependencyBuildErrors = 0; buildWarnings = 0; buildErrors = 0; runtime = 'pass'; formatterCompileAssets = $compile; formatterRuntimeAssets = $runtime } |
+        ConvertTo-Json -Depth 5 | Set-Content -LiteralPath (Join-Path $EvidenceDirectory ('packed-consumer-' + $TargetFramework + '.json'))
 } finally {
+    if ($locationPushed) { Pop-Location }
     $resolvedScratch = [System.IO.Path]::GetFullPath($scratch)
     if ([System.IO.Path]::GetDirectoryName($resolvedScratch) -ne $tempRoot -or [System.IO.Path]::GetFileName($resolvedScratch) -notmatch '^maliev-typed-package-[a-f0-9]{32}$') {
         throw 'Refusing cleanup outside the owned temporary package consumer.'
