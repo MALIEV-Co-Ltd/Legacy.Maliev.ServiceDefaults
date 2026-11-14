@@ -233,7 +233,7 @@ jobs:
             New-Item artifacts/coverage-evidence -ItemType Directory -Force | Out-Null
             $manifest.Save((Join-Path (Get-Location) 'artifacts/coverage-evidence/formatter-package.nuspec'))
             foreach ($framework in @('net10.0', 'net11.0')) {
-              $groups = @($manifest.SelectNodes("//*[local-name()='group' and @targetFramework='$framework']"))
+              $groups = @($manifest.SelectNodes("//*[local-name()='dependencies']/*[local-name()='group' and @targetFramework='$framework']"))
               if ($groups.Count -ne 1) { throw "Expected one dependency group for $framework." }
               $dependencies = @($groups[0].SelectNodes("./*[local-name()='dependency' and @id='Microsoft.AspNet.WebApi.Client']"))
               if ($dependencies.Count -ne 1) { throw "Formatter runtime dependency is missing for $framework." }
