@@ -21,130 +21,198 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           repository: MALIEV-Co-Ltd/Legacy.Maliev.CompatibilityContracts
-          ref: 78e48ffc4ee000df0510cba5e7c7a3c4c4d539d7
+          ref: fe17b8cea8ace3eef5434f8b29c9038f5c975613
           path: .dependencies/Legacy.Maliev.CompatibilityContracts
           persist-credentials: false
       - name: Set up focused observer validation
         uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73
         with:
-          dotnet-version: 10.0.x
+          dotnet-version: |
+            10.0.404
+            11.0.100
+      - name: Verify .NET 10 project-reference consumer
+        shell: bash
+        run: |
+          set -euo pipefail
+          export GITHUB_ACTIONS=false
+          consumer="$RUNNER_TEMP/defaults-sdk10-consumer"
+          mkdir -p "$consumer"
+          cp nuget.config "$consumer/NuGet.Config"
+          python3 - "$consumer" "$GITHUB_WORKSPACE" <<'PY'
+          import json
+          from pathlib import Path
+          import sys
+          import xml.etree.ElementTree as ET
+
+          consumer = Path(sys.argv[1])
+          repo = Path(sys.argv[2])
+          (consumer / "global.json").write_text(json.dumps({"sdk": {"version": "10.0.404", "rollForward": "disable"}}))
+          project = ET.Element("Project", Sdk="Microsoft.NET.Sdk")
+          properties = ET.SubElement(project, "PropertyGroup")
+          ET.SubElement(properties, "TargetFramework").text = "net10.0"
+          references = ET.SubElement(project, "ItemGroup")
+          ET.SubElement(references, "ProjectReference", Include=str(repo / "src/Legacy.Maliev.ServiceDefaults/Legacy.Maliev.ServiceDefaults.csproj"))
+          ET.ElementTree(project).write(consumer / "consumer.csproj", encoding="unicode")
+          (consumer / "Probe.cs").write_text("public static class Probe { public static System.Type Type => typeof(Maliev.Service.WebApi.WebApiResponseReader); }\n")
+          PY
+          cd "$consumer"
+          test "$(dotnet --version)" = "10.0.404"
+          dotnet build consumer.csproj --configuration Release --disable-build-servers -warnaserror
       - name: Build and verify send observation ownership first
         shell: bash
         run: |
           export GITHUB_ACTIONS=false
           dotnet restore Legacy.Maliev.ServiceDefaults.slnx -p:UseLocalMalievDependencies=true
           dotnet build Legacy.Maliev.ServiceDefaults.slnx --configuration Release --no-restore -warnaserror -p:UseLocalMalievDependencies=true
-          dotnet test tests/Legacy.Maliev.ServiceDefaults.Tests/Legacy.Maliev.ServiceDefaults.Tests.csproj \
-            --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true \
-            --filter "FullyQualifiedName~PrivateDependencyNativeDeadlineTests" \
-            --logger "trx;LogFileName=send-observation.trx" --results-directory artifacts/send-observation
+          for framework in net10.0 net11.0; do
+            dotnet test tests/Legacy.Maliev.ServiceDefaults.Tests/Legacy.Maliev.ServiceDefaults.Tests.csproj \
+              --framework "$framework" \
+              --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true \
+              --filter "FullyQualifiedName~PrivateDependencyNativeDeadlineTests" \
+              --logger "trx;LogFileName=send-observation.trx" --results-directory artifacts/send-observation/$framework
+          done
       - name: Verify opt-in outbound source failure predicate
         shell: pwsh
         run: |
-          dotnet test tests/Legacy.Maliev.ServiceDefaults.Tests/Legacy.Maliev.ServiceDefaults.Tests.csproj `
-            --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true `
-            --filter "FullyQualifiedName~PrivateDependencySourceFailureTests" `
-            --logger "trx;LogFileName=source-failure.trx" --results-directory artifacts/source-failure
-          if ($LASTEXITCODE -ne 0) { throw 'Source failure predicate tests failed.' }
-          [xml] $trx = Get-Content artifacts/source-failure/source-failure.trx -Raw
-          $results = @($trx.SelectNodes('/*[local-name()="TestRun"]/*[local-name()="Results"]/*[local-name()="UnitTestResult"]'))
-          $counters = $trx.SelectSingleNode('/*[local-name()="TestRun"]/*[local-name()="ResultSummary"]/*[local-name()="Counters"]')
-          if ($results.Count -ne 57 -or @($results | Where-Object outcome -ne 'Passed').Count -ne 0 -or
-              $null -eq $counters -or [int] $counters.total -ne 57 -or [int] $counters.passed -ne 57) {
-            throw 'Expected all 57 compiled source failure cases to execute and pass.'
+          foreach ($framework in @("net10.0", "net11.0")) {
+            dotnet test tests/Legacy.Maliev.ServiceDefaults.Tests/Legacy.Maliev.ServiceDefaults.Tests.csproj `
+              --framework $framework `
+              --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true `
+              --filter "FullyQualifiedName~PrivateDependencySourceFailureTests" `
+              --logger "trx;LogFileName=source-failure.trx" --results-directory artifacts/source-failure/$framework
+            if ($LASTEXITCODE -ne 0) { throw 'Source failure predicate tests failed.' }
+            [xml] $trx = Get-Content artifacts/source-failure/$framework/source-failure.trx -Raw
+            $results = @($trx.SelectNodes('/*[local-name()="TestRun"]/*[local-name()="Results"]/*[local-name()="UnitTestResult"]'))
+            $counters = $trx.SelectSingleNode('/*[local-name()="TestRun"]/*[local-name()="ResultSummary"]/*[local-name()="Counters"]')
+            if ($results.Count -ne 57 -or @($results | Where-Object outcome -ne 'Passed').Count -ne 0 -or
+                $null -eq $counters -or [int] $counters.total -ne 57 -or [int] $counters.passed -ne 57) {
+              throw 'Expected all 57 compiled source failure cases to execute and pass.'
+            }
           }
       - name: Verify bounded source metadata through normal host formatter
         shell: pwsh
         run: |
-          dotnet test tests/Legacy.Maliev.ServiceDefaults.Tests/Legacy.Maliev.ServiceDefaults.Tests.csproj `
-            --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true `
-            --filter "FullyQualifiedName~PrivateDependencySourceMetadataTests" `
-            --logger "trx;LogFileName=source-metadata.trx" --results-directory artifacts/source-metadata
-          if ($LASTEXITCODE -ne 0) { throw 'Source metadata tests failed.' }
-          [xml] $trx = Get-Content artifacts/source-metadata/source-metadata.trx -Raw
-          $results = @($trx.SelectNodes('/*[local-name()="TestRun"]/*[local-name()="Results"]/*[local-name()="UnitTestResult"]'))
-          $counters = $trx.SelectSingleNode('/*[local-name()="TestRun"]/*[local-name()="ResultSummary"]/*[local-name()="Counters"]')
-          if ($results.Count -ne 82 -or @($results | Where-Object outcome -ne 'Passed').Count -ne 0 -or
-              $null -eq $counters -or [int] $counters.total -ne 82 -or [int] $counters.executed -ne 82 -or [int] $counters.passed -ne 82) {
-            throw 'Expected all 82 compiled source metadata cases to execute and pass.'
+          foreach ($framework in @("net10.0", "net11.0")) {
+            dotnet test tests/Legacy.Maliev.ServiceDefaults.Tests/Legacy.Maliev.ServiceDefaults.Tests.csproj `
+              --framework $framework `
+              --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true `
+              --filter "FullyQualifiedName~PrivateDependencySourceMetadataTests" `
+              --logger "trx;LogFileName=source-metadata.trx" --results-directory artifacts/source-metadata/$framework
+            if ($LASTEXITCODE -ne 0) { throw 'Source metadata tests failed.' }
+            [xml] $trx = Get-Content artifacts/source-metadata/$framework/source-metadata.trx -Raw
+            $results = @($trx.SelectNodes('/*[local-name()="TestRun"]/*[local-name()="Results"]/*[local-name()="UnitTestResult"]'))
+            $counters = $trx.SelectSingleNode('/*[local-name()="TestRun"]/*[local-name()="ResultSummary"]/*[local-name()="Counters"]')
+            if ($results.Count -ne 82 -or @($results | Where-Object outcome -ne 'Passed').Count -ne 0 -or
+                $null -eq $counters -or [int] $counters.total -ne 82 -or [int] $counters.executed -ne 82 -or [int] $counters.passed -ne 82) {
+              throw 'Expected all 82 compiled source metadata cases to execute and pass.'
+            }
           }
       - name: Verify selected source native buffering ownership
         shell: pwsh
         run: |
-          dotnet test tests/Legacy.Maliev.ServiceDefaults.Tests/Legacy.Maliev.ServiceDefaults.Tests.csproj `
-            --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true `
-            --filter "FullyQualifiedName~PrivateDependencyBufferedSourceTests" `
-            --logger "trx;LogFileName=source-buffering.trx" --results-directory artifacts/source-buffering
-          if ($LASTEXITCODE -ne 0) { throw 'Source native buffering tests failed.' }
-          [xml] $trx = Get-Content artifacts/source-buffering/source-buffering.trx -Raw
-          $results = @($trx.SelectNodes('/*[local-name()="TestRun"]/*[local-name()="Results"]/*[local-name()="UnitTestResult"]'))
-          $counters = $trx.SelectSingleNode('/*[local-name()="TestRun"]/*[local-name()="ResultSummary"]/*[local-name()="Counters"]')
-          if ($results.Count -ne 80 -or @($results | Where-Object outcome -ne 'Passed').Count -ne 0 -or
-              $null -eq $counters -or [int] $counters.total -ne 80 -or [int] $counters.executed -ne 80 -or [int] $counters.passed -ne 80) {
-            throw 'Expected all 80 compiled source native buffering cases to execute and pass.'
+          foreach ($framework in @("net10.0", "net11.0")) {
+            dotnet test tests/Legacy.Maliev.ServiceDefaults.Tests/Legacy.Maliev.ServiceDefaults.Tests.csproj `
+              --framework $framework `
+              --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true `
+              --filter "FullyQualifiedName~PrivateDependencyBufferedSourceTests" `
+              --logger "trx;LogFileName=source-buffering.trx" --results-directory artifacts/source-buffering/$framework
+            if ($LASTEXITCODE -ne 0) { throw 'Source native buffering tests failed.' }
+            [xml] $trx = Get-Content artifacts/source-buffering/$framework/source-buffering.trx -Raw
+            $results = @($trx.SelectNodes('/*[local-name()="TestRun"]/*[local-name()="Results"]/*[local-name()="UnitTestResult"]'))
+            $counters = $trx.SelectSingleNode('/*[local-name()="TestRun"]/*[local-name()="ResultSummary"]/*[local-name()="Counters"]')
+            if ($results.Count -ne 80 -or @($results | Where-Object outcome -ne 'Passed').Count -ne 0 -or
+                $null -eq $counters -or [int] $counters.total -ne 80 -or [int] $counters.executed -ne 80 -or [int] $counters.passed -ne 80) {
+              throw 'Expected all 80 compiled source native buffering cases to execute and pass.'
+            }
           }
       - name: Verify separately enrolled IAM profile exchange and real DI wiring
         shell: bash
         run: |
-          dotnet test tests/Legacy.Maliev.ServiceDefaults.Tests/Legacy.Maliev.ServiceDefaults.Tests.csproj \
-            --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true \
-            --filter "FullyQualifiedName~LegacyIamServiceAuthenticationTests" \
-            --logger "trx;LogFileName=iam-service-profile.trx" --results-directory artifacts/iam-service-profile
+          for framework in net10.0 net11.0; do
+            dotnet test tests/Legacy.Maliev.ServiceDefaults.Tests/Legacy.Maliev.ServiceDefaults.Tests.csproj \
+              --framework "$framework" \
+              --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true \
+              --filter "FullyQualifiedName~LegacyIamServiceAuthenticationTests" \
+              --logger "trx;LogFileName=iam-service-profile.trx" --results-directory artifacts/iam-service-profile/$framework
+          done
       - name: Validate .NET solution
         uses: MALIEV-Co-Ltd/Legacy.Maliev.Workflows/actions/dotnet-validate@73dd7304ffe85ec504389fd7664cc39070b9f148
         with:
           solution: Legacy.Maliev.ServiceDefaults.slnx
+          dotnet-version: 11.0.100
           use-local-maliev-dependencies: 'true'
       - name: Verify completed response failure ownership
         shell: bash
         run: |
-          dotnet test tests/Legacy.Maliev.ServiceDefaults.Tests/Legacy.Maliev.ServiceDefaults.Tests.csproj \
-            --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true \
-            --filter "FullyQualifiedName~PrivateRequestObservationContractTests" \
-            --logger "trx;LogFileName=response-ownership.trx" --results-directory artifacts/response-ownership
+          for framework in net10.0 net11.0; do
+            dotnet test tests/Legacy.Maliev.ServiceDefaults.Tests/Legacy.Maliev.ServiceDefaults.Tests.csproj \
+              --framework "$framework" \
+              --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true \
+              --filter "FullyQualifiedName~PrivateRequestObservationContractTests" \
+              --logger "trx;LogFileName=response-ownership.trx" --results-directory artifacts/response-ownership/$framework
+          done
       - name: Verify shared IAM private failure ownership
         shell: bash
         run: |
-          dotnet test tests/Legacy.Maliev.ServiceDefaults.Tests/Legacy.Maliev.ServiceDefaults.Tests.csproj \
-            --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true \
-            --filter "FullyQualifiedName~IamPrivateDiagnosticBoundaryTests|FullyQualifiedName~IamPrivateObservationOwnershipTests" \
-            --logger "trx;LogFileName=iam-private-observation.trx" --results-directory artifacts/iam-private-observation
+          for framework in net10.0 net11.0; do
+            dotnet test tests/Legacy.Maliev.ServiceDefaults.Tests/Legacy.Maliev.ServiceDefaults.Tests.csproj \
+              --framework "$framework" \
+              --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true \
+              --filter "FullyQualifiedName~IamPrivateDiagnosticBoundaryTests|FullyQualifiedName~IamPrivateObservationOwnershipTests" \
+              --logger "trx;LogFileName=iam-private-observation.trx" --results-directory artifacts/iam-private-observation/$framework
+          done
       - name: Verify IAM cache ownership and permission compatibility
         shell: bash
         run: |
-          dotnet test tests/Legacy.Maliev.ServiceDefaults.Tests/Legacy.Maliev.ServiceDefaults.Tests.csproj \
-            --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true \
-            --filter "FullyQualifiedName~IamPermissionCacheIsolationTests|FullyQualifiedName~IamServiceClientTests|FullyQualifiedName~PermissionAuthorizationPolicyTests|FullyQualifiedName~PermissionAuthorizationSemaphoreTests"
+          for framework in net10.0 net11.0; do
+            dotnet test tests/Legacy.Maliev.ServiceDefaults.Tests/Legacy.Maliev.ServiceDefaults.Tests.csproj \
+              --framework "$framework" \
+              --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true \
+              --filter "FullyQualifiedName~IamPermissionCacheIsolationTests|FullyQualifiedName~IamServiceClientTests|FullyQualifiedName~PermissionAuthorizationPolicyTests|FullyQualifiedName~PermissionAuthorizationSemaphoreTests"
+          done
       - name: Verify retained typed HTTP response boundaries
         shell: bash
         run: |
-          dotnet test tests/Legacy.Maliev.ServiceDefaults.Tests/Legacy.Maliev.ServiceDefaults.Tests.csproj \
-            --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true \
-            --filter "FullyQualifiedName~RetainedTypedHttpResponseTests"
+          for framework in net10.0 net11.0; do
+            dotnet test tests/Legacy.Maliev.ServiceDefaults.Tests/Legacy.Maliev.ServiceDefaults.Tests.csproj \
+              --framework "$framework" \
+              --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true \
+              --filter "FullyQualifiedName~RetainedTypedHttpResponseTests"
+          done
       - name: Verify legacy token owner deadline and cache lifecycle
         shell: bash
         run: |
-          dotnet test tests/Legacy.Maliev.ServiceDefaults.Tests/Legacy.Maliev.ServiceDefaults.Tests.csproj \
-            --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true \
-            --filter "FullyQualifiedName~LegacyTokenExchangeDeadlineTests|FullyQualifiedName~LegacyServiceAuthenticationTests"
+          for framework in net10.0 net11.0; do
+            dotnet test tests/Legacy.Maliev.ServiceDefaults.Tests/Legacy.Maliev.ServiceDefaults.Tests.csproj \
+              --framework "$framework" \
+              --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true \
+              --filter "FullyQualifiedName~LegacyTokenExchangeDeadlineTests|FullyQualifiedName~LegacyServiceAuthenticationTests"
+          done
       - name: Verify private coverage evidence controls
         shell: pwsh
         run: ./eng/Test-CoverageEvidence.ps1
       - name: Collect complete raw owned production coverage
         shell: bash
         run: |
-          dotnet test tests/Legacy.Maliev.ServiceDefaults.Tests/Legacy.Maliev.ServiceDefaults.Tests.csproj \
-            --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true \
-            --collect "XPlat Code Coverage" --settings eng/coverage.runsettings \
-            --logger "trx;LogFileName=owned-raw.trx" --results-directory artifacts/owned-raw
+          for framework in net10.0 net11.0; do
+            dotnet test tests/Legacy.Maliev.ServiceDefaults.Tests/Legacy.Maliev.ServiceDefaults.Tests.csproj \
+              --framework "$framework" \
+              --configuration Release --no-build --no-restore -p:UseLocalMalievDependencies=true \
+              --collect "XPlat Code Coverage" --settings eng/coverage.runsettings \
+              --logger "trx;LogFileName=owned-raw.trx" --results-directory artifacts/owned-raw/$framework
+          done
       - name: Require complete owned assembly evidence
         shell: pwsh
         run: |
-          New-Item -ItemType Directory -Path artifacts/coverage-evidence -Force | Out-Null
-          $reports = @(& ./eng/Get-OwnedCoverageReport.ps1 -ResultsDirectory artifacts/owned-raw)
-          if ($reports.Count -ne 1) { throw 'Expected exactly one complete owned coverage report.' }
-          & ./eng/Assert-OwnedCoverageEvidence.ps1 -CoveragePath $reports[0].FullName -ResultsDirectory artifacts/owned-raw |
-            Tee-Object -FilePath artifacts/coverage-evidence/checker-results.log
+          foreach ($framework in @("net10.0", "net11.0")) {
+            New-Item -ItemType Directory -Path artifacts/coverage-evidence/$framework -Force | Out-Null
+            $reports = @(& ./eng/Get-OwnedCoverageReport.ps1 -ResultsDirectory artifacts/owned-raw/$framework)
+            if ($reports.Count -ne 1) { throw 'Expected exactly one complete owned coverage report.' }
+            $result = & ./eng/Assert-OwnedCoverageEvidence.ps1 -CoveragePath $reports[0].FullName -ResultsDirectory artifacts/owned-raw/$framework |
+              Tee-Object -FilePath artifacts/coverage-evidence/$framework/checker-results.log
+            $summary = ($result -join "`n") | ConvertFrom-Json
+            if ([decimal] $summary.Percent -lt 80) { throw "Owned raw coverage for $framework is below 80%." }
+          }
       - name: Verify package can be produced
         shell: bash
         run: |
@@ -162,36 +230,45 @@ jobs:
             if ($entry.Count -ne 1) { throw 'Expected one package manifest.' }
             $reader = [System.IO.StreamReader]::new($entry[0].Open())
             try { [xml]$manifest = $reader.ReadToEnd() } finally { $reader.Dispose() }
-            $dependencies = @($manifest.SelectNodes("//*[local-name()='dependency' and @id='Microsoft.AspNet.WebApi.Client']"))
-            if ($dependencies.Count -ne 1) { throw 'Formatter runtime dependency is missing.' }
-            $excluded = @($dependencies[0].exclude -split '[,;]' | ForEach-Object { $_.Trim() })
             New-Item artifacts/coverage-evidence -ItemType Directory -Force | Out-Null
             $manifest.Save((Join-Path (Get-Location) 'artifacts/coverage-evidence/formatter-package.nuspec'))
-            @{ dependency = $dependencies[0].id; version = $dependencies[0].version; includedAssets = $dependencies[0].GetAttribute('include'); excludedAssets = $excluded } |
-              ConvertTo-Json | Set-Content artifacts/coverage-evidence/formatter-package.json
-            $included = @($dependencies[0].GetAttribute('include') -split '[,;]' | ForEach-Object { $_.Trim() })
-            if ([string]::IsNullOrWhiteSpace($dependencies[0].GetAttribute('include'))) { $included = @('All') }
-            $compileAllowed = ('All' -in $included -or 'Compile' -in $included) -and 'Compile' -notin $excluded -and 'All' -notin $excluded
-            $runtimeAllowed = ('All' -in $included -or 'Runtime' -in $included) -and 'Runtime' -notin $excluded -and 'All' -notin $excluded
-            if ($compileAllowed -or !$runtimeAllowed) {
-              throw 'Formatter must remain available at runtime without exposing compile extensions.'
+            foreach ($framework in @('net10.0', 'net11.0')) {
+              $groups = @($manifest.SelectNodes("//*[local-name()='dependencies']/*[local-name()='group' and @targetFramework='$framework']"))
+              if ($groups.Count -ne 1) { throw "Expected one dependency group for $framework." }
+              $dependencies = @($groups[0].SelectNodes("./*[local-name()='dependency' and @id='Microsoft.AspNet.WebApi.Client']"))
+              if ($dependencies.Count -ne 1) { throw "Formatter runtime dependency is missing for $framework." }
+              $excluded = @($dependencies[0].exclude -split '[,;]' | ForEach-Object { $_.Trim() })
+              $included = @($dependencies[0].GetAttribute('include') -split '[,;]' | ForEach-Object { $_.Trim() })
+              if ([string]::IsNullOrWhiteSpace($dependencies[0].GetAttribute('include'))) { $included = @('All') }
+              $compileAllowed = ('All' -in $included -or 'Compile' -in $included) -and 'Compile' -notin $excluded -and 'All' -notin $excluded
+              $runtimeAllowed = ('All' -in $included -or 'Runtime' -in $included) -and 'Runtime' -notin $excluded -and 'All' -notin $excluded
+              if ($compileAllowed -or !$runtimeAllowed) {
+                throw "Formatter must remain available at runtime without exposing compile extensions for $framework."
+              }
+              @{ framework = $framework; dependency = $dependencies[0].id; version = $dependencies[0].version; includedAssets = $dependencies[0].GetAttribute('include'); excludedAssets = $excluded } |
+                ConvertTo-Json | Set-Content "artifacts/coverage-evidence/formatter-package-$framework.json"
             }
           } finally { $archive.Dispose() }
       - name: Verify exact produced package through an isolated consumer
         shell: pwsh
-        run: ./eng/Test-TypedResponsePackageConsumer.ps1
+        run: |
+          foreach ($framework in @("net10.0", "net11.0")) {
+            ./eng/Test-TypedResponsePackageConsumer.ps1 -TargetFramework $framework
+          }
       - name: Prepare private validation evidence
         if: always()
         shell: pwsh
         run: |
-          & ./eng/Export-CoverageEvidence.ps1 -ResultsDirectory artifacts/owned-raw -OutputDirectory artifacts/coverage-evidence
-          & ./eng/Export-CoverageEvidence.ps1 -ResultsDirectory artifacts/response-ownership -OutputDirectory artifacts/coverage-evidence/response-ownership
-          & ./eng/Export-CoverageEvidence.ps1 -ResultsDirectory artifacts/send-observation -OutputDirectory artifacts/coverage-evidence/send-observation
-          & ./eng/Export-CoverageEvidence.ps1 -ResultsDirectory artifacts/iam-private-observation -OutputDirectory artifacts/coverage-evidence/iam-private-observation
-          & ./eng/Export-CoverageEvidence.ps1 -ResultsDirectory artifacts/iam-service-profile -OutputDirectory artifacts/coverage-evidence/iam-service-profile
-          & ./eng/Export-CoverageEvidence.ps1 -ResultsDirectory artifacts/source-failure -OutputDirectory artifacts/coverage-evidence/source-failure
-          & ./eng/Export-CoverageEvidence.ps1 -ResultsDirectory artifacts/source-metadata -OutputDirectory artifacts/coverage-evidence/source-metadata
-          & ./eng/Export-CoverageEvidence.ps1 -ResultsDirectory artifacts/source-buffering -OutputDirectory artifacts/coverage-evidence/source-buffering
+          foreach ($framework in @("net10.0", "net11.0")) {
+            & ./eng/Export-CoverageEvidence.ps1 -ResultsDirectory artifacts/owned-raw/$framework -OutputDirectory artifacts/coverage-evidence/$framework
+            & ./eng/Export-CoverageEvidence.ps1 -ResultsDirectory artifacts/response-ownership/$framework -OutputDirectory artifacts/coverage-evidence/$framework/response-ownership
+            & ./eng/Export-CoverageEvidence.ps1 -ResultsDirectory artifacts/send-observation/$framework -OutputDirectory artifacts/coverage-evidence/$framework/send-observation
+            & ./eng/Export-CoverageEvidence.ps1 -ResultsDirectory artifacts/iam-private-observation/$framework -OutputDirectory artifacts/coverage-evidence/$framework/iam-private-observation
+            & ./eng/Export-CoverageEvidence.ps1 -ResultsDirectory artifacts/iam-service-profile/$framework -OutputDirectory artifacts/coverage-evidence/$framework/iam-service-profile
+            & ./eng/Export-CoverageEvidence.ps1 -ResultsDirectory artifacts/source-failure/$framework -OutputDirectory artifacts/coverage-evidence/$framework/source-failure
+            & ./eng/Export-CoverageEvidence.ps1 -ResultsDirectory artifacts/source-metadata/$framework -OutputDirectory artifacts/coverage-evidence/$framework/source-metadata
+            & ./eng/Export-CoverageEvidence.ps1 -ResultsDirectory artifacts/source-buffering/$framework -OutputDirectory artifacts/coverage-evidence/$framework/source-buffering
+          }
       - name: Retain private validation evidence
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
