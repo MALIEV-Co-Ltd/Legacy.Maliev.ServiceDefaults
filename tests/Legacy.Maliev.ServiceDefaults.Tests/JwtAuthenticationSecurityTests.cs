@@ -336,6 +336,35 @@ public class JwtAuthenticationSecurityTests
         }, out _);
     }
 
+    [Fact]
+    public void ServiceAccountTokenGenerator_ProducesVerifiableRegistrationIdentity()
+    {
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
+            Convert.ToBase64String(RandomNumberGenerator.GetBytes(32))));
+        var token = ServiceAccountTokenGenerator.GenerateToken(
+            "UploadService", Encoding.UTF8.GetString(key.Key), Issuer, Audience, expirationYears: 2);
+        var handler = new JwtSecurityTokenHandler { MapInboundClaims = false };
+
+        var principal = handler.ValidateToken(token, new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidIssuer = Issuer,
+            ValidateAudience = true,
+            ValidAudience = Audience,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = key
+        }, out var validated);
+
+        Assert.Equal(SecurityAlgorithms.HmacSha256, Assert.IsType<JwtSecurityToken>(validated).Header.Alg);
+        Assert.Equal("system:service:uploadservice", principal.FindFirst("sub")?.Value);
+        Assert.Equal("UploadService", principal.FindFirst("service_name")?.Value);
+        Assert.Equal("service", principal.FindFirst("user_type")?.Value);
+        Assert.Equal("service-account", principal.FindFirst("role")?.Value);
+        Assert.Equal("iam-registration", principal.FindFirst("purpose")?.Value);
+        Assert.Equal("*", principal.FindFirst("permissions")?.Value);
+    }
+
     /// <summary>
     /// Production service-account signing must not silently fall back to the shared HMAC key.
     /// </summary>
